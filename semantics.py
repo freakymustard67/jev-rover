@@ -252,6 +252,7 @@ class SemanticStore:
         self.diff = SemanticDiff()
         self.destination: Destination | None = None
         self._misses: dict[str, int] = {}
+        self._hs_hist: dict[str, list[bool]] = {}
         self._labels: dict[str, str] = {}
         self.store_dir = Path(cfg.store_dir)
 
@@ -299,7 +300,15 @@ class SemanticStore:
             prev.x = (1.0 - ema) * prev.x + ema * d.x
             prev.y = (1.0 - ema) * prev.y + ema * d.y
             prev.confidence = d.confidence
-            prev.height_suspect = d.height_suspect
+            # height_suspect needs a 2-of-3 majority (hysteresis): a single
+            # noisy probe must not flap the flag in either direction.
+            hist = self._hs_hist.setdefault(oid, [])
+            hist.append(bool(d.height_suspect))
+            del hist[:-3]
+            if sum(hist) >= 2:
+                prev.height_suspect = True
+            elif len(hist) - sum(hist) >= 2:
+                prev.height_suspect = False
             # RAW displacement this pass, before any smoothing: the EMA step is
             # only alpha * raw and hides moves just above the threshold.
             raw = math.hypot(d.x - prev_x, d.y - prev_y)

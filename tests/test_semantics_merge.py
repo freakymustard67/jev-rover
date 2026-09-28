@@ -107,6 +107,20 @@ def test_sub_threshold_hits_only_refresh_freshness(tmp_path):
     assert m.diff.moved == [], "no motion is reported from a rejected detection"
 
 
+def test_height_suspect_flips_only_on_two_of_three(tmp_path):
+    """Hysteresis: one noisy probe must not flap the flag either way."""
+    st = _store(tmp_path)
+    st.merge([_obj("box", 3.0, 1.0)], 0, "fake", 0.0)
+    m = st.merge([_obj("box", 3.0, 1.0, hs=True)], 0, "fake", 1.0)
+    assert m.objects[0].height_suspect is False, "1 of 1 is not a majority"
+    m = st.merge([_obj("box", 3.0, 1.0, hs=True)], 0, "fake", 2.0)
+    assert m.objects[0].height_suspect is True, "2 of 3 agree -> flip up"
+    m = st.merge([_obj("box", 3.0, 1.0, hs=False)], 0, "fake", 3.0)
+    assert m.objects[0].height_suspect is True, "one clean probe must not flip it back"
+    m = st.merge([_obj("box", 3.0, 1.0, hs=False)], 0, "fake", 4.0)
+    assert m.objects[0].height_suspect is False, "2 of 3 clear -> flip down"
+
+
 def test_height_suspect_and_rejected_propagate(tmp_path):
     st = _store(tmp_path)
     m = st.merge([_obj("box", 3.0, 1.0, hs=True)], rejected=2, model="fake", t_pass=0.0)
