@@ -330,12 +330,22 @@ class SemanticStore:
                 diff.appeared.append(oid)
             seen.add(oid)
 
+        evicted: list[str] = []
         for oid in self.objs:
             if oid in seen:
                 continue
             self._misses[oid] = self._misses.get(oid, 0) + 1
             if self._misses[oid] == self.cfg.vanish_passes:
                 diff.vanished.append(oid)
+            if self._misses[oid] >= self.cfg.max_misses:
+                evicted.append(oid)
+        for oid in evicted:
+            # Cap resurrection: an object gone this long gets a new id if it
+            # comes back, and churn cannot grow the map without bound.
+            del self.objs[oid]
+            self._misses.pop(oid, None)
+            self._labels.pop(oid, None)
+            self._hs_hist.pop(oid, None)
 
         self.diff = diff
         if diff.appeared or diff.moved or diff.vanished:

@@ -146,6 +146,7 @@ class SemanticsConfig:
     ema_alpha: float = 0.4
     move_threshold_m: float = 0.25
     vanish_passes: int = 2
+    max_misses: int = 10               # evict (cap resurrection) after this many missed passes
     dedupe_iou: float = 0.5
     min_interval_s: float = 2.0
     failure_cooldown_s: float = 10.0
@@ -332,6 +333,9 @@ class RoomConfig:
             raise ConfigError(f"{where}.semantics.max_passes_per_min must be >= 1")
         if s.vanish_passes < 1:
             raise ConfigError(f"{where}.semantics.vanish_passes must be >= 1")
+        if s.max_misses < s.vanish_passes:
+            raise ConfigError(f"{where}.semantics.max_misses must be >= vanish_passes "
+                              f"({s.max_misses} < {s.vanish_passes})")
         w = self.sweep
         _check_choice(w.sensor.kind, ("tof",), f"{where}.sweep.sensor.kind")
         if not (0.0 < w.sensor.min_range_m < w.sensor.max_range_m):

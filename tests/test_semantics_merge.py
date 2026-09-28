@@ -129,6 +129,21 @@ def test_height_suspect_and_rejected_propagate(tmp_path):
     assert m.age_s == 0.0
 
 
+def test_eviction_caps_resurrection_and_map_growth(tmp_path):
+    """After max_misses missed passes the object is gone; a return is a new id."""
+    st = _store(tmp_path, max_misses=3)
+    st.merge([_obj("mat", 3.0, 1.2)], 0, "fake", 0.0)
+    for i in (1.0, 2.0):
+        st.merge([], 0, "fake", i)
+    assert "obj_0001" in st.objs, "not evicted before the cap"
+    m = st.merge([], 0, "fake", 3.0)                       # third miss -> evict
+    assert "obj_0001" not in st.objs
+    assert m.diff.vanished == [], "the vanish event already fired at vanish_passes"
+    m = st.merge([_obj("mat", 3.0, 1.2)], 0, "fake", 4.0)
+    assert m.diff.appeared == ["obj_0002"], "a returning object is a new identity"
+    assert len(m.objects) == 1, "the map does not grow from churn"
+
+
 def test_persistence_round_trip(tmp_path):
     st = _store(tmp_path)
     st.merge([_obj("mat", 3.0, 1.2)], 1, "fake", 0.5)

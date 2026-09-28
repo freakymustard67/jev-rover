@@ -87,6 +87,7 @@ def test_semantics_validation(synth_cfg):
 
 
 def test_build_state_carries_semantics_and_stays_bounded():
+    base = len(json.dumps(build_state(Scene(t=5.0))))
     scene = Scene(t=5.0)
     scene.semantics = SemanticMap(
         age_s=0.4, passes=3, model="fake-vision-v0",
@@ -97,6 +98,7 @@ def test_build_state_carries_semantics_and_stays_bounded():
     assert state["observed"]["semantics"]["objects"][0]["label"] == "thing 0"
     size = len(json.dumps(state))
     assert size < 6000, f"state grew too much with semantics: {size} bytes"
+    assert size - base < 3000, f"semantics added {size - base} bytes over the bare state"
 
 
 def test_room_config_default_paths_still_load():
