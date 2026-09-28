@@ -90,8 +90,8 @@ class FakeVision:
             raise ValueError("FakeVision expects a BGR frame")
         if not labels:
             return list(self.fixtures)
-        want = {lbl.strip().lower() for lbl in labels}
-        return [d for d in self.fixtures if d.label.strip().lower() in want]
+        want = {canonical_label(lbl) for lbl in labels}
+        return [d for d in self.fixtures if canonical_label(d.label) in want]
 
     @classmethod
     def from_world(cls, entries, homography: Homography,
@@ -117,8 +117,8 @@ def build_vision(cfg: SemanticsConfig, homography: Homography) -> VisionModel:
     if kind == "fake":
         entries = list(cfg.model.fixtures)
         if cfg.model.labels:
-            want = {lbl.strip().lower() for lbl in cfg.model.labels}
-            entries = [e for e in entries if e.label.strip().lower() in want]
+            want = {canonical_label(lbl) for lbl in cfg.model.labels}
+            entries = [e for e in entries if canonical_label(e.label) in want]
         return FakeVision.from_world(entries, homography)
     raise NotImplementedError(
         f"vision model kind {kind!r} is planned for M2; only 'fake' ships in M1")
@@ -155,12 +155,16 @@ def _iou(a: tuple[float, float, float, float], b: tuple[float, float, float, flo
 def dedupe_detections(dets: list[Detection], iou_thr: float) -> list[Detection]:
     """Same-label overlapping detections collapse to the highest score."""
     kept: list[Detection] = []
+    kept_canon: list[str] = []
     for d in sorted(dets, key=lambda d: -d.score):
         if d.bbox_px[2] <= d.bbox_px[0] or d.bbox_px[3] <= d.bbox_px[1]:
             continue
-        if any(k.label == d.label and _iou(k.bbox_px, d.bbox_px) > iou_thr for k in kept):
+        canon = canonical_label(d.label)
+        if any(canon == kc and _iou(k.bbox_px, d.bbox_px) > iou_thr
+               for kc, k in zip(kept_canon, kept)):
             continue
         kept.append(d)
+        kept_canon.append(canon)
     return kept[:MAX_DETECTIONS]
 
 
@@ -273,9 +277,11 @@ class SemanticStore:
         # nearest pair first, so two same-label objects cannot swap identities
         # because of dict insertion order.
         pairs: list[tuple[float, str, int]] = []
+        det_labels = [canonical_label(d.label) for d in unmatched]
         for oid, prev in self.objs.items():
+            prev_label = canonical_label(prev.label)
             for i, d in enumerate(unmatched):
-                if d.label != prev.label:
+                if det_labels[i] != prev_label:
                     continue
                 dd = math.hypot(d.x - prev.x, d.y - prev.y)
                 if dd <= self.cfg.match_radius_m:
@@ -617,10 +623,24 @@ _STOP_WORDS = {
 
 
 def _fold(word: str) -> str:
-    """Tiny plural fold; enough for 'mats' -> 'mat' without a stemmer."""
+    """Tiny plural fold; enough for 'mats'/'boxes'/'berries' without a stemmer."""
+    if len(word) > 4 and word.endswith("ies") and word[-4] not in "aeiou":
+        return word[:-3] + "y"                    # berries -> berry
+    if len(word) > 4 and word.endswith("es") and (
+            word[-3] in "sxz" or word.endswith(("ches", "shes"))):
+        return word[:-2]                          # boxes -> box, dishes -> dish
     if len(word) > 3 and word.endswith("s") and not word.endswith("ss"):
-        return word[:-1]
+        return word[:-1]                          # mats -> mat
     return word
+
+
+def canonical_label(label: str) -> str:
+    """Casefold + plural fold, used for label comparisons only.
+
+    'Blue Mats' -> 'blue mat'; the display label stored in the map keeps its
+    original spelling. A real stemmer is out of scope (M2 concern).
+    """
+    return " ".join(_fold(w) for w in re.findall(r"[a-z0-9]+", label.casefold()))
 
 
 def _tokens(text: str) -> set[str]:

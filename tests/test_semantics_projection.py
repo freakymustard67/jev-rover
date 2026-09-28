@@ -8,7 +8,8 @@ import pytest
 from config import SemanticsConfig
 from perception import Perception
 from semantics import (Detection, FakeVision, WorldFixture, anchor_point,
-                       height_suspect, project_detections, resolve_anchor_kind)
+                       dedupe_detections, height_suspect, project_detections,
+                       resolve_anchor_kind)
 from synthetic import SyntheticRoom
 
 WARM = 6
@@ -98,6 +99,25 @@ def test_dedupe_collapses_overlapping_same_label():
     kept = dedupe_detections(dets, 0.5)
     assert len(kept) == 2                                   # one mat (best score), one box
     assert max(k.score for k in kept if k.label == "mat") == 0.9
+
+
+def test_canonical_label_folds_case_and_plurals():
+    from semantics import canonical_label
+    assert canonical_label("Blue Mats") == "blue mat"
+    assert canonical_label("boxes") == "box"
+    assert canonical_label("dishes") == "dish"
+    assert canonical_label("berries") == "berry"
+
+
+def test_dedupe_and_adapter_filter_are_label_case_insensitive():
+    d1 = Detection("Blue Mat", (100, 100, 200, 200), 0.7)
+    d2 = Detection("blue mats", (102, 101, 201, 199), 0.9)
+    kept = dedupe_detections([d1, d2], 0.5)
+    assert len(kept) == 1 and kept[0].score == 0.9
+
+    vision = FakeVision([Detection("Blue Mat", (0, 0, 10, 10))])
+    got = vision.infer(np.zeros((20, 20, 3), np.uint8), labels=["blue mats"])
+    assert [d.label for d in got] == ["Blue Mat"], "adapter filter folds case + plurals"
 
 
 def test_anchor_helpers():

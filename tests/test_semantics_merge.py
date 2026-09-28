@@ -68,6 +68,15 @@ def test_ids_stable_with_two_same_label_objects(tmp_path):
     assert xs[0] < 1.5 and xs[1] > 3.5, xs
 
 
+def test_label_matching_folds_case_and_plurals(tmp_path):
+    st = _store(tmp_path)
+    st.merge([_obj("Blue Mat", 3.0, 1.2)], 0, "fake", 0.0)
+    m = st.merge([_obj("blue mats", 3.02, 1.19)], 0, "fake", 1.0)
+    assert not m.diff.appeared and not m.diff.vanished, "one object, not two"
+    assert len(m.objects) == 1 and m.objects[0].label == "Blue Mat", \
+        "the display label keeps its original spelling"
+
+
 def test_contested_detection_goes_to_the_nearest_object(tmp_path):
     """Distance-ordered assignment: insertion order must not decide a match."""
     st = _store(tmp_path)
