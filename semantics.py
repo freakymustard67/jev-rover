@@ -31,6 +31,7 @@ import math
 import os
 import queue
 import re
+import sys
 import threading
 import time
 from dataclasses import asdict, dataclass, field, replace
@@ -564,8 +565,10 @@ class SemanticsRunner:
         self._offer_times: list[float] = []
         self.last_offer_t = float("-inf")
         self.fail_cooldown_until = float("-inf")
-        self.skipped = {"interval": 0, "budget": 0, "inflight": 0, "no_context": 0}
+        self.skipped = {"interval": 0, "budget": 0, "inflight": 0, "no_context": 0,
+                        "resolution": 0}
         self.stale_dropped = 0
+        self._resolution_warned = False
 
     # -- passes -------------------------------------------------------------
     def maybe_pass(self, t: float, ctx: SemanticContext, frame: np.ndarray, *,
@@ -576,6 +579,17 @@ class SemanticsRunner:
             return False
         if ctx.floor_lab is None:
             self.skipped["no_context"] += 1
+            return False
+        # The polygon, homography and probe are all in configured-camera pixels;
+        # a frame at another resolution would silently misplace them. Refuse and
+        # say so once instead of projecting wrong.
+        if ctx.camera_w and ctx.camera_h and frame.shape[:2] != (ctx.camera_h, ctx.camera_w):
+            if not self._resolution_warned:
+                print(f"[semantics] frame {frame.shape[1]}x{frame.shape[0]} does not match "
+                      f"the configured camera {ctx.camera_w}x{ctx.camera_h}; refusing semantic "
+                      f"passes (calibrate at the capture resolution)", file=sys.stderr)
+                self._resolution_warned = True
+            self.skipped["resolution"] += 1
             return False
         # Cooldown and budget are hard limits: even an explicit trigger respects
         # them, so a bug cannot run up a bill or hammer a failing model.
