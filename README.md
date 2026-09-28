@@ -45,7 +45,7 @@ should emit a route name, never motor commands.
 
 ```bash
 ./setup.sh
-.venv/bin/python -m pytest                                     # 25 tests
+.venv/bin/python -m pytest                                     # 80 tests
 .venv/bin/python run.py --config config/room.synthetic.json \
     --source synthetic --mission patrol --seconds 30 --no-jev  # baseline drive
 ```
@@ -244,7 +244,7 @@ hardware.
 | `mission.py` | natural-language missions as Choice + Noul over known routes; re-exports destination resolution |
 | `semantics.py` | triggered semantic layer: FakeVision, projection, merge/diff, destinations (M1) |
 | `firmware/` | reference ESP32 sketch and wire protocol |
-| `tests/` | 67 tests: geometry signs, synthetic perception e2e, planner, reflexes, Jev gating, semantics (no network) |
+| `tests/` | 80 tests (25 legacy + 55 semantics): geometry signs, synthetic perception e2e, planner, reflexes, Jev gating, semantics (no network) |
 
 ## Honest limitations
 
@@ -271,6 +271,8 @@ hardware.
 * `sweep-validation.md` — simulation evidence for marker-less localization
   (180° ToF sweep + desmear; desmear is mandatory for moving sweeps)
 * `prototype/` — pre-implementation validation scripts and their tests
+  (opt-in: `.venv/bin/python -m pytest docs/planning/prototype`; the default
+  `testpaths` is `tests/`)
 * `../tools/sim/tof_sim.py` — the sweep simulator (numpy-only)
 
 **Status:** M1 (offline semantic skeleton) shipped —
