@@ -777,7 +777,9 @@ def approach_point(dest: Destination, from_xy: tuple[float, float],
                    standoff_m: float) -> tuple[float, float]:
     dx, dy = dest.x - from_xy[0], dest.y - from_xy[1]
     length = math.hypot(dx, dy)
-    if length < 1e-9:
+    if length <= standoff_m:
+        # Already inside the standoff ring (or on the object): never step past
+        # the destination to its far side.
         return dest.x, dest.y
     return (dest.x - dx / length * standoff_m, dest.y - dy / length * standoff_m)
 
