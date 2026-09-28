@@ -1,0 +1,8 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+runs/
+*.mp4
+calibration/camera.json
+firmware/rover_esp32/secrets.h
