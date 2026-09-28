@@ -115,6 +115,7 @@ def test_failure_cooldown(tmp_path):
         assert _drain(runner, 0.05) is None
         assert runner.worker.errors == 1
         assert not runner.maybe_pass(1.0, _ctx(), FRAME, force=True), "cooldown must block"
+        assert runner.skipped["cooldown"] == 1, "cooldown refusals are counted"
         assert runner.maybe_pass(20.0, _ctx(), FRAME, force=True), "cooldown must expire"
     finally:
         runner.close()
@@ -157,5 +158,7 @@ def test_stats_shape(tmp_path):
         stats = runner.stats()
         assert stats["enabled"] is True and stats["passes"] == 0
         assert "median_ms" in stats and "skipped" in stats
+        assert set(stats["skipped"]) == {"interval", "budget", "inflight", "no_context",
+                                         "resolution", "cooldown"}
     finally:
         runner.close()

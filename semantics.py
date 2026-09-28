@@ -566,7 +566,7 @@ class SemanticsRunner:
         self.last_offer_t = float("-inf")
         self.fail_cooldown_until = float("-inf")
         self.skipped = {"interval": 0, "budget": 0, "inflight": 0, "no_context": 0,
-                        "resolution": 0}
+                        "resolution": 0, "cooldown": 0}
         self.stale_dropped = 0
         self._resolution_warned = False
 
@@ -594,6 +594,7 @@ class SemanticsRunner:
         # Cooldown and budget are hard limits: even an explicit trigger respects
         # them, so a bug cannot run up a bill or hammer a failing model.
         if t < self.fail_cooldown_until:
+            self.skipped["cooldown"] += 1
             return False
         if not force and t - self.last_offer_t < self.semantics_cfg.min_interval_s:
             self.skipped["interval"] += 1
