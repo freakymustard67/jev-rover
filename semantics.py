@@ -288,20 +288,24 @@ class SemanticStore:
             d = unmatched[i]
             taken.add(i)
             prev = self.objs[oid]
+            prev.last_seen_s = round(t_pass, 2)
+            self._misses[oid] = 0
+            seen.add(oid)
+            if d.confidence < self.cfg.min_confidence:
+                # Freshness only: a sub-threshold hit keeps the object alive but
+                # must not move it or overwrite its flags.
+                continue
             prev_x, prev_y = prev.x, prev.y
             prev.x = (1.0 - ema) * prev.x + ema * d.x
             prev.y = (1.0 - ema) * prev.y + ema * d.y
             prev.confidence = d.confidence
             prev.height_suspect = d.height_suspect
-            prev.last_seen_s = round(t_pass, 2)
-            self._misses[oid] = 0
             # RAW displacement this pass, before any smoothing: the EMA step is
             # only alpha * raw and hides moves just above the threshold.
             raw = math.hypot(d.x - prev_x, d.y - prev_y)
             prev.motion = "moved" if raw > self.cfg.move_threshold_m else "static"
             if prev.motion == "moved":
                 diff.moved.append(oid)
-            seen.add(oid)
 
         unmatched = [d for i, d in enumerate(unmatched) if i not in taken]
 

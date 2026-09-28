@@ -94,6 +94,19 @@ def test_appeared_respects_min_confidence(tmp_path):
     assert m.diff.appeared == [], "...but they are not announced as appeared"
 
 
+def test_sub_threshold_hits_only_refresh_freshness(tmp_path):
+    """A low-score detection must not move the object or overwrite its flags."""
+    st = _store(tmp_path)
+    st.merge([_obj("mat", 3.0, 1.2, 0.9, hs=True)], 0, "fake", 0.0)
+    m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 1.0)
+    o = m.objects[0]
+    assert o.x == 3.0 and o.confidence == 0.9 and o.height_suspect is True
+    assert o.last_seen_s == 1.0, "sub-threshold hits still count as seen"
+    m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 2.0)
+    assert not m.diff.vanished, "freshness from low-confidence hits keeps it alive"
+    assert m.diff.moved == [], "no motion is reported from a rejected detection"
+
+
 def test_height_suspect_and_rejected_propagate(tmp_path):
     st = _store(tmp_path)
     m = st.merge([_obj("box", 3.0, 1.0, hs=True)], rejected=2, model="fake", t_pass=0.0)
