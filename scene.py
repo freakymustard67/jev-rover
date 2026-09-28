@@ -261,6 +261,69 @@ class Mission:
     route: str | None = None
 
 
+# --------------------------------------------------------------- semantics
+# Optional layer: labeled objects from a triggered vision pass, a resolved
+# destination, and a per-pass change diff. All of it is additive; scenes with
+# no semantic layer serialize with `semantics: null` and behave as before.
+
+@dataclass
+class SemanticObject:
+    id: str
+    label: str
+    x: float
+    y: float
+    confidence: float
+    sources: list[str] = field(default_factory=lambda: ["vision"])
+    plane_assumed: str = "floor"
+    height_suspect: bool = False
+    first_seen_s: float = 0.0
+    last_seen_s: float = 0.0
+    motion: str = "static"          # static | moved
+
+
+@dataclass
+class Destination:
+    label: str
+    x: float
+    y: float
+    confidence: float
+    source: str = "vision"          # vision | sweep
+    object_id: str | None = None
+
+
+@dataclass
+class SemanticDiff:
+    appeared: list[str] = field(default_factory=list)
+    moved: list[str] = field(default_factory=list)
+    vanished: list[str] = field(default_factory=list)
+
+
+@dataclass
+class SemanticMap:
+    age_s: float = 0.0
+    passes: int = 0
+    model: str = ""
+    objects: list[SemanticObject] = field(default_factory=list)
+    destination: Destination | None = None
+    diff: SemanticDiff = field(default_factory=SemanticDiff)
+
+
+@dataclass
+class SweepConfirmation:
+    object_id: str
+    result: str                      # confirmed | contradicted | absent
+    range_err_m: float | None = None
+
+
+@dataclass
+class SweepState:
+    age_s: float = 0.0
+    last_seq: int = 0
+    pose_sigma: list[float] = field(default_factory=lambda: [0.0, 0.0, 0.0])
+    confirmations: list[SweepConfirmation] = field(default_factory=list)
+    backend: str = "none"            # none | servo-tof
+
+
 @dataclass
 class Scene:
     t: float = 0.0
@@ -283,6 +346,8 @@ class Scene:
     dynamics: Dynamics = field(default_factory=Dynamics)
     hardware: Hardware = field(default_factory=Hardware)
     mission: Mission = field(default_factory=Mission)
+    semantics: SemanticMap | None = None
+    sweep: SweepState | None = None
 
     # ------------------------------------------------------------ accessors
     def sector(self, name: str) -> float | None:

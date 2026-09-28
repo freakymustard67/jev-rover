@@ -19,6 +19,10 @@ from typesafe_sdk import Choice, Noul, TypeSafeClient
 
 from config import RoomConfig
 
+# Proposal §7: natural-language destinations resolve against the semantic map.
+# Implemented in semantics.py; re-exported here as the mission-facing entry point.
+from semantics import resolve_destination  # noqa: F401
+
 MODEL = "jev-latest"
 
 

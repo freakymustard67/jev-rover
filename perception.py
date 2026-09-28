@@ -138,6 +138,42 @@ class Homography:
         return float(np.mean(np.linalg.norm(got - ref, axis=1)))
 
 
+@dataclass
+class SemanticContext:
+    """Read-only snapshot handed to the semantics worker.
+
+    The main thread mutates ``Perception`` at camera rate; the worker must never
+    touch it. Arrays are copies and the homography is immutable after
+    construction, so projection can run off-thread without locks.
+    """
+
+    homography: Homography
+    room_w_m: float
+    room_h_m: float
+    cell_m: float
+    polygon_px: np.ndarray          # full-res floor polygon, (N, 2)
+    floor_lab: np.ndarray | None    # sampled floor colour (None until first classify)
+    floor_lab_tolerance: float
+    grid_log_odds: np.ndarray
+    grid_last_seen: np.ndarray
+    grid_t: float
+    occupied_thr: float
+    stale_s: float
+
+    def occupied(self) -> np.ndarray:
+        return self.grid_log_odds > self.occupied_thr
+
+    def observed(self) -> np.ndarray:
+        return (self.grid_t - self.grid_last_seen) <= self.stale_s
+
+    def cell_of(self, x: float, y: float) -> tuple[int, int] | None:
+        h, w = self.grid_log_odds.shape
+        ix, iy = int(x / self.cell_m), int(y / self.cell_m)
+        if 0 <= ix < w and 0 <= iy < h:
+            return ix, iy
+        return None
+
+
 # --------------------------------------------------------------------------- tags
 
 @dataclass
@@ -262,6 +298,8 @@ class FloorModel:
 class OccupancyGrid:
     """Log-odds occupancy grid with explicit unknown cells."""
 
+    OCCUPIED_THR = 0.42   # log-odds above which a cell counts as occupied
+
     def __init__(self, width_m: float, height_m: float, cell_m: float = 0.05):
         self.cell_m = float(cell_m)
         self.w = int(math.ceil(width_m / cell_m))
@@ -320,8 +358,12 @@ class OccupancyGrid:
         np.clip(self.log_odds, -3.0, 4.5, out=self.log_odds)
 
     # -- reads --------------------------------------------------------------
-    def occupied(self, thr: float = 0.42) -> np.ndarray:
-        return self.log_odds > thr
+    def snapshot(self) -> tuple[np.ndarray, np.ndarray]:
+        """Immutable copies of (log_odds, last_seen) for hand-off to workers."""
+        return self.log_odds.copy(), self.last_seen.copy()
+
+    def occupied(self, thr: float | None = None) -> np.ndarray:
+        return self.log_odds > (self.OCCUPIED_THR if thr is None else thr)
 
     def observed(self, t: float, stale_s: float) -> np.ndarray:
         return (t - self.last_seen) <= stale_s
@@ -658,6 +700,26 @@ class Perception:
             return False
         d = np.hypot(self.nogo[:, 0] - pose.x, self.nogo[:, 1] - pose.y)
         return bool(np.any(d < self.nogo[:, 2]))
+
+    def semantic_context(self, t: float) -> SemanticContext:
+        """Snapshot for the semantics worker; safe to hand to another thread."""
+        lo, seen = self.grid.snapshot()
+        poly = np.asarray(self.cfg.floor.polygon_px, np.float32).reshape(-1, 2).copy()
+        lab = None if self.floor.color_lab is None else np.array(self.floor.color_lab, float)
+        return SemanticContext(
+            homography=self.homography,
+            room_w_m=self.cfg.width_m,
+            room_h_m=self.cfg.height_m,
+            cell_m=self.grid.cell_m,
+            polygon_px=poly,
+            floor_lab=lab,
+            floor_lab_tolerance=self.cfg.floor.lab_tolerance,
+            grid_log_odds=lo,
+            grid_last_seen=seen,
+            grid_t=t,
+            occupied_thr=self.grid.OCCUPIED_THR,
+            stale_s=self.cfg.grid.stale_s,
+        )
 
     # -- main ---------------------------------------------------------------
     def process(self, frame: np.ndarray, t: float, cmd_v: float = 0.0,

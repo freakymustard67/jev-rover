@@ -27,6 +27,7 @@ from config import RoomConfig
 from control import Executor
 from link import Cmd, DryRunLink, MockLink, UDPLink
 from perception import Camera, Perception
+from semantics import SemanticsRunner, approach_point, build_vision, resolve_destination
 from synthetic import SyntheticRoom
 from tactics import DEFAULT, Tactician
 from viz import Renderer
@@ -185,6 +186,12 @@ def parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--local-port", type=int, default=4211)
     p.add_argument("--perception-hz", type=float, default=15.0)
     p.add_argument("--control-hz", type=float, default=20.0)
+    p.add_argument("--semantics", choices=["off", "fake"], default="off",
+                   help="off follows config.semantics.enabled; fake forces the fixture adapter (M1)")
+    p.add_argument("--semantics-once", action="store_true",
+                   help="single semantic pass at mission start, no further triggers (M1 default)")
+    p.add_argument("--find", default=None, metavar="LABEL",
+                   help="resolve a natural-language destination from the semantic map and print it")
     p.add_argument("--video", default=None)
     p.add_argument("--show", action="store_true")
     p.add_argument("--log", default=None, help="write a JSONL scene log here")
@@ -230,6 +237,16 @@ def main(argv=None) -> int:
 
     renderer = Renderer(cfg, perception.grid, show=args.show, video_path=args.video)
     metrics = Metrics()
+
+    runner = None
+    if args.semantics == "fake" or args.find or cfg.semantics.enabled:
+        vision = build_vision(cfg.semantics, perception.homography)
+        runner = SemanticsRunner(cfg, cfg.name, vision)
+        n_fixtures = len(getattr(vision, "fixtures", []))
+        print(f"[semantics] enabled: model={vision.name} fixtures={n_fixtures} "
+              f"(M1: one pass at mission start, no triggers)")
+    semantics_fired = False
+    find_done = False
     log_file = open(args.log, "a") if args.log else None
 
     # ---- loop
@@ -270,6 +287,28 @@ def main(argv=None) -> int:
                 scene = perception.process(frame, t, last_cmd.v_mps, last_cmd.w_deg_s, frame_age)
                 goals.update(scene, t)
                 scene.hardware = link.telemetry(t)
+                if runner is not None:
+                    runner.poll(t)
+                    if not semantics_fired and t >= 1.0:
+                        # Mission-start trigger (proposal §8); M3 adds the scheduler.
+                        if runner.maybe_pass(t, perception.semantic_context(t), frame,
+                                             kind="full", force=True):
+                            semantics_fired = True
+                    scene.semantics = runner.snapshot(t)
+                    if args.find and not find_done and scene.semantics is not None:
+                        dest = resolve_destination(args.find, scene.semantics, cfg=cfg.semantics)
+                        if dest is not None:
+                            ax, ay = approach_point(dest, (scene.pose.x, scene.pose.y),
+                                                    cfg.destination.standoff_m)
+                            runner.set_destination(dest)
+                            print(f"[find] '{args.find}' -> {dest.label} at "
+                                  f"({dest.x:.2f},{dest.y:.2f}) m conf={dest.confidence:.2f} "
+                                  f"object={dest.object_id}; approach ({ax:.2f},{ay:.2f}) "
+                                  f"standoff={cfg.destination.standoff_m} m")
+                        else:
+                            print(f"[find] '{args.find}': no destination resolved "
+                                  f"(passes={scene.semantics.passes})")
+                        find_done = True
                 judg = tact.read(t) if tact is not None else dict(DEFAULT, source="none")
                 next_perc = t + 1.0 / max(1.0, args.perception_hz)
                 frame_ready = True
@@ -319,6 +358,8 @@ def main(argv=None) -> int:
             cam.release()
         if tact is not None:
             tact.close()
+        if runner is not None:
+            runner.close()
         renderer.close()
         if log_file:
             log_file.close()
@@ -333,6 +374,7 @@ def main(argv=None) -> int:
         "metrics": metrics.summary(t_total, goals.reached, goals.expected),
         "control": executor.stats,
         "jev": tact.stats() if tact else None,
+        "semantics": runner.stats() if runner else None,
         "transport": link.stats(),
     }
     out = Path("runs") / f"summary_{stamp}.json"
