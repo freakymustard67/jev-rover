@@ -260,3 +260,19 @@ hardware.
   ranges as real-world claims.
 * Measured on this machine: perception ~50 ms/frame at 640x360 processing
   resolution (roughly 12-15 Hz with overhead), Jev median ~0.32 s, p90 ~1.0 s.
+
+## Planning & roadmap
+
+`docs/planning/` holds the design documents behind the current build state:
+
+* `semantics-layer-proposal.md` — triggered semantic layer (vision model on
+  demand) + physical sweep confirmation; milestones M1–M4
+* `m1-plan.md` — the M1 implementation plan, conflicts found, decisions approved
+* `sweep-validation.md` — simulation evidence for marker-less localization
+  (180° ToF sweep + desmear; desmear is mandatory for moving sweeps)
+* `prototype/` — pre-implementation validation scripts and their tests
+* `../tools/sim/tof_sim.py` — the sweep simulator (numpy-only)
+
+**Status:** M1 (offline semantic skeleton) shipped —
+`.venv/bin/python run.py --config config/room.synthetic.json --source synthetic --semantics fake --semantics-once --find "blue mat" --seconds 5`.
+Next: M2 (real vision adapter + driving to a resolved destination).
