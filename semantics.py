@@ -267,17 +267,27 @@ class SemanticStore:
         seen: set[str] = set()
         ema = self.cfg.ema_alpha
 
+        # Distance-ordered best-first assignment: collect every (object,
+        # detection) pair inside the match radius and consume the globally
+        # nearest pair first, so two same-label objects cannot swap identities
+        # because of dict insertion order.
+        pairs: list[tuple[float, str, int]] = []
         for oid, prev in self.objs.items():
-            best_i, best_d = None, self.cfg.match_radius_m
             for i, d in enumerate(unmatched):
                 if d.label != prev.label:
                     continue
                 dd = math.hypot(d.x - prev.x, d.y - prev.y)
-                if dd <= best_d:
-                    best_i, best_d = i, dd
-            if best_i is None:
+                if dd <= self.cfg.match_radius_m:
+                    pairs.append((dd, oid, i))
+        pairs.sort(key=lambda p: p[0])
+
+        taken: set[int] = set()
+        for _, oid, i in pairs:
+            if oid in seen or i in taken:
                 continue
-            d = unmatched.pop(best_i)
+            d = unmatched[i]
+            taken.add(i)
+            prev = self.objs[oid]
             prev_x, prev_y = prev.x, prev.y
             prev.x = (1.0 - ema) * prev.x + ema * d.x
             prev.y = (1.0 - ema) * prev.y + ema * d.y
@@ -292,6 +302,8 @@ class SemanticStore:
             if prev.motion == "moved":
                 diff.moved.append(oid)
             seen.add(oid)
+
+        unmatched = [d for i, d in enumerate(unmatched) if i not in taken]
 
         for d in unmatched:
             oid = f"obj_{self.next_id:04d}"

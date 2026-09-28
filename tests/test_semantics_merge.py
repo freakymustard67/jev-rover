@@ -68,6 +68,16 @@ def test_ids_stable_with_two_same_label_objects(tmp_path):
     assert xs[0] < 1.5 and xs[1] > 3.5, xs
 
 
+def test_contested_detection_goes_to_the_nearest_object(tmp_path):
+    """Distance-ordered assignment: insertion order must not decide a match."""
+    st = _store(tmp_path)
+    st.merge([_obj("mat", 1.0, 1.0), _obj("mat", 1.4, 1.0)], 0, "fake", 0.0)
+    m = st.merge([_obj("mat", 1.3, 1.0)], 0, "fake", 1.0)  # 0.30 m from obj 1, 0.10 m from obj 2
+    assert not m.diff.appeared
+    assert st.objs["obj_0001"].x == 1.0, "the far object must not steal the detection"
+    assert abs(st.objs["obj_0002"].x - (0.6 * 1.4 + 0.4 * 1.3)) < 1e-9
+
+
 def test_smoothing_converges(tmp_path):
     st = _store(tmp_path)
     st.merge([_obj("mat", 1.0, 1.0)], 0, "fake", 0.0)
