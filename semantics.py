@@ -152,15 +152,37 @@ def _iou(a: tuple[float, float, float, float], b: tuple[float, float, float, flo
     return inter / max(1e-9, area_a + area_b - inter)
 
 
-def dedupe_detections(dets: list[Detection], iou_thr: float) -> list[Detection]:
-    """Same-label overlapping detections collapse to the highest score."""
+def _centres_within_m(a: Detection, b: Detection, homography: Homography,
+                      thr_m: float) -> bool:
+    """World-space bbox-centre distance (the plan's 'centres < 0.15 m' clause)."""
+    if thr_m <= 0.0:
+        return False
+    ca = np.array([[(a.bbox_px[0] + a.bbox_px[2]) / 2.0, (a.bbox_px[1] + a.bbox_px[3]) / 2.0]])
+    cb = np.array([[(b.bbox_px[0] + b.bbox_px[2]) / 2.0, (b.bbox_px[1] + b.bbox_px[3]) / 2.0]])
+    wa = homography.img_to_world(ca)[0]
+    wb = homography.img_to_world(cb)[0]
+    return float(math.hypot(wa[0] - wb[0], wa[1] - wb[1])) <= thr_m
+
+
+def dedupe_detections(dets: list[Detection], iou_thr: float, *,
+                      homography: Homography | None = None,
+                      center_dist_m: float = 0.0) -> list[Detection]:
+    """Same-label duplicates collapse to the highest score.
+
+    Duplicates overlap (IoU > ``iou_thr``) or have projected centres within
+    ``center_dist_m`` metres (near-coincident detector boxes that do not
+    overlap); the world clause needs ``homography``.
+    """
     kept: list[Detection] = []
     kept_canon: list[str] = []
     for d in sorted(dets, key=lambda d: -d.score):
         if d.bbox_px[2] <= d.bbox_px[0] or d.bbox_px[3] <= d.bbox_px[1]:
             continue
         canon = canonical_label(d.label)
-        if any(canon == kc and _iou(k.bbox_px, d.bbox_px) > iou_thr
+        if any(canon == kc and (
+                   _iou(k.bbox_px, d.bbox_px) > iou_thr
+                   or (homography is not None
+                       and _centres_within_m(k, d, homography, center_dist_m)))
                for kc, k in zip(kept_canon, kept)):
             continue
         kept.append(d)
@@ -213,7 +235,8 @@ def project_detections(dets: list[Detection], frame: np.ndarray, ctx: SemanticCo
     h, w = frame.shape[:2]
     objects: list[SemanticObject] = []
     rejected = 0
-    for d in dedupe_detections(dets, cfg.dedupe_iou):
+    for d in dedupe_detections(dets, cfg.dedupe_iou, homography=ctx.homography,
+                               center_dist_m=cfg.dedupe_center_m):
         x0 = max(0, min(w - 1, d.bbox_px[0]))
         y0 = max(0, min(h - 1, d.bbox_px[1]))
         x1 = max(0, min(w - 1, d.bbox_px[2]))
