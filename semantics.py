@@ -47,6 +47,7 @@ from scene import Destination, SemanticDiff, SemanticMap, SemanticObject
 VISION_KINDS = ("fake", "local", "remote")
 ANCHOR_POINTS = ("bbox_bottom_center", "bbox_center", "centroid")
 MAX_DETECTIONS = 64
+PROBE_PATCH_PX = (7, 3)                # probe median patch (w, h) below the bbox base
 EVENT_LOG = "events.jsonl"
 
 
@@ -196,7 +197,13 @@ def _inside_polygon(polygon_px: np.ndarray, x: float, y: float) -> bool:
 
 
 def _lab_at(frame: np.ndarray, x: int, y: int) -> np.ndarray:
-    return cv2.cvtColor(frame[y, x].reshape(1, 1, 3), cv2.COLOR_BGR2LAB)[0, 0].astype(float)
+    """Median LAB over a small patch: one pixel sits in MJPG edge ringing."""
+    h, w = frame.shape[:2]
+    pw, ph = PROBE_PATCH_PX
+    x0, x1 = max(0, x - pw // 2), min(w, x + pw // 2 + 1)
+    y0, y1 = max(0, y - ph // 2), min(h, y + ph // 2 + 1)
+    patch = cv2.cvtColor(frame[y0:y1, x0:x1], cv2.COLOR_BGR2LAB).reshape(-1, 3)
+    return np.median(patch.astype(float), axis=0)
 
 
 def height_suspect(frame: np.ndarray, bbox: tuple[float, float, float, float],

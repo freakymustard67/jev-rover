@@ -81,6 +81,22 @@ def test_height_suspect_when_probe_leaves_the_frame(synth_cfg):
     assert height_suspect(frame, bbox, 3.0, 0.2, ctx, synth_cfg.semantics.project) is True
 
 
+def test_probe_median_survives_a_single_dead_pixel(synth_cfg):
+    perc, syn, frame = _perception(synth_cfg)
+    ctx = perc.semantic_context(1.0)
+    bb = FakeVision.from_world(
+        [WorldFixture("thing", 3.0, 1.2, 0.4, 0.4)], perc.homography).fixtures[0].bbox_px
+    bbox = (float(bb[0]), float(bb[1]), float(bb[2]), float(bb[3]))
+    px = int(round((bbox[0] + bbox[2]) / 2.0))
+    py = int(round(bbox[3])) + int(synth_cfg.semantics.project.probe_px)
+    noisy = frame.copy()
+    noisy[py, px] = (0, 0, 0)                       # one dead pixel under the base
+    assert height_suspect(noisy, bbox, 3.0, 1.2, ctx, synth_cfg.semantics.project) is False
+    dark = frame.copy()
+    dark[py - 1:py + 2, px - 3:px + 4] = 0          # a dark band still flags suspect
+    assert height_suspect(dark, bbox, 3.0, 1.2, ctx, synth_cfg.semantics.project) is True
+
+
 def test_height_suspect_without_a_floor_sample(synth_cfg):
     perc, syn, frame = _perception(synth_cfg)
     ctx = perc.semantic_context(1.0)
