@@ -117,6 +117,42 @@ JSON-serializable, roughly 3.5 KB:
 | `goal` | bearing, range, `path_valid`, `path_len_m`, **`path_bearing_deg`** (where the planner wants to go) | the plan is part of the observation, not hidden in code |
 | `dynamics`, `hardware` | commanded vs observed speed, `no_progress_s`, ToF distance, watchdog state | stall and slip are observable facts |
 | `target`, `mission`, `nogo_hit` | follow target and mission context | - |
+| `semantics`, `sweep` | labeled objects (M1: triggered vision layer), resolved destination, per-pass diff, sweep state (schema only until M4) | meaning, not just geometry |
+
+## Semantic layer (M1)
+
+Geometry answers *where*; the semantic layer answers *what*, on demand. A vision
+model runs only when triggered (mission start in M1; uncertainty/audit triggers
+in M3), its detections are projected onto the floor plane, merged into a
+persistent per-room map, and diffed between passes. `FakeVision` ships in M1 so
+the whole pipeline is testable offline; real adapters are M2.
+
+```bash
+.venv/bin/python run.py --config config/room.synthetic.json --source synthetic \
+    --mission patrol --seconds 8 --no-jev --semantics fake --find "blue mat"
+# [find] 'blue mat' -> blue mat at (3.00,1.20) m conf=0.92; approach (3.12,1.53) standoff=0.35 m
+```
+
+* **Projection**: bbox anchor -> floor homography -> metres, rejecting anything
+  outside the floor polygon (never clamping: no invented positions).
+  `project.point_by_label` overrides the anchor per label because the measured
+  error differs by object shape: `centroid` is ~1.5 cm for flat mats vs ~30 cm
+  for `bbox_bottom_center`, and the reverse for standing objects.
+* **`height_suspect`**: probes the pixels *below* the bbox base. Floor-coloured
+  means the object rests on the floor; anything else (furniture) means the
+  projection may be biased, which is the honest flag rather than a guess.
+* **Motion**: computed from the RAW per-pass displacement, never the EMA step
+  (smoothing turns a 0.35 m move into 0.14 m and would miss it).
+* **Destination**: Jaccard token overlap over labels; ties within
+  `ambiguity_epsilon` go to one budgeted Jev `Choice` over the candidate labels
+  (code owns the options), with a deterministic fallback when no client is
+  available. `approach_point` places the standoff on the rover->object line.
+* **Worker discipline**: immutable `SemanticContext` snapshot (grid arrays +
+  floor colour + polygon) plus a frame copy, one pass in flight, hard
+  `max_passes_per_min` budget, failure cooldown, stale-result rejection.
+  Counters land in `runs/summary_*.json` under `"semantics"`.
+* Artifacts: `runs/semantic/<room>_latest.json` and `_events.jsonl` (written,
+  not auto-loaded yet).
 
 Perception itself: AprilTag pose straight from the floor homography (no
 intrinsics needed for the planar case), floor-color model (optionally with an
@@ -205,9 +241,10 @@ hardware.
 | `viz.py` | HUD: camera + belief overlay, minimap, Jev panel |
 | `synthetic.py` | deterministic room renderer for tests and dry runs |
 | `calibrate.py` | cameras, tag printing, floor homography, intrinsics, sanity check |
-| `mission.py` | natural-language missions as Choice + Noul over known routes |
+| `mission.py` | natural-language missions as Choice + Noul over known routes; re-exports destination resolution |
+| `semantics.py` | triggered semantic layer: FakeVision, projection, merge/diff, destinations (M1) |
 | `firmware/` | reference ESP32 sketch and wire protocol |
-| `tests/` | 25 tests: geometry signs, synthetic perception e2e, planner, reflexes, Jev gating (no network) |
+| `tests/` | 67 tests: geometry signs, synthetic perception e2e, planner, reflexes, Jev gating, semantics (no network) |
 
 ## Honest limitations
 

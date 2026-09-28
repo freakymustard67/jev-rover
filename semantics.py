@@ -40,7 +40,7 @@ from typing import Protocol
 import cv2
 import numpy as np
 
-from config import DestinationConfig, ProjectConfig, RoomConfig, SemanticsConfig
+from config import ProjectConfig, RoomConfig, SemanticsConfig
 from perception import Homography, SemanticContext
 from scene import Destination, SemanticDiff, SemanticMap, SemanticObject
 
