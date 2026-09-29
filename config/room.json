@@ -1,17 +1,79 @@
 {
   "name": "living-room",
-  "width_m": 6.4,
-  "height_m": 3.6,
-  "camera": {"source": "/dev/video10", "width": 1920, "height": 1080, "intrinsics": ""},
+  "width_m": 3.07,
+  "height_m": 1.79,
+  "camera": {
+    "source": "/dev/video10",
+    "width": 1920,
+    "height": 1080,
+    "intrinsics": "",
+    "hfov_deg": 60.0
+  },
   "floor": {
-    "polygon_px": [[120, 120], [1800, 120], [1800, 960], [120, 960]],
+    "polygon_px": [
+      [
+        120,
+        120
+      ],
+      [
+        1800,
+        120
+      ],
+      [
+        1800,
+        960
+      ],
+      [
+        120,
+        960
+      ]
+    ],
     "lab_tolerance": 22.0
   },
   "homography": {
-    "image_points_px": [[0, 0], [1920, 0], [1920, 1080], [0, 1080]],
-    "world_points_m": [[0, 3.6], [6.4, 3.6], [6.4, 0], [0, 0]]
+    "image_points_px": [
+      [
+        8.0,
+        360.0
+      ],
+      [
+        1912.0,
+        360.0
+      ],
+      [
+        1912.0,
+        1072.0
+      ],
+      [
+        8.0,
+        1072.0
+      ]
+    ],
+    "world_points_m": [
+      [
+        -0.047,
+        1.58
+      ],
+      [
+        3.05,
+        1.587
+      ],
+      [
+        2.402,
+        0.202
+      ],
+      [
+        0.599,
+        0.2
+      ]
+    ]
   },
-  "grid": {"cell_m": 0.05, "inflation_m": 0.24, "max_range_m": 5.5, "stale_s": 3.0},
+  "grid": {
+    "cell_m": 0.05,
+    "inflation_m": 0.24,
+    "max_range_m": 5.5,
+    "stale_s": 3.0
+  },
   "rover": {
     "footprint_radius_m": 0.18,
     "pose_source": "blob",
@@ -22,30 +84,108 @@
     "max_speed_mps": 0.6,
     "max_turn_deg_s": 120.0
   },
-  "target": {"mode": "none", "tag_id": 1, "standoff_m": 1.0},
+  "target": {
+    "mode": "none",
+    "tag_id": 1,
+    "standoff_m": 1.0
+  },
   "semantics": {
     "enabled": false,
     "model": {
       "kind": "local",
-      "labels": ["mat", "box", "ball", "bottle", "charger"],
+      "labels": [
+        "mat",
+        "box",
+        "ball",
+        "bottle",
+        "charger"
+      ],
       "image_shortest_edge": 400,
       "image_longest_edge": 666
     },
-    "project": {"point": "bbox_bottom_center", "probe_px": 6,
-                "point_by_label": {"mat": "centroid"}},
+    "project": {
+      "point": "bbox_bottom_center",
+      "probe_px": 6,
+      "point_by_label": {
+        "mat": "centroid"
+      }
+    },
     "max_age_s": 120,
     "min_interval_s": 5
   },
-  "destination": {"standoff_m": 0.35},
-  "sweep": {"enabled": false},
-  "confirmation": {"backend": "none"},
-  "synthetic": {"px_per_m": 200.0},
-  "waypoints": {
-    "dock": [0.5, 0.5, 45],
-    "kitchen": [5.5, 0.8, 0],
-    "living": [3.2, 2.8, 180],
-    "hall": [0.6, 2.0, 90]
+  "destination": {
+    "standoff_m": 0.35
   },
-  "routes": {"patrol": ["dock", "kitchen", "living", "hall"]},
-  "nogo": []
+  "sweep": {
+    "enabled": false
+  },
+  "confirmation": {
+    "backend": "none"
+  },
+  "synthetic": {
+    "px_per_m": 200.0
+  },
+  "waypoints": {
+    "dock": [
+      0.5,
+      0.5,
+      45
+    ],
+    "kitchen": [
+      2.77,
+      0.8,
+      0
+    ],
+    "living": [
+      2.77,
+      1.49,
+      180
+    ],
+    "hall": [
+      0.6,
+      1.49,
+      90
+    ]
+  },
+  "routes": {
+    "patrol": [
+      "dock",
+      "kitchen",
+      "living",
+      "hall"
+    ]
+  },
+  "nogo": [],
+  "depth": {
+    "model": "depth:Depth-Anything-V2-Metric-Indoor-Small-hf",
+    "frames": 5,
+    "hfov_deg": 60.0,
+    "focal_px": 1662.8,
+    "image_wh": [
+      1920,
+      1080
+    ],
+    "normal": [
+      0.00131,
+      -0.81749,
+      -0.57594
+    ],
+    "offset_m": -1.3183,
+    "camera_height_m": 1.318,
+    "inlier_ratio": 0.908,
+    "residual_median_m": 0.0072,
+    "residual_p90_m": 0.0196,
+    "inliers": 19612,
+    "samples": 21600,
+    "floor_size_m": [
+      3.07,
+      1.79
+    ],
+    "metres_per_px_center": [
+      0.00138,
+      0.00239
+    ],
+    "calibrated_at": "2026-09-29T14:19:33",
+    "note": "camera-only, test-grade (~5-15% scale error, frame wobble); the sweep-ruler replaces this without interface changes"
+  }
 }
