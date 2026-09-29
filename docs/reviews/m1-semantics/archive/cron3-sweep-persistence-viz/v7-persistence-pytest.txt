@@ -1,0 +1,24 @@
+# v7 persistence probe — run in scratch clone /home/freakymustard/.hermes/cache/scratch/w5/v7/jev-rover-1790634310 (HEAD 9c33ec0), 2026-09-29T03:57:22+05:30
+# cmd: PYTHONDONTWRITEBYTECODE=1 /home/freakymustard/jev-rover/.venv/bin/python -m pytest -q -p no:cacheprovider -s tests/test_v7_persistence_probe.py
+..  empty_file                   -> JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+  whitespace                   -> JSONDecodeError: Expecting value: line 2 column 3 (char 6)
+  truncated_json               -> JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 52 (char 51)
+  no_map_key                   -> KeyError: 'map'
+  map_null                     -> AttributeError: 'NoneType' object has no attribute 'get'
+  object_unknown_field         -> TypeError: SemanticObject.__init__() got an unexpected keyword argument 'bbox_px'
+  object_missing_required      -> TypeError: SemanticObject.__init__() missing 1 required positional argument: 'id'
+  diff_unknown_field           -> TypeError: SemanticDiff.__init__() got an unexpected keyword argument 'notable'
+  destination_unknown_field    -> TypeError: Destination.__init__() got an unexpected keyword argument 'sweep_confirmed'
+.map-level 'schema_version' ignored; object-level would raise TypeError
+.loaded roomB_latest.json whose payload says room='roomA': accepted
+.path used: /home/freakymustard/.hermes/cache/scratch/pytest-of-freakymustard/pytest-53/test_room_name_is_used_raw_in_0/../escape_latest.json -> exists: True
+.events.jsonl line keys: ['appeared', 'labels', 'moved', 't', 'vanished'] | bytes/line ~ 95
+.map.age_s = 0.0 | saved_at (wall) = 1790634443.4841025
+.store_dir pointing at a file: merge survived, no artifact, no signal
+.100 objects: merge(incl. save) median 6.13 ms max 7.95 ms | save median 5.03 ms | load median 0.63 ms | latest.json 35431 bytes
+.
+10 passed in 0.41s
+
+# full suite in the same clone:
+................                                                         [100%]
+88 passed in 14.19s

@@ -1,0 +1,371 @@
+{
+  "repo": "/home/freakymustard/.hermes/cache/scratch/i7/repo",
+  "project_to_free": true,
+  "approach": [
+    2.65,
+    1.2
+  ],
+  "projected": [
+    2.4250000000000003,
+    0.9750000000000001
+  ],
+  "results": [
+    {
+      "case": "A raw (jev)",
+      "jev": true,
+      "goal": [
+        2.65,
+        1.2
+      ],
+      "min_goal_m": 0.248,
+      "latch_0.30": true,
+      "arrival_0.10": false,
+      "min_mat_gap_m": 0.175,
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "end_source": "jev:hold_course",
+      "tail_sources": [
+        "jev:hold_course",
+        "reflex:map_brake"
+      ],
+      "reflexes": {
+        "map_brake": 132
+      },
+      "replans": 50,
+      "end_pose": [
+        2.401,
+        1.013
+      ],
+      "trace_5s": [
+        [
+          0.67,
+          1.436,
+          1.199,
+          0.55,
+          -28.0,
+          "jev:hold_course",
+          1.214,
+          1.214
+        ],
+        [
+          5.67,
+          2.405,
+          0.97,
+          0.06,
+          120.0,
+          "jev:hold_course",
+          0.336,
+          0.245
+        ],
+        [
+          10.67,
+          2.473,
+          1.022,
+          0.06,
+          120.0,
+          "jev:hold_course",
+          0.251,
+          0.177
+        ],
+        [
+          15.67,
+          2.401,
+          0.966,
+          0.06,
+          120.0,
+          "jev:hold_course",
+          0.341,
+          0.249
+        ],
+        [
+          20.67,
+          2.453,
+          1.011,
+          0.06,
+          120.0,
+          "jev:hold_course",
+          0.273,
+          0.197
+        ],
+        [
+          25.67,
+          2.41,
+          0.956,
+          0.0,
+          120.0,
+          "reflex:map_brake",
+          0.343,
+          0.24
+        ],
+        [
+          30.67,
+          2.433,
+          1.04,
+          0.06,
+          120.0,
+          "jev:hold_course",
+          0.27,
+          0.217
+        ],
+        [
+          35.67,
+          2.404,
+          0.953,
+          0.0,
+          50.0,
+          "reflex:map_brake",
+          0.348,
+          0.246
+        ]
+      ]
+    },
+    {
+      "case": "A raw (base)",
+      "jev": false,
+      "goal": [
+        2.65,
+        1.2
+      ],
+      "min_goal_m": 0.392,
+      "latch_0.30": false,
+      "arrival_0.10": false,
+      "min_mat_gap_m": 0.344,
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "reflexes": {},
+      "replans": 50,
+      "end_pose": [
+        2.306,
+        1.012
+      ],
+      "trace_5s": [
+        [
+          0.67,
+          1.436,
+          1.199,
+          0.55,
+          -28.0,
+          "path",
+          1.214,
+          1.214
+        ],
+        [
+          5.67,
+          2.306,
+          1.012,
+          0.0,
+          -84.0,
+          "baseline",
+          0.392,
+          0.344
+        ],
+        [
+          10.67,
+          2.306,
+          1.012,
+          0.0,
+          84.0,
+          "baseline",
+          0.392,
+          0.344
+        ],
+        [
+          15.67,
+          2.306,
+          1.012,
+          0.0,
+          84.0,
+          "baseline",
+          0.392,
+          0.344
+        ],
+        [
+          20.67,
+          2.306,
+          1.012,
+          0.0,
+          -84.0,
+          "baseline",
+          0.392,
+          0.344
+        ],
+        [
+          25.67,
+          2.306,
+          1.012,
+          0.0,
+          -84.0,
+          "baseline",
+          0.392,
+          0.344
+        ],
+        [
+          30.67,
+          2.306,
+          1.012,
+          0.0,
+          84.0,
+          "baseline",
+          0.392,
+          0.344
+        ],
+        [
+          35.67,
+          2.306,
+          1.012,
+          0.0,
+          84.0,
+          "baseline",
+          0.392,
+          0.344
+        ]
+      ]
+    },
+    {
+      "case": "B proj (jev)",
+      "jev": true,
+      "goal": [
+        2.425,
+        0.975
+      ],
+      "min_goal_m": 0.045,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_mat_gap_m": 0.268,
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "end_source": "jev:hold_course",
+      "tail_sources": [
+        "jev:hold_course"
+      ],
+      "reflexes": {},
+      "replans": 3,
+      "end_pose": [
+        2.382,
+        0.989
+      ],
+      "trace_5s": [
+        [
+          0.67,
+          1.436,
+          1.199,
+          0.55,
+          -28.0,
+          "jev:hold_course",
+          1.014,
+          1.214
+        ]
+      ]
+    },
+    {
+      "case": "B proj (base)",
+      "jev": false,
+      "goal": [
+        2.425,
+        0.975
+      ],
+      "min_goal_m": 0.124,
+      "latch_0.30": true,
+      "arrival_0.10": false,
+      "min_mat_gap_m": 0.344,
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "reflexes": {},
+      "replans": 50,
+      "end_pose": [
+        2.306,
+        1.012
+      ],
+      "trace_5s": [
+        [
+          0.67,
+          1.436,
+          1.199,
+          0.55,
+          -28.0,
+          "path",
+          1.014,
+          1.214
+        ],
+        [
+          5.67,
+          2.306,
+          1.012,
+          0.0,
+          -84.0,
+          "baseline",
+          0.124,
+          0.344
+        ],
+        [
+          10.67,
+          2.306,
+          1.012,
+          0.0,
+          84.0,
+          "baseline",
+          0.124,
+          0.344
+        ],
+        [
+          15.67,
+          2.306,
+          1.012,
+          0.0,
+          84.0,
+          "baseline",
+          0.124,
+          0.344
+        ],
+        [
+          20.67,
+          2.306,
+          1.012,
+          0.0,
+          -84.0,
+          "baseline",
+          0.124,
+          0.344
+        ],
+        [
+          25.67,
+          2.306,
+          1.012,
+          0.0,
+          -84.0,
+          "baseline",
+          0.124,
+          0.344
+        ],
+        [
+          30.67,
+          2.306,
+          1.012,
+          0.0,
+          84.0,
+          "baseline",
+          0.124,
+          0.344
+        ],
+        [
+          35.67,
+          2.306,
+          1.012,
+          0.0,
+          84.0,
+          "baseline",
+          0.124,
+          0.344
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+python=3.11.16  scratch=/home/freakymustard/.hermes/cache/scratch/w4c/repo/w4c_out
+LOOPBACK ONLY: mock on 127.0.0.1 + one dead loopback port; no external host.
+mock server: http://127.0.0.1:45829/detect
+
+---- A. adapter direct checks ------------------------------------------------
+[PASS] no endpoint anywhere -> clean error  |  msg=remote vision endpoint is not set (env JEV_VISION_ENDPOINT or config)
+[PASS] infer via env endpoint: 2 valid detections, 0 skipped  |  dets=[('mat', (20, 30, 60, 70), 0.91), ('bottle', (80, 10, 100, 40), 0.77)]
+[PASS] infer via constructor endpoint: works
+
+---- B. healthy pass (baseline) + artifact write -----------------------------
+[PASS] baseline pass accepted
+[PASS] baseline pass merged (2 objects)  |  labels=['mat', 'bottle']
+[PASS] artifacts written
+
+---- C. slow server > timeout: submit non-blocking, loop unaffected ----------
+[PASS] submit returns immediately while slow  |  0.1 ms
+[PASS] second submit refused (one in flight)
+[PASS] 60x poll+snapshot in flight stays cheap  |  1.1 ms total
+[PASS] timeout -> clean error recorded
+[PASS] timeout: poll() consumes error as None
+[PASS] timeout: cooldown armed  |  until=7.0
+[PASS] timeout: cooldown blocks
+[PASS] timeout: worker alive
+         last_error = 'RemoteVisionError: transport error: TimeoutError: timed out'
+[PASS] timeout: following pass accepted after cooldown
+[PASS] timeout: following pass succeeds
+
+---- D. failure modes x cooldown (500 / malformed / schema / badentry / refused) 
+[PASS] http500: submit accepted
+[PASS] http500: worker records a clean error
+[PASS] http500: poll() consumes the error as None (no merge)
+[PASS] http500: cooldown armed at t+5.0  |  fail_cooldown_until=14.0
+[PASS] http500: cooldown blocks the next pass  |  skipped[cooldown]=2
+[PASS] http500: worker thread still alive
+[PASS] http500: in-flight cleared after error
+         last_error = 'RemoteVisionError: HTTP 500: Internal Server Error'
+[PASS] http500: pass accepted after cooldown
+[PASS] http500: following pass succeeds (failure isolated)  |  passes=3 objects=2
+[PASS] malformed-json: submit accepted
+[PASS] malformed-json: worker records a clean error
+[PASS] malformed-json: poll() consumes the error as None (no merge)
+[PASS] malformed-json: cooldown armed at t+5.0  |  fail_cooldown_until=21.0
+[PASS] malformed-json: cooldown blocks the next pass  |  skipped[cooldown]=3
+[PASS] malformed-json: worker thread still alive
+[PASS] malformed-json: in-flight cleared after error
+         last_error = 'RemoteVisionError: malformed JSON: JSONDecodeError'
+[PASS] malformed-json: pass accepted after cooldown
+[PASS] malformed-json: following pass succeeds (failure isolated)  |  passes=4 objects=2
+[PASS] wrong-schema: submit accepted
+[PASS] wrong-schema: worker records a clean error
+[PASS] wrong-schema: poll() consumes the error as None (no merge)
+[PASS] wrong-schema: cooldown armed at t+5.0  |  fail_cooldown_until=28.0
+[PASS] wrong-schema: cooldown blocks the next pass  |  skipped[cooldown]=4
+[PASS] wrong-schema: worker thread still alive
+[PASS] wrong-schema: in-flight cleared after error
+         last_error = "RemoteVisionError: schema: expected {'detections': [...]}"
+[PASS] wrong-schema: pass accepted after cooldown
+[PASS] wrong-schema: following pass succeeds (failure isolated)  |  passes=5 objects=2
+[PASS] all-invalid-entry: submit accepted
+[PASS] all-invalid-entry: worker records a clean error
+[PASS] all-invalid-entry: poll() consumes the error as None (no merge)
+[PASS] all-invalid-entry: cooldown armed at t+5.0  |  fail_cooldown_until=35.0
+[PASS] all-invalid-entry: cooldown blocks the next pass  |  skipped[cooldown]=5
+[PASS] all-invalid-entry: worker thread still alive
+[PASS] all-invalid-entry: in-flight cleared after error
+         last_error = 'RemoteVisionError: all 1 detection entries malformed'
+[PASS] all-invalid-entry: pass accepted after cooldown
+[PASS] all-invalid-entry: following pass succeeds (failure isolated)  |  passes=6 objects=2
+[PASS] connection-refused: submit accepted
+[PASS] connection-refused: worker records a clean error
+[PASS] connection-refused: poll() consumes the error as None (no merge)
+[PASS] connection-refused: cooldown armed at t+5.0  |  fail_cooldown_until=42.0
+[PASS] connection-refused: cooldown blocks the next pass  |  skipped[cooldown]=6
+[PASS] connection-refused: worker thread still alive
+[PASS] connection-refused: in-flight cleared after error
+         last_error = 'RemoteVisionError: transport error: ConnectionRefusedError: [Errno 111] Connection refused'
+[PASS] connection-refused: pass accepted after cooldown
+[PASS] connection-refused: following pass succeeds (failure isolated)  |  passes=7 objects=2
+
+---- E. counters / stats after 6 consecutive failures ------------------------
+{
+  "model": "remote-vision-w4c-v0",
+  "passes": 7,
+  "passes_started": 13,
+  "errors": 6,
+  "last_error": "RemoteVisionError: transport error: ConnectionRefusedError: [Errno 111] Connection refused",
+  "stale_dropped": 0,
+  "skipped": {
+    "interval": 0,
+    "budget": 0,
+    "inflight": 1,
+    "no_context": 0,
+    "resolution": 0,
+    "cooldown": 6
+  },
+  "median_ms": 3.3
+}
+[PASS] 7 passes merged, 6 errors, 13 offers started  |  passes=7 errors=6 started=13
+[PASS] worker thread alive at end of run
+
+---- F. build_vision('remote'/'local') at M1 = the M2 entry point ------------
+[PASS] build_vision(kind='remote') raises at M1  |  msg=vision model kind 'remote' is planned for M2; only 'fake' ships in M1
+[PASS] build_vision(kind='local') raises at M1  |  msg=vision model kind 'local' is planned for M2; only 'fake' ships in M1
+
+---- G. config: what a remote kind gets vs needs -----------------------------
+[PASS] gap: bogus endpoint string accepted at load  |  config.py:302-304 validates kind + timeout_s>0 only
+[PASS] 'token' config key rejected by strict section  |  msg=w4c.semantics.model: unknown key(s): token
+[PASS] timeout_s=0.0: rejected  |  msg=w4c.semantics.model.timeout_s must be > 0
+[PASS] timeout_s=3600.0: accepted (no upper bound = gap)
+[PASS] serialized model has no token field (endpoint IS serialized)  |  keys=['endpoint', 'fixtures', 'kind', 'labels', 'timeout_s']
+
+---- H. token hygiene: env-only, header-only, in no file this run wrote ------
+[PASS] token was sent as Bearer header on every mock request  |  requests=14 auth_received=True value_withheld=True fp=sha256:3fb6ece4
+[PASS] mock saw JSON bodies
+[PASS] token absent from every written artifact/summary  |  scanned=['w4c_latest.json', 'events.jsonl', 'w4c-run-summary.json'] leaks=[]
+
+---- I. verdict --------------------------------------------------------------
+checks: 73/73 passed
+summary: /home/freakymustard/.hermes/cache/scratch/w4c/repo/w4c_out/w4c-run-summary.json

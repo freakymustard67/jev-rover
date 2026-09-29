@@ -1,0 +1,64 @@
+== A. header + sample byte layout (§2.2/§2.1), one +t_us chunk ==
+hex: 53 5d 29 01 00 03 00 01 e8 03 00 00 e8 80 00 00 d3 a0 0f fe 58 02 28 00 07 00
+PASS  msg        u8      §2.2 off0: got 83 want 83
+PASS  ver_flags  u8      §2.2 off1: got 93 want 93
+PASS  scan_id    u16 LE  §2.2 off2-3: got 297 want 297
+PASS  chunk_idx  u8      §2.2 off4: got 0 want 0
+PASS  chunk_cnt  u8      §2.2 off5: got 3 want 3
+PASS  first_idx  u8      §2.2 off6: got 0 want 0
+PASS  n_samples  u8      §2.2 off7: got 1 want 1
+PASS  t0_ms      u32 LE  §2.2 off8-11: got 1000 want 1000
+PASS  period_us  u32 LE  §2.2 off12-15: got 33000 want 33000
+PASS  angle_dd   i8      §2.1 off16: got -45 want -45
+PASS  range_mm   u16 LE  §2.1 off17-18: got 4000 want 4000
+PASS  status     u8      §2.1 off19: got 254 want 254
+PASS  signal     u16 LE  §2.1 off20-21: got 600 want 600
+PASS  ambient    u16 LE  §2.1 off22-23: got 40 want 40
+PASS  t_us       u16 LE  §2.1 off24-25: got 7 want 7
+PASS  datagram length (16 + 10): got 26 want 26
+PASS  roundtrip equality: got ScanChunk(scan_id=297, chunk_idx=0, chunk_count=3, first_idx=0, t0_ms=1000, period_us=33000, samples=(ScanSample(angle_dd=-45, range_mm=4000, status=254, signal_cmcps=600, ambient_cmcps=40, t_us=7),), partial=False) want ScanChunk(scan_id=297, chunk_idx=0, chunk_count=3, first_idx=0, t0_ms=1000, period_us=33000, samples=(ScanSample(angle_dd=-45, range_mm=4000, status=254, signal_cmcps=600, ambient_cmcps=40, t_us=7),), partial=False)
+
+== B. datagram sizes vs v6 §2.4 (flags = has_signal, has_ambient, has_t_us) ==
+  B core      {angle,range,status}    4 B/sample  chunk64= 272 B (§2.4  272)  chunked N=181 total= 772 B  (one-datagram math  740 B)
+PASS    size chunk64 B core      {angle,range,status}: got 272 want 272
+PASS    chunked N=181 total B core      {angle,range,status}: got 772 want 772
+PASS    one-datagram N=181 math B core      {angle,range,status}: got 740 want 740
+PASS    all chunked datagrams <=1472 B core      {angle,range,status}: got True want True
+PASS    last chunk datagram (53 samples) B core      {angle,range,status}: got 228 want 228
+  C +signal                           6 B/sample  chunk64= 400 B (§2.4  400)  chunked N=181 total=1134 B  (one-datagram math 1102 B)
+PASS    size chunk64 C +signal: got 400 want 400
+PASS    chunked N=181 total C +signal: got 1134 want 1134
+PASS    one-datagram N=181 math C +signal: got 1102 want 1102
+PASS    all chunked datagrams <=1472 C +signal: got True want True
+PASS    last chunk datagram (53 samples) C +signal: got 334 want 334
+  D +ambient                          8 B/sample  chunk64= 528 B (§2.4  528)  chunked N=181 total=1496 B  (one-datagram math 1464 B)
+PASS    size chunk64 D +ambient: got 528 want 528
+PASS    chunked N=181 total D +ambient: got 1496 want 1496
+PASS    one-datagram N=181 math D +ambient: got 1464 want 1464
+PASS    all chunked datagrams <=1472 D +ambient: got True want True
+PASS    last chunk datagram (53 samples) D +ambient: got 440 want 440
+  E +t_us (all)                      10 B/sample  chunk64= 656 B (§2.4  656)  chunked N=181 total=1858 B  (one-datagram math 1826 B)
+PASS    size chunk64 E +t_us (all): got 656 want 656
+PASS    chunked N=181 total E +t_us (all): got 1858 want 1858
+PASS    one-datagram N=181 math E +t_us (all): got 1826 want 1826
+PASS    all chunked datagrams <=1472 E +t_us (all): got True want True
+PASS    last chunk datagram (53 samples) E +t_us (all): got 546 want 546
+
+== C. 512 B policy and chunk limits (§2.4 recommendation) ==
+PASS  chunk=64 core <=512: got 272 want 272
+  core/+signal meet the 512 B cap at chunk 64 (272/400 B)
+  +ambient 512-safe chunk size = 62 -> datagram 512 B (<=512: True)
+PASS    +ambient 512-safe: got True want True
+  +t_us    512-safe chunk size = 49 -> datagram 506 B (<=512: True)
+PASS    +t_us 512-safe: got True want True
+PASS  chunk_count(N=37) == ceil(N/64): got 1 want 1
+PASS  chunk_count(N=91) == ceil(N/64): got 2 want 2
+PASS  chunk_count(N=181) == ceil(N/64): got 3 want 3
+
+== D. strict rejection (measured error messages) ==
+  PASS check_parser.py bytes (12 B, header says 64 samples): ScanPayloadError: short packet: 12 B < 16 B header
+  PASS trailing byte: ScanPayloadError: length mismatch: header says 1 samples x 10 B = 26 B, got 27 B
+  PASS version 2: ScanPayloadError: unsupported version 2
+  PASS reserved bit7: ScanPayloadError: reserved flag bit7 set
+
+RESULT: ALL CHECKS PASSED

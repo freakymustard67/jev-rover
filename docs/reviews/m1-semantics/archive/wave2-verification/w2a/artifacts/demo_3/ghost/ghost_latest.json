@@ -1,0 +1,32 @@
+{
+  "room": "ghost",
+  "saved_at": 1790623321.2015288,
+  "map": {
+    "age_s": 0.0,
+    "passes": 52,
+    "model": "demo",
+    "objects": [
+      {
+        "id": "obj_0001",
+        "label": "blue mat",
+        "x": 3.0199999999999996,
+        "y": 1.2,
+        "confidence": 0.9,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 0.0,
+        "last_seen_s": 52.0,
+        "motion": "static"
+      }
+    ],
+    "destination": null,
+    "diff": {
+      "appeared": [],
+      "moved": [],
+      "vanished": []
+    }
+  }
+}

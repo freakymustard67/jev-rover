@@ -1,0 +1,39 @@
+{
+  "config": "../evidence/room.enabled.json",
+  "source": "synthetic",
+  "mission": "none",
+  "jevs": false,
+  "link": "MockLink",
+  "metrics": {
+    "duration_s": 2.1,
+    "frames": 25,
+    "distance_m": 0.0,
+    "min_obstacle_ahead_m": null,
+    "collision_reflex_events": 0,
+    "reflex_reasons": {},
+    "stuck_s": 0.0,
+    "stuck_fraction": 0.0,
+    "watchdog_bad_s": 0.1,
+    "no_telemetry_s": 0.0,
+    "lost_pose_s": 0.0,
+    "goals_reached": 0,
+    "goals_expected": null
+  },
+  "control": {
+    "modes": {
+      "baseline": 25
+    },
+    "reflexes": {},
+    "replans": 0,
+    "path_unknown": 0
+  },
+  "jev": null,
+  "semantics": null,
+  "transport": {
+    "link": "mock",
+    "commands": 28,
+    "ttl_ok": true
+  }
+}
+
+summary written to runs/summary_20260929-005732.json

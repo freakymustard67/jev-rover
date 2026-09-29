@@ -1,0 +1,47 @@
+{
+  "room": "swap",
+  "saved_at": 1790622925.5474405,
+  "map": {
+    "age_s": 0.0,
+    "passes": 2,
+    "model": "d",
+    "objects": [
+      {
+        "id": "obj_0001",
+        "label": "blue mat",
+        "x": 0.08000000000000002,
+        "y": 1.0,
+        "confidence": 0.9,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 0.0,
+        "last_seen_s": 1.0,
+        "motion": "static"
+      },
+      {
+        "id": "obj_0002",
+        "label": "blue mat",
+        "x": 0.31999999999999995,
+        "y": 1.0,
+        "confidence": 0.9,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 0.0,
+        "last_seen_s": 1.0,
+        "motion": "static"
+      }
+    ],
+    "destination": null,
+    "diff": {
+      "appeared": [],
+      "moved": [],
+      "vanished": []
+    }
+  }
+}

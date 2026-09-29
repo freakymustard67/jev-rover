@@ -1,0 +1,61 @@
+I6 — git verification transcript (captured 2026-09-29, commands + raw outputs)
+
+Context: patch = i6-churn-hysteresis-evidence/i6-churn-hysteresis.patch
+sha256 0916094006af3952d39649c93e20ee53f1d1c5665a4a97c4aaef024656bf00fa
+Working clone: ~/.hermes/cache/scratch/i6/repo  (review/m1-semantics-audit @ bec1d91 + commit 7c5de1f)
+Verify clone:  ~/.hermes/cache/scratch/i6/verify (fresh `git clone` from GitHub)
+
+--- 1. format-patch ---
+$ git format-patch -1 -o <evidence-dir> --suffix=.patch
+  -> 0001-fix-semantics-mover-carry-hysteresis-sub-threshold-d.patch
+     (renamed to i6-churn-hysteresis.patch; 270 lines)
+
+--- 2. git am on a FRESH clone at bec1d91 ---
+$ git clone -q https://github.com/freakymustard67/jev-rover .../i6/verify
+$ git -C .../i6/verify checkout -q review/m1-semantics-audit
+$ git -C .../i6/verify rev-parse HEAD
+bec1d91fe17682ce38d24e334c94c67fa4bcc685
+$ git -C .../i6/verify am <evidence>/i6-churn-hysteresis.patch
+Applying: fix(semantics): mover carry hysteresis, sub-threshold decay, resurrection event
+$ git -C .../i6/verify log --oneline -2
+b5a0ce5 fix(semantics): mover carry hysteresis, sub-threshold decay, resurrection event
+bec1d91 docs(reviews): M1 semantics deep review, fix rationale, M2 design note
+=> clean apply (exit 0).
+
+--- 3. full suite in the fresh am'd clone ---
+$ cd .../i6/verify && PYTHONDONTWRITEBYTECODE=1 /home/freakymustard/jev-rover/.venv/bin/python -m pytest -q -p no:cacheprovider
+85 passed in 18.39s
+
+--- 4. git apply --check against master 9c33ec0 (NOT applied; informational) ---
+$ git -C .../i6/verify fetch -q origin master && git checkout -q master && git rev-parse HEAD
+9c33ec06afcc644c23deef76447b4a2370de31c1
+$ git -C .../i6/verify apply --check <evidence>/i6-churn-hysteresis.patch ; echo "exit=$?"
+error: patch failed: config.py:147
+error: config.py: patch does not apply
+error: patch failed: semantics.py:287
+error: semantics.py: patch does not apply
+error: patch failed: tests/test_semantics_merge.py:103
+error: tests/test_semantics_merge.py: patch does not apply
+exit=1
+=> does NOT apply to master (expected: master lacks the PR branch's sub-threshold
+   gate and test changes; the fix builds on review/m1-semantics-audit context).
+$ git -C .../i6/verify apply --check -3 <evidence>/i6-churn-hysteresis.patch
+Applied patch to 'config.py' with conflicts.
+Applied patch to 'semantics.py' with conflicts.
+Applied patch to 'tests/test_semantics_merge.py' with conflicts.
+=> 3-way also conflicts; nothing forced/applied.
+
+--- 5. determinism / artifact parity ---
+$ (verify clone @ b5a0ce5) driver --seeds 3 --tag spot3 --out spot3.json
+$ compare-runs.py results-patched.json spot3.json
+checked 324 fields across 36 per-seed runs; mismatches=0
+$ (verify clone @ b5a0ce5) driver --seeds 100 --tag patched-fresh --out results-patched-fresh.json
+$ compare-runs.py results-patched-fresh.json results-patched-workclone.json
+checked 10800 fields across 1200 per-seed runs; mismatches=0
+=> the git-am'd artifact reproduces the working clone bit-for-bit, and re-runs
+   with a seed prefix reproduce the same per-seed rows (fixed seeds).
+
+--- 6. test-count deltas in the working clone ---
+baseline (bec1d91): 80 passed
+patched  (7c5de1f): 85 passed (19 in tests/test_semantics_merge.py; +5 new tests,
+2 updated)

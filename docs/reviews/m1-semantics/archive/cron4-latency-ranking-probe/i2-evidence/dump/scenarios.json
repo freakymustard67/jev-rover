@@ -1,0 +1,448 @@
+{
+ "clone": "/home/freakymustard/.hermes/cache/scratch/i2/clone-master",
+ "camera": {
+  "width": 1280,
+  "height": 720
+ },
+ "image_points_px": [
+  [
+   0,
+   0
+  ],
+  [
+   1280,
+   0
+  ],
+  [
+   1280,
+   720
+  ],
+  [
+   0,
+   720
+  ]
+ ],
+ "world_points_m": [
+  [
+   0,
+   3.6
+  ],
+  [
+   6.4,
+   3.6
+  ],
+  [
+   6.4,
+   0
+  ],
+  [
+   0,
+   0
+  ]
+ ],
+ "polygon_px": [
+  [
+   30.0,
+   30.0
+  ],
+  [
+   1250.0,
+   30.0
+  ],
+  [
+   1250.0,
+   690.0
+  ],
+  [
+   30.0,
+   690.0
+  ]
+ ],
+ "lab_tolerance": 26.0,
+ "probe_px": 6,
+ "point_by_label": {
+  "blue mat": "centroid"
+ },
+ "room": {
+  "width_m": 6.4,
+  "height_m": 3.6
+ },
+ "px_per_m": 200.0,
+ "mat_bgr": [
+  180,
+  90,
+  40
+ ],
+ "mat_lab": [
+  101.0,
+  144.0,
+  76.0
+ ],
+ "dark_mat_bgr": [
+  105,
+  105,
+  105
+ ],
+ "dark_mat_lab": [
+  113.0,
+  128.0,
+  128.0
+ ],
+ "floor_bgr": [
+  168,
+  162,
+  150
+ ],
+ "floor_lab_nominal": [
+  168.0,
+  125.0,
+  123.0
+ ],
+ "scenarios": [
+  {
+   "name": "floor_only",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    970.0,
+    490.0,
+    1030.0,
+    550.0
+   ],
+   "score": 0.9,
+   "x": 5.0,
+   "y": 1.0,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "control: object on bare floor",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "mat_thing",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    570.0,
+    450.0,
+    630.0,
+    510.0
+   ],
+   "score": 0.9,
+   "x": 3.0,
+   "y": 1.2,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "object resting on a FLAT non-floor-coloured mat (headline FP class)",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "mat_itself",
+   "label": "blue mat",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    550.0,
+    420.0,
+    650.0,
+    540.0
+   ],
+   "score": 0.9,
+   "x": 3.0,
+   "y": 1.2,
+   "w": 0.5,
+   "h": 0.6,
+   "note": "detection of the mat itself (centroid anchor); probe lands on the flat cover",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "mat_edge_floor",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    570.0,
+    470.0,
+    630.0,
+    530.0
+   ],
+   "score": 0.9,
+   "x": 3.0,
+   "y": 1.1,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "mat is behind the base: probe lands on bare floor (control)",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "shadow_mild",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    970.0,
+    490.0,
+    1030.0,
+    550.0
+   ],
+   "score": 0.9,
+   "x": 5.0,
+   "y": 1.0,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "floor shadow (L-20, chroma preserved) under/around the base",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "shadow_deep",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    970.0,
+    490.0,
+    1030.0,
+    550.0
+   ],
+   "score": 0.9,
+   "x": 5.0,
+   "y": 1.0,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "floor shadow (L-40, chroma preserved) under/around the base",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "shadow_vdeep",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    970.0,
+    490.0,
+    1030.0,
+    550.0
+   ],
+   "score": 0.9,
+   "x": 5.0,
+   "y": 1.0,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "floor shadow (L-70, chroma preserved) under/around the base",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "shadow_contact",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    970.0,
+    490.0,
+    1030.0,
+    550.0
+   ],
+   "score": 0.9,
+   "x": 5.0,
+   "y": 1.0,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "deep contact shadow covering the probe row (wider than the probe ring)",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "shadow_contact_narrow",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    970.0,
+    490.0,
+    1030.0,
+    550.0
+   ],
+   "score": 0.9,
+   "x": 5.0,
+   "y": 1.0,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "deep but 20 px-wide contact shadow: sides of the probe row stay bright",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "dark_card_wide",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    970.0,
+    490.0,
+    1030.0,
+    550.0
+   ],
+   "score": 0.9,
+   "x": 5.0,
+   "y": 1.0,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "wide flat dark neutral card in front of the base (shadow/card ambiguity)",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "occluder_narrow",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    970.0,
+    490.0,
+    1030.0,
+    550.0
+   ],
+   "score": 0.9,
+   "x": 5.0,
+   "y": 1.0,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "narrow (16 px) dark object in front of the base, ring stays floor",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "dark_mat_thing",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    930.0,
+    370.0,
+    990.0,
+    430.0
+   ],
+   "score": 0.9,
+   "x": 4.8,
+   "y": 1.6,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "object resting on a flat DARK neutral mat (registered as a cover)",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "tight_bbox_speckle",
+   "label": "red box",
+   "expect": false,
+   "cls": "floor",
+   "bbox_px": [
+    970.0,
+    490.0,
+    1030.0,
+    550.0
+   ],
+   "score": 0.9,
+   "x": 5.0,
+   "y": 1.0,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "detector bbox 3 px tight: speckled dark object edge sits on the probe row",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "on_table",
+   "label": "thing",
+   "expect": true,
+   "cls": "elevated",
+   "bbox_px": [
+    576.0,
+    576.0,
+    676.0,
+    676.0
+   ],
+   "score": 0.9,
+   "x": 3.13,
+   "y": 0.47,
+   "w": 0.5,
+   "h": 0.5,
+   "note": "object on the synthetic-room table region (genuine suspect)",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  },
+  {
+   "name": "edge_polygon",
+   "label": "thing",
+   "expect": true,
+   "cls": "unverifiable",
+   "bbox_px": [
+    90.0,
+    626.0,
+    150.0,
+    686.0
+   ],
+   "score": 0.9,
+   "x": 0.6,
+   "y": 0.32,
+   "w": 0.3,
+   "h": 0.3,
+   "note": "probe falls outside the floor polygon (py>690): cannot verify",
+   "floor_lab": [
+    168.0,
+    125.0,
+    123.0
+   ]
+  }
+ ]
+}

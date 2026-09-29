@@ -1,0 +1,58 @@
+[semantics] enabled: model=fake-vision-v0 fixtures=3 (one pass at mission start)
+{
+  "config": "/home/freakymustard/.hermes/cache/scratch/wave3/w3b/out/enabled.json",
+  "source": "synthetic",
+  "mission": "patrol",
+  "jevs": false,
+  "link": "MockLink",
+  "metrics": {
+    "duration_s": 6.3,
+    "frames": 81,
+    "distance_m": 1.51,
+    "min_obstacle_ahead_m": 0.89,
+    "collision_reflex_events": 0,
+    "reflex_reasons": {},
+    "stuck_s": 0.0,
+    "stuck_fraction": 0.0,
+    "watchdog_bad_s": 0.1,
+    "no_telemetry_s": 0.0,
+    "lost_pose_s": 0.0,
+    "goals_reached": 1,
+    "goals_expected": null
+  },
+  "control": {
+    "modes": {
+      "baseline": 81
+    },
+    "reflexes": {},
+    "replans": 8,
+    "path_unknown": 0
+  },
+  "jev": null,
+  "semantics": {
+    "enabled": true,
+    "model": "fake-vision-v0",
+    "passes": 1,
+    "passes_started": 1,
+    "errors": 0,
+    "last_error": null,
+    "rejected_total": 0,
+    "stale_dropped": 0,
+    "skipped": {
+      "interval": 0,
+      "budget": 0,
+      "inflight": 0,
+      "no_context": 0,
+      "resolution": 0,
+      "cooldown": 0
+    },
+    "median_ms": 1.1
+  },
+  "transport": {
+    "link": "mock",
+    "commands": 84,
+    "ttl_ok": true
+  }
+}
+
+summary written to runs/summary_20260929-011242.json

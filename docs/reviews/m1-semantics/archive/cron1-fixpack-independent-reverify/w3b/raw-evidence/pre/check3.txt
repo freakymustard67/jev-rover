@@ -1,0 +1,8 @@
+OBS A_objects=[('obj_0001', 'blue mat', 3.0, 1.2), ('obj_0002', 'Blue Mat', 3.02, 1.19)]
+OBS A_n_objects=2 A_appeared=['obj_0002'] A_vanished=[] A_moved=[]
+OBS A_plural_n_objects=3 A_plural_appeared=['obj_0003'] A_plural_labels=['blue mat', 'Blue Mat', 'blue mats']
+OBS B_dedupe_n_kept=2 B_dedupe_labels=['blue mats', 'Blue Mat'] B_dedupe_scores=[0.9, 0.7]
+OBS C_infer_plural_label=[]
+OBS D_projected=[('Blue Mat', 3.0, 1.2, 0.95), ('blue mat', 3.0, 1.2, 0.9)] D_rejected=0 D_detections=2
+EXPECT_AFTER_FIX: A_n_objects=1 appeared=[] label='blue mat'; B_dedupe_n_kept=1; C=1 detection; D_projected has 1 entry (score 0.95)
+PRE_PATCH_SYMPTOM: A_n_objects=2 appeared=['obj_0002']; B=2 kept; C=0 detections; D=2 entries

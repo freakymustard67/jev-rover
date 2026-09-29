@@ -1,0 +1,15 @@
+floor_only             surface=floor            expect=False
+mat_thing              surface=cover            expect=False
+mat_itself             surface=cover            expect=False
+mat_edge_floor         surface=floor            expect=False
+shadow_mild            surface=floor            expect=False
+shadow_deep            surface=shadow           expect=False
+shadow_vdeep           surface=cover            expect=False
+shadow_contact         surface=shadow           expect=False
+shadow_contact_narrow  surface=cover            expect=False
+dark_card_wide         surface=notfloor         expect=False
+occluder_narrow        surface=notfloor         expect=False
+dark_mat_thing         surface=shadow           expect=False
+tight_bbox_speckle     surface=notfloor         expect=False
+on_table               surface=notfloor         expect=True
+edge_polygon           surface=outside-polygon  expect=True

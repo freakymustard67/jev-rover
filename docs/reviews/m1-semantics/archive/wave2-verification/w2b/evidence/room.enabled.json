@@ -1,0 +1,168 @@
+{
+  "name": "synthetic-room",
+  "width_m": 6.4,
+  "height_m": 3.6,
+  "camera": {
+    "source": "0",
+    "width": 1280,
+    "height": 720
+  },
+  "floor": {
+    "polygon_px": [
+      [
+        30,
+        30
+      ],
+      [
+        1250,
+        30
+      ],
+      [
+        1250,
+        690
+      ],
+      [
+        30,
+        690
+      ]
+    ],
+    "lab_tolerance": 26.0
+  },
+  "homography": {
+    "image_points_px": [
+      [
+        0,
+        0
+      ],
+      [
+        1280,
+        0
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        0,
+        720
+      ]
+    ],
+    "world_points_m": [
+      [
+        0,
+        3.6
+      ],
+      [
+        6.4,
+        3.6
+      ],
+      [
+        6.4,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ]
+  },
+  "grid": {
+    "cell_m": 0.05,
+    "inflation_m": 0.22,
+    "max_range_m": 5.5,
+    "stale_s": 3.0
+  },
+  "rover": {
+    "footprint_radius_m": 0.18,
+    "tag_id": 0,
+    "tag_size_m": 0.1,
+    "tag_yaw_offset_deg": 0.0,
+    "rover_mask_extra_m": 0.08,
+    "max_speed_mps": 0.6,
+    "max_turn_deg_s": 120.0
+  },
+  "target": {
+    "mode": "none"
+  },
+  "semantics": {
+    "enabled": true,
+    "model": {
+      "kind": "fake",
+      "labels": [],
+      "fixtures": [
+        {
+          "label": "blue mat",
+          "x": 3.0,
+          "y": 1.2,
+          "w": 0.5,
+          "h": 0.6,
+          "score": 0.92
+        },
+        {
+          "label": "red box",
+          "x": 4.4,
+          "y": 1.0,
+          "w": 0.3,
+          "h": 0.3,
+          "score": 0.85
+        },
+        {
+          "label": "green ball",
+          "x": 1.5,
+          "y": 0.8,
+          "w": 0.15,
+          "h": 0.15,
+          "score": 0.8
+        }
+      ]
+    },
+    "project": {
+      "point": "bbox_bottom_center",
+      "probe_px": 6,
+      "point_by_label": {
+        "blue mat": "centroid"
+      }
+    }
+  },
+  "destination": {
+    "standoff_m": 0.35
+  },
+  "sweep": {
+    "enabled": false
+  },
+  "confirmation": {
+    "backend": "none"
+  },
+  "synthetic": {
+    "px_per_m": 200.0,
+    "drive_v_mps": 0.45,
+    "drive_w_deg_s": 14.0
+  },
+  "waypoints": {
+    "a": [
+      1.0,
+      1.0
+    ],
+    "b": [
+      5.5,
+      0.9
+    ],
+    "c": [
+      3.3,
+      2.9
+    ],
+    "d": [
+      2.3,
+      2.9
+    ]
+  },
+  "routes": {
+    "patrol": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ]
+  },
+  "nogo": []
+}

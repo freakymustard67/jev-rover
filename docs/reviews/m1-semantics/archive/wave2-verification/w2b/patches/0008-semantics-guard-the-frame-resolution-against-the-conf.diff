@@ -1,0 +1,121 @@
+From 81889e561b771e1d682084e1d40d96d4fc47a6a2 Mon Sep 17 00:00:00 2001
+From: Hermes Fix Package <hermes@local>
+Date: Tue, 29 Sep 2026 00:55:03 +0530
+Subject: [PATCH 08/12] semantics: guard the frame resolution against the
+ configured camera
+
+polygon_px, the homography and the probe are all in configured-camera
+pixels, but the worker received whatever frame the capture produced; a
+capture-size mismatch would silently misplace every projection. Carry the
+configured camera size on SemanticContext and refuse (with one loud
+stderr warning) passes whose frame does not match. Scaling the polygon
+was rejected: the homography itself would still be wrong.
+
+Tests: tests/test_semantics_worker.py::test_frame_resolution_mismatch_is_refused_once
+       tests/test_semantics_worker.py::test_frame_resolution_match_is_accepted
+---
+ perception.py                  |  4 ++++
+ semantics.py                   | 16 +++++++++++++++-
+ tests/test_semantics_worker.py | 22 ++++++++++++++++++++++
+ 3 files changed, 41 insertions(+), 1 deletion(-)
+
+diff --git a/perception.py b/perception.py
+index 44ca978..170f191 100644
+--- a/perception.py
++++ b/perception.py
+@@ -159,6 +159,8 @@ class SemanticContext:
+     grid_t: float
+     occupied_thr: float
+     stale_s: float
++    camera_w: int = 0               # configured capture size; 0 = unknown, no check
++    camera_h: int = 0
+ 
+     def occupied(self) -> np.ndarray:
+         return self.grid_log_odds > self.occupied_thr
+@@ -719,6 +721,8 @@ class Perception:
+             grid_t=t,
+             occupied_thr=self.grid.OCCUPIED_THR,
+             stale_s=self.cfg.grid.stale_s,
++            camera_w=int(self.cfg.camera.width),
++            camera_h=int(self.cfg.camera.height),
+         )
+ 
+     # -- main ---------------------------------------------------------------
+diff --git a/semantics.py b/semantics.py
+index 4dcb2ad..9978ef5 100644
+--- a/semantics.py
++++ b/semantics.py
+@@ -31,6 +31,7 @@ import math
+ import os
+ import queue
+ import re
++import sys
+ import threading
+ import time
+ from dataclasses import asdict, dataclass, field, replace
+@@ -564,8 +565,10 @@ class SemanticsRunner:
+         self._offer_times: list[float] = []
+         self.last_offer_t = float("-inf")
+         self.fail_cooldown_until = float("-inf")
+-        self.skipped = {"interval": 0, "budget": 0, "inflight": 0, "no_context": 0}
++        self.skipped = {"interval": 0, "budget": 0, "inflight": 0, "no_context": 0,
++                        "resolution": 0}
+         self.stale_dropped = 0
++        self._resolution_warned = False
+ 
+     # -- passes -------------------------------------------------------------
+     def maybe_pass(self, t: float, ctx: SemanticContext, frame: np.ndarray, *,
+@@ -577,6 +580,17 @@ class SemanticsRunner:
+         if ctx.floor_lab is None:
+             self.skipped["no_context"] += 1
+             return False
++        # The polygon, homography and probe are all in configured-camera pixels;
++        # a frame at another resolution would silently misplace them. Refuse and
++        # say so once instead of projecting wrong.
++        if ctx.camera_w and ctx.camera_h and frame.shape[:2] != (ctx.camera_h, ctx.camera_w):
++            if not self._resolution_warned:
++                print(f"[semantics] frame {frame.shape[1]}x{frame.shape[0]} does not match "
++                      f"the configured camera {ctx.camera_w}x{ctx.camera_h}; refusing semantic "
++                      f"passes (calibrate at the capture resolution)", file=sys.stderr)
++                self._resolution_warned = True
++            self.skipped["resolution"] += 1
++            return False
+         # Cooldown and budget are hard limits: even an explicit trigger respects
+         # them, so a bug cannot run up a bill or hammer a failing model.
+         if t < self.fail_cooldown_until:
+diff --git a/tests/test_semantics_worker.py b/tests/test_semantics_worker.py
+index 0d0a385..03cda48 100644
+--- a/tests/test_semantics_worker.py
++++ b/tests/test_semantics_worker.py
+@@ -129,6 +129,28 @@ def test_pass_refused_without_floor_sample(tmp_path):
+         runner.close()
+ 
+ 
++def test_frame_resolution_mismatch_is_refused_once(tmp_path, capsys):
++    runner = _runner(FastVision(), tmp_path)
++    try:
++        ctx = replace(_ctx(), camera_w=100, camera_h=100)     # FRAME is 160x120
++        assert not runner.maybe_pass(1.0, ctx, FRAME, force=True)
++        assert not runner.maybe_pass(2.0, ctx, FRAME, force=True)
++        assert runner.skipped["resolution"] == 2
++        assert capsys.readouterr().err.count("does not match") == 1, "warn once, not per refusal"
++    finally:
++        runner.close()
++
++
++def test_frame_resolution_match_is_accepted(tmp_path):
++    runner = _runner(FastVision(), tmp_path)
++    try:
++        ctx = replace(_ctx(), camera_w=160, camera_h=120)
++        assert runner.maybe_pass(1.0, ctx, FRAME, force=True)
++        assert runner.skipped["resolution"] == 0
++    finally:
++        runner.close()
++
++
+ def test_stats_shape(tmp_path):
+     runner = _runner(FastVision(), tmp_path)
+     try:
+-- 
+2.47.3
+

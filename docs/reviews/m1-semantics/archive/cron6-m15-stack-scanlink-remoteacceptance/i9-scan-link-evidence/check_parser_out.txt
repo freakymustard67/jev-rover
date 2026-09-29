@@ -1,0 +1,3 @@
+real chunk (angle=-45 -> 0xD3, range 300 cm)         -> UnicodeDecodeError (NOT caught by link.py:109 -> escapes telemetry(), crashes run.py loop)
+all-ASCII chunk (angles 0,1,2)                       -> JSONDecodeError (caught by link.py:109 -> packet silently skipped)
+UnicodeDecodeError is ValueError: True | is json.JSONDecodeError: False

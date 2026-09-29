@@ -1,0 +1,22 @@
+CLAIM 7: two consecutive 0.2 m passes leave motion='static' (total drift 0.4 m)
+config: ema_alpha=0.4 move_threshold_m=0.25
+
+[A] literal reading: straight-line drift, 0.2 m per pass (total drift 0.4 m)
+    pass 1: detection x=0.20  derived raw=|0.20-0.000|=0.200 m -> pos=0.080 motion=static diff.moved=[]
+    pass 2: detection x=0.40  derived raw=|0.40-0.080|=0.320 m -> pos=0.208 motion=moved diff.moved=['obj_0001']
+    -> motions=['static', 'moved']; total drift from start = 0.4 m; both passes static? False
+
+[B] oscillation reading: +0.2 m then -0.2 m (0.4 m travelled, net drift 0)
+    pass 1: detection x=0.20  derived raw=|0.20-0.000|=0.200 m -> pos=0.080 motion=static diff.moved=[]
+    pass 2: detection x=0.00  derived raw=|0.00-0.080|=0.080 m -> pos=0.048 motion=static diff.moved=[]
+    -> motions=['static', 'static']; 0.4 m travelled, net drift 0.0 m
+
+[C] estimate-relative reading: each detection sits 0.2 m ahead of the current estimate
+    pass 1: detection x=0.20  derived raw=|0.20-0.000|=0.200 m -> pos=0.080 motion=static diff.moved=[]
+    pass 2: detection x=0.28  derived raw=|0.28-0.080|=0.200 m -> pos=0.160 motion=static diff.moved=[]
+    -> motions=['static', 'static']; detection stream walked 0.28 m net over two passes
+
+VERDICT claim 7: REFUTED (as literally stated: net 0.4 m straight drift does NOT stay static)
+    - the 1st 0.2 m step reads 'static' by design (0.2 < threshold 0.25); the 2nd step reads raw 0.320 m > 0.25 and is flagged 'moved', because raw is measured against the LAGGING smoothed estimate (semantics.py L281-291).
+    - 'static/static' holds only for oscillating or estimate-relative steps (cases B/C), where net drift is not 0.4 m.
+incident code: semantics.py L281-291 (raw vs previous smoothed position, per-pass threshold)

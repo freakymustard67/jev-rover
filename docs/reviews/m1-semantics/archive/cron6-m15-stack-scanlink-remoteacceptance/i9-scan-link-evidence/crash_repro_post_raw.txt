@@ -1,0 +1,4 @@
+telemetry() returned without raising: Hardware(dist_front_m=None, dist_rear_m=None, batt_v=None, watchdog_ok=False, reflex=False, telemetry_age_s=None)
+follow-up JSON parsed: dist_front_m=0.5 batt_v=7.4 watchdog_ok=True
+stats: {'link': 'udp', 'commands': 0, 'telemetry_rx': 1, 'send_errors': 0, 'scan_rx': 0, 'scan_rx_errors': 1}
+VERDICT: no exception escaped (GREEN)

@@ -1,0 +1,94 @@
+t=  0.00 pose=( 3.20, 1.80,  +0.0) src=tag near=1.01 clear=1.01 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.27 pose=( 3.21, 1.80, -16.5) src=tag near=1.01 clear=2.91 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.34 pose=( 3.21, 1.80, -27.7) src=tag near=1.01 clear=2.31 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.41 pose=( 3.22, 1.79, -39.3) src=tag near=1.01 clear=1.96 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.48 pose=( 3.22, 1.79, -48.8) src=tag near=0.99 clear=1.09 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.55 pose=( 3.22, 1.78, -57.1) src=tag near=0.99 clear=1.04 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.63 pose=( 3.23, 1.78, -65.8) src=tag near=0.99 clear=0.99 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.70 pose=( 3.23, 1.77, -74.6) src=tag near=0.99 clear=0.99 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.77 pose=( 3.23, 1.77, -83.4) src=tag near=0.99 clear=0.99 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.85 pose=( 3.23, 1.76, -92.2) src=tag near=0.96 clear=0.96 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.92 pose=( 3.23, 1.76,-101.0) src=tag near=0.96 clear=0.96 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+t=  0.98 pose=( 3.22, 1.75,-109.4) src=tag near=0.96 clear=0.96 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.38,-114,path)
+t=  1.06 pose=( 3.21, 1.74,-117.0) src=tag near=0.96 clear=0.96 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.41,-98,path)
+t=  1.13 pose=( 3.20, 1.73,-123.8) src=tag near=0.94 clear=0.96 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.44,-84,path)
+t=  1.19 pose=( 3.18, 1.71,-132.1) src=tag near=0.91 clear=1.01 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.47,-66,path)
+t=  1.26 pose=( 3.15, 1.68,-138.1) src=tag near=0.89 clear=1.04 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.49,-53,path)
+t=  1.33 pose=( 3.13, 1.67,-142.8) src=tag near=0.89 clear=1.86 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.51,-44,path)
+t=  1.40 pose=( 3.10, 1.65,-146.3) src=tag near=0.86 clear=1.91 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.53,-37,path)
+t=  1.47 pose=( 3.07, 1.63,-149.0) src=tag near=0.84 clear=1.96 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.54,-31,path)
+t=  1.55 pose=( 3.04, 1.61,-151.3) src=tag near=0.81 clear=2.01 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.55,-27,path)
+t=  1.62 pose=( 3.01, 1.59,-153.2) src=tag near=0.81 clear=2.06 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.56,-23,path)
+t=  1.69 pose=( 2.97, 1.57,-154.8) src=tag near=0.79 clear=2.09 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.56,-20,path)
+t=  1.76 pose=( 2.93, 1.56,-156.3) src=tag near=0.76 clear=2.14 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.57,-17,path)
+t=  1.83 pose=( 2.90, 1.54,-157.7) src=tag near=0.76 clear=2.16 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.57,-14,path)
+t=  1.89 pose=( 2.86, 1.53,-158.7) src=tag near=0.74 clear=2.19 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.58,-12,path)
+t=  1.97 pose=( 2.82, 1.51,-159.7) src=tag near=0.74 clear=2.21 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.58,-10,path)
+t=  2.04 pose=( 2.79, 1.50,-160.4) src=tag near=0.71 clear=2.24 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.58,-9,path)
+t=  2.11 pose=( 2.75, 1.49,-161.2) src=tag near=0.69 clear=2.24 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.59,-7,path)
+t=  2.18 pose=( 2.71, 1.48,-161.8) src=tag near=0.69 clear=2.26 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.59,-6,path)
+t=  2.25 pose=( 2.67, 1.46,-162.4) src=tag near=0.66 clear=2.26 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.59,-5,path)
+t=  2.32 pose=( 2.63, 1.45,-162.7) src=tag near=0.66 clear=2.26 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.59,-4,path)
+t=  2.39 pose=( 2.59, 1.44,-163.0) src=tag near=0.66 clear=2.26 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.59,-3,path)
+t=  2.46 pose=( 2.55, 1.43,-163.2) src=tag near=0.64 clear=2.26 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.59,-3,path)
+t=  2.54 pose=( 2.51, 1.42,-163.5) src=tag near=0.64 clear=2.24 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-2,path)
+t=  2.61 pose=( 2.47, 1.41,-163.7) src=tag near=0.64 clear=2.24 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-2,path)
+t=  2.68 pose=( 2.43, 1.39,-163.8) src=tag near=0.61 clear=2.21 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-2,path)
+t=  2.74 pose=( 2.39, 1.38,-164.0) src=tag near=0.61 clear=2.21 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-1,path)
+t=  2.82 pose=( 2.35, 1.37,-164.1) src=tag near=0.76 clear=2.19 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-1,path)
+t=  2.89 pose=( 2.31, 1.36,-164.2) src=tag near=0.91 clear=2.16 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-1,path)
+t=  2.96 pose=( 2.27, 1.35,-164.3) src=tag near=1.06 clear=2.14 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-1,path)
+t=  3.03 pose=( 2.23, 1.34,-164.4) src=tag near=1.19 clear=2.09 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-1,path)
+t=  3.09 pose=( 2.23, 1.34,-164.4) src=tag near=1.19 clear=2.09 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-1,path)
+t=  3.14 pose=( 2.17, 1.32,-164.5) src=tag near=1.19 clear=2.04 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-0,path)
+t=  3.21 pose=( 2.12, 1.31,-164.5) src=tag near=1.16 clear=1.99 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-0,path)
+t=  3.29 pose=( 2.08, 1.30,-164.5) src=tag near=1.16 clear=1.94 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-0,path)
+t=  3.35 pose=( 2.03, 1.29,-164.5) src=tag near=1.14 clear=1.89 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-0,path)
+t=  3.43 pose=( 1.99, 1.27,-164.5) src=tag near=1.14 clear=1.86 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-0,path)
+t=  3.50 pose=( 1.95, 1.26,-164.6) src=tag near=1.14 clear=1.81 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,+0,path)
+t=  3.57 pose=( 1.91, 1.25,-164.6) src=tag near=1.11 clear=1.76 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,+0,path)
+t=  3.64 pose=( 1.87, 1.24,-164.5) src=tag near=1.11 clear=1.74 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,-0,path)
+t=  3.71 pose=( 1.83, 1.23,-164.5) src=tag near=1.09 clear=1.69 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,+0,path)
+t=  3.78 pose=( 1.79, 1.22,-164.5) src=tag near=1.06 clear=1.64 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,+0,path)
+t=  3.85 pose=( 1.75, 1.21,-164.5) src=tag near=1.04 clear=1.61 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,+0,path)
+t=  3.92 pose=( 1.71, 1.20,-164.5) src=tag near=1.04 clear=1.56 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,+0,path)
+t=  3.99 pose=( 1.66, 1.19,-164.5) src=tag near=1.01 clear=1.51 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.60,+0,path)
+{
+  "config": "config/room.synthetic.json",
+  "source": "synthetic",
+  "mission": "patrol",
+  "jevs": false,
+  "link": "MockLink",
+  "metrics": {
+    "duration_s": 4.1,
+    "frames": 55,
+    "distance_m": 0.86,
+    "min_obstacle_ahead_m": 0.94,
+    "collision_reflex_events": 0,
+    "reflex_reasons": {},
+    "stuck_s": 0.0,
+    "stuck_fraction": 0.0,
+    "watchdog_bad_s": 0.1,
+    "no_telemetry_s": 0.0,
+    "lost_pose_s": 0.0,
+    "goals_reached": 0,
+    "goals_expected": null
+  },
+  "control": {
+    "modes": {
+      "baseline": 55
+    },
+    "reflexes": {},
+    "replans": 6,
+    "path_unknown": 0
+  },
+  "jev": null,
+  "semantics": null,
+  "transport": {
+    "link": "mock",
+    "commands": 58,
+    "ttl_ok": true
+  }
+}
+
+summary written to runs/summary_20260929-011442.json

@@ -1,0 +1,13 @@
+docs/planning/prototype/test_april_sem.py::test_homography_round_trip
+docs/planning/prototype/test_april_sem.py::test_room_corners_visible
+docs/planning/prototype/test_april_sem.py::test_flat_object_estimators
+docs/planning/prototype/test_april_sem.py::test_flat_object_noise_sensitivity
+docs/planning/prototype/test_april_sem.py::test_standing_ball_estimators
+docs/planning/prototype/test_april_sem.py::test_elevated_object_is_dangerous_and_flagged
+docs/planning/prototype/test_april_sem.py::test_merge_appear_move_vanish
+docs/planning/prototype/test_april_sem.py::test_merge_large_jump_is_new_object
+docs/planning/prototype/test_april_sem.py::test_merge_ids_stable_with_two_same_label
+docs/planning/prototype/test_april_sem.py::test_merge_smoothing_converges
+docs/planning/prototype/test_april_sem.py::test_destination_resolution
+
+11 tests collected in 0.21s

@@ -1,0 +1,22 @@
+sanity: range to right wall from (3.0,2.0) facing +x: 1.224 m (expect ~3.25)
+
+--- bootstrap (no prior, global search) ---
+global, 4deg beams                  pos p50/p90 =  8.2/116.4 cm   yaw p50/p90 =  3.1/15.0 deg   success   77%
+
+--- tracking (prior from IMU/prev: 5cm/3deg) ---
+local, stationary, 2deg sweep       pos p50/p90 =  2.4/ 4.0 cm   yaw p50/p90 =  1.2/ 2.3 deg   success  100%
+local, stationary, 4deg sweep       pos p50/p90 =  3.3/ 6.4 cm   yaw p50/p90 =  1.5/ 2.2 deg   success  100%
+local, stationary, 6deg sweep       pos p50/p90 =  2.5/ 5.5 cm   yaw p50/p90 =  1.1/ 2.3 deg   success  100%
+local, moving 0.45 m/s, 1.0 s sweep  pos p50/p90 = 24.0/28.9 cm   yaw p50/p90 =  4.7/10.7 deg   success    7%
+local, moving 0.45 m/s, 0.5 s sweep  pos p50/p90 = 12.9/16.4 cm   yaw p50/p90 =  3.2/ 7.4 deg   success   70%
+local, turning 30 deg/s, 1.0 s sweep  pos p50/p90 =  9.1/13.2 cm   yaw p50/p90 = 15.5/18.9 deg   success   37%
+
+--- desmear: matcher models the commanded motion (v, w) ---
+desmear, drive 0.45 m/s             pos p50/p90 =  2.7/ 5.6 cm   yaw p50/p90 =  1.2/ 2.2 deg   success  100%
+desmear, drive +10% speed err       pos p50/p90 =  3.4/ 6.0 cm   yaw p50/p90 =  1.3/ 2.1 deg   success   97%
+desmear, drive +25% speed err       pos p50/p90 =  6.4/10.1 cm   yaw p50/p90 =  1.5/ 3.1 deg   success  100%
+desmear, pivot 30 deg/s             pos p50/p90 =  2.2/ 4.6 cm   yaw p50/p90 =  1.3/ 2.2 deg   success  100%
+desmear, drive 0.3 + turn 20 deg/s  pos p50/p90 =  3.8/ 7.3 cm   yaw p50/p90 =  1.4/ 2.3 deg   success  100%
+desmear, drive+turn, +10% v +15% w  pos p50/p90 =  3.2/ 5.5 cm   yaw p50/p90 =  1.4/ 3.1 deg   success  100%
+desmear, pivot 60 deg/s (hard)      pos p50/p90 =  3.2/ 5.7 cm   yaw p50/p90 =  1.2/ 2.0 deg   success  100%
+desmear, 4deg, pivot 30 deg/s       pos p50/p90 =  2.7/ 6.1 cm   yaw p50/p90 =  1.4/ 2.0 deg   success  100%

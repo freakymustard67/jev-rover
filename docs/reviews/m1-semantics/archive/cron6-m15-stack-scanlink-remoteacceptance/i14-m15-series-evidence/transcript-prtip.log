@@ -1,0 +1,47 @@
+=== 2026-09-29T08:23:20+05:30 session start ===
+$ git clone (local mirror of freakymustard67/jev-rover) into repoA; remote set-url origin https://github.com/freakymustard67/jev-rover; fetch review/m1-semantics-audit:prtip; checkout prtip
+$ git rev-parse HEAD
+bec1d91fe17682ce38d24e334c94c67fa4bcc685
+$ sha256sum patches (recorded expected values matched in caller)
+73717eac6725b9caf9540e1ddea20f8f933766dabb3d74c05a69c292b8095846  /home/freakymustard/jev-rover-research/runs/20260929-0118/i5-state-digest-evidence/i5-state-digest.patch
+0916094006af3952d39649c93e20ee53f1d1c5665a4a97c4aaef024656bf00fa  /home/freakymustard/jev-rover-research/runs/20260929-0118/i6-churn-hysteresis-evidence/i6-churn-hysteresis.patch
+3b222edd251db9428e4aca459956c9ad2916641fee96f1e14a0541f758fd6e91  /home/freakymustard/jev-rover-research/runs/20260929-0118/i7-approach-standoff-evidence/i7-approach-standoff.patch
+$ git log --oneline -3
+bec1d91 docs(reviews): M1 semantics deep review, fix rationale, M2 design note
+e6be51d run: drop dead print(trace_line) - fixes --trace NameError
+998f586 tests: scope pytest to tests/ and fix stale README counts
+
+=== 2026-09-29T08:23:50+05:30 STAGE i5: git am -3 i5-state-digest.patch ===
+$ git am -3 /home/freakymustard/jev-rover-research/runs/20260929-0118/i5-state-digest-evidence/i5-state-digest.patch
+Applying: semantics: Jev payload ships a compact state digest
+[exit=0]
+
+=== 2026-09-29T08:23:54+05:30 after i5: git log ===
+$ git log --oneline bec1d91..HEAD
+cca5987 semantics: Jev payload ships a compact state digest
+[exit=0]
+
+=== 2026-09-29T08:24:15+05:30 STAGE i6: git am -3 i6-churn-hysteresis.patch ===
+$ git am -3 /home/freakymustard/jev-rover-research/runs/20260929-0118/i6-churn-hysteresis-evidence/i6-churn-hysteresis.patch
+Applying: fix(semantics): mover carry hysteresis, sub-threshold decay, resurrection event
+[exit=0]
+
+=== 2026-09-29T08:24:20+05:30 after i6: git log ===
+$ git log --oneline bec1d91..HEAD
+8458359 fix(semantics): mover carry hysteresis, sub-threshold decay, resurrection event
+cca5987 semantics: Jev payload ships a compact state digest
+[exit=0]
+
+=== 2026-09-29T08:24:48+05:30 STAGE i7: git am -3 i7-approach-standoff.patch ===
+$ git am -3 /home/freakymustard/jev-rover-research/runs/20260929-0118/i7-approach-standoff-evidence/i7-approach-standoff.patch
+Applying: semantics: project approach goals to free space; never splice a blocked goal (w4b F1/F2)
+Applying: docs: errata for approach standoff vs planner inflation (w4b/I7 audit)
+[exit=0]
+
+=== 2026-09-29T08:25:10+05:30 combined suite (i5+i6+i7 on prtip) ===
+$ git log --oneline bec1d91..HEAD
+7bbd21a docs: errata for approach standoff vs planner inflation (w4b/I7 audit)
+a1d0ed2 semantics: project approach goals to free space; never splice a blocked goal (w4b F1/F2)
+8458359 fix(semantics): mover carry hysteresis, sub-threshold decay, resurrection event
+cca5987 semantics: Jev payload ships a compact state digest
+[exit=0]

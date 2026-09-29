@@ -1,0 +1,3 @@
+floor LAB [168.0, 125.0, 123.0]  probe pixel (1000,556)
+grey surface L-30 (BGR [138, 131, 119]): height_suspect=False surface=shadow
+grey surface L-50 (BGR [118, 111, 100]): height_suspect=False surface=shadow

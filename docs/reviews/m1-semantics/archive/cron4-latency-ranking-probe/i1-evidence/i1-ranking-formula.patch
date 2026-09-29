@@ -1,0 +1,136 @@
+diff --git a/README.md b/README.md
+index f9a22cb..d6daa95 100644
+--- a/README.md
++++ b/README.md
+@@ -143,7 +143,9 @@ the whole pipeline is testable offline; real adapters are M2.
+   projection may be biased, which is the honest flag rather than a guess.
+ * **Motion**: computed from the RAW per-pass displacement, never the EMA step
+   (smoothing turns a 0.35 m move into 0.14 m and would miss it).
+-* **Destination**: Jaccard token overlap over labels; ties within
++* **Destination**: asymmetric token overlap over labels (`0.7*recall +
++  0.3*precision`, the plan's formula) with a `difflib` fallback for typo'd
++  tokens (`fuzzy_token_cutoff`); ties within
+   `ambiguity_epsilon` go to one budgeted Jev `Choice` over the candidate labels
+   (code owns the options), with a deterministic fallback when no client is
+   available. `approach_point` places the standoff on the rover->object line.
+diff --git a/config.py b/config.py
+index 3952911..8286810 100644
+--- a/config.py
++++ b/config.py
+@@ -151,6 +151,7 @@ class SemanticsConfig:
+     failure_cooldown_s: float = 10.0
+     min_label_score: float = 0.34
+     ambiguity_epsilon: float = 0.15
++    fuzzy_token_cutoff: float = 0.80   # difflib ratio for near-miss token pairs
+     store_dir: str = "runs/semantic"
+ 
+ 
+@@ -325,7 +326,8 @@ class RoomConfig:
+                                     ("match_radius_m", s.match_radius_m, 1e-9, None),
+                                     ("move_threshold_m", s.move_threshold_m, 1e-9, None),
+                                     ("min_label_score", s.min_label_score, 0.0, 1.0),
+-                                    ("ambiguity_epsilon", s.ambiguity_epsilon, 0.0, None)):
++                                    ("ambiguity_epsilon", s.ambiguity_epsilon, 0.0, None),
++                                    ("fuzzy_token_cutoff", s.fuzzy_token_cutoff, 0.0, 1.0)):
+             if value < lo or (hi is not None and value > hi):
+                 raise ConfigError(f"{where}.semantics.{name} out of range: {value}")
+         if s.max_passes_per_min < 1:
+diff --git a/semantics.py b/semantics.py
+index 456843c..c462908 100644
+--- a/semantics.py
++++ b/semantics.py
+@@ -34,6 +34,7 @@ import re
+ import threading
+ import time
+ from dataclasses import asdict, dataclass, field, replace
++from difflib import SequenceMatcher
+ from pathlib import Path
+ from typing import Protocol
+ 
+@@ -582,9 +583,19 @@ _STOP_WORDS = {
+ 
+ 
+ def _fold(word: str) -> str:
+-    """Tiny plural fold; enough for 'mats' -> 'mat' without a stemmer."""
++    """Plural fold v2: '-ies' -> '-y', sibilant '-es' -> stem, else trailing 's'.
++
++    Enough for 'mats' -> 'mat', 'batteries' -> 'battery' and 'boxes' -> 'box'
++    without a stemmer; deterministic (pure string rules, no dictionary).
++    """
++    if len(word) > 4 and word.endswith("ies"):
++        return word[:-3] + "y"                      # batteries -> battery
++    if len(word) > 3 and word.endswith("es"):
++        stem = word[:-2]
++        if stem.endswith(("s", "x", "z", "ch", "sh")):
++            return stem                             # boxes -> box, glasses -> glass
+     if len(word) > 3 and word.endswith("s") and not word.endswith("ss"):
+-        return word[:-1]
++        return word[:-1]                            # mats -> mat, kites -> kite
+     return word
+ 
+ 
+@@ -598,13 +609,49 @@ class ScoredCandidate:
+     score: float
+ 
+ 
++# Asymmetric token overlap (the plan's §4 formula): recall-heavy so a verbose
++# detector label ("plastic water bottle") is not punished for its extra words,
++# with a precision term so a short label is not punished by a long query.
++# Symmetric Jaccard was neither: 1/3 < 0.34 dropped "bottle" (measured).
++_W_RECALL = 0.7
++_W_PRECISION = 0.3
++
++
++def _match_tokens(q: set[str], w: set[str], cutoff: float) -> tuple[int, int]:
++    """Pair query tokens with label tokens; returns (matched q, matched w).
++
++    Exact matches first, then char-similarity (difflib) pairs gated at
++    `cutoff` for typo tolerance. Deterministic: query tokens in sorted order,
++    best ratio wins, ties broken by the lexicographically smallest label
++    token; a label token is claimed at most once.
++    """
++    exact = q & w
++    m = p = len(exact)
++    used: set[str] = set()
++    for tq in sorted(q - exact):
++        pick, pick_r = None, 0.0
++        for tw in sorted(w - exact):
++            if tw in used:
++                continue
++            r = SequenceMatcher(None, tq, tw).ratio()
++            if r >= cutoff and (pick is None or r > pick_r or (r == pick_r and tw < pick)):
++                pick, pick_r = tw, r
++        if pick is not None:
++            used.add(pick)
++            m += 1
++            p += 1
++    return m, p
++
++
+ def rank_candidates(query: str, objects: list[SemanticObject],
+                     cfg: SemanticsConfig | None = None) -> list[ScoredCandidate]:
+-    """Jaccard token overlap, best object per label, deterministic order.
++    """Asymmetric token overlap + difflib typo fallback, best object per label.
+ 
+-    Jaccard (not weighted recall) is what the prototype measured: 'go to the
+-    blue mat' -> 0.67, bare 'mat' -> 0.5 for both mats (ambiguous), and a
+-    non-existent object -> empty.
++    score = 0.7*matched/|q| + 0.3*matched/|w|: recall dominant, so
++    'go to the blue mat' -> 1.0, bare 'mat' -> 0.85 for both mats (ambiguous),
++    'bottle' vs 'plastic water bottle' -> 0.80 (was 0.33, dropped), and
++    'chargr' -> charger via the SequenceMatcher fallback. A non-existent
++    object still scores 0 for every label -> empty.
+     """
+     cfg = cfg or SemanticsConfig()
+     q = _tokens(query)
+@@ -615,8 +662,8 @@ def rank_candidates(query: str, objects: list[SemanticObject],
+         w = _tokens(o.label)
+         if not w:
+             continue
+-        union = q | w
+-        score = len(q & w) / len(union) if union else 0.0
++        m, p = _match_tokens(q, w, cfg.fuzzy_token_cutoff)
++        score = _W_RECALL * (m / len(q)) + _W_PRECISION * (p / len(w))
+         if score < cfg.min_label_score:
+             continue
+         prev = best_by_label.get(o.label)

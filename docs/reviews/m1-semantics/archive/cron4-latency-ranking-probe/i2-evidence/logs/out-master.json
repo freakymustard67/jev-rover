@@ -1,0 +1,893 @@
+{
+ "clone": "clone-master",
+ "commit": "9c33ec0",
+ "fp": 10,
+ "fn": 0,
+ "fp_cases": [
+  "mat_thing",
+  "mat_itself",
+  "shadow_deep",
+  "shadow_vdeep",
+  "shadow_contact",
+  "shadow_contact_narrow",
+  "dark_card_wide",
+  "occluder_narrow",
+  "dark_mat_thing",
+  "tight_bbox_speckle"
+ ],
+ "fn_cases": [],
+ "scenarios": [
+  {
+   "name": "floor_only",
+   "expect": false,
+   "cls": "floor",
+   "note": "control: object on bare floor",
+   "label": "red box",
+   "decision": false,
+   "ok": true,
+   "diag": {
+    "legacy_probe_px": [
+     1000,
+     556
+    ],
+    "legacy_pixel_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_patch7x3_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 0.0,
+    "dL": 0.0,
+    "dchroma": 0.0,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     5.0,
+     0.82
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "ring_lab_r": [
+     168.0,
+     125.0,
+     123.0
+    ]
+   },
+   "e2e": {
+    "wx": 5.0,
+    "wy": 0.85,
+    "height_suspect": false
+   }
+  },
+  {
+   "name": "mat_thing",
+   "expect": false,
+   "cls": "floor",
+   "note": "object resting on a FLAT non-floor-coloured mat (headline FP class)",
+   "label": "red box",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     600,
+     516
+    ],
+    "legacy_pixel_lab": [
+     101.0,
+     144.0,
+     76.0
+    ],
+    "legacy_patch7x3_lab": [
+     101.0,
+     144.0,
+     76.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 84.02,
+    "dL": 67.0,
+    "dchroma": 50.7,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     3.0,
+     1.02
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     101.0,
+     144.0,
+     76.0
+    ],
+    "ring_lab_r": [
+     101.0,
+     144.0,
+     76.0
+    ]
+   },
+   "e2e": {
+    "wx": 3.0,
+    "wy": 1.05,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "mat_itself",
+   "expect": false,
+   "cls": "floor",
+   "note": "detection of the mat itself (centroid anchor); probe lands on the flat cover",
+   "label": "blue mat",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     600,
+     546
+    ],
+    "legacy_pixel_lab": [
+     101.0,
+     144.0,
+     76.0
+    ],
+    "legacy_patch7x3_lab": [
+     101.0,
+     144.0,
+     76.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 84.02,
+    "dL": 67.0,
+    "dchroma": 50.7,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     3.0,
+     0.87
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     101.0,
+     144.0,
+     76.0
+    ],
+    "ring_lab_r": [
+     101.0,
+     144.0,
+     76.0
+    ]
+   },
+   "e2e": {
+    "wx": 3.0,
+    "wy": 1.2,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "mat_edge_floor",
+   "expect": false,
+   "cls": "floor",
+   "note": "mat is behind the base: probe lands on bare floor (control)",
+   "label": "red box",
+   "decision": false,
+   "ok": true,
+   "diag": {
+    "legacy_probe_px": [
+     600,
+     536
+    ],
+    "legacy_pixel_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_patch7x3_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 0.0,
+    "dL": 0.0,
+    "dchroma": 0.0,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     3.0,
+     0.92
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "ring_lab_r": [
+     168.0,
+     125.0,
+     123.0
+    ]
+   },
+   "e2e": {
+    "wx": 3.0,
+    "wy": 0.95,
+    "height_suspect": false
+   }
+  },
+  {
+   "name": "shadow_mild",
+   "expect": false,
+   "cls": "floor",
+   "note": "floor shadow (L-20, chroma preserved) under/around the base",
+   "label": "red box",
+   "decision": false,
+   "ok": true,
+   "diag": {
+    "legacy_probe_px": [
+     1000,
+     556
+    ],
+    "legacy_pixel_lab": [
+     148.0,
+     125.0,
+     123.0
+    ],
+    "legacy_patch7x3_lab": [
+     148.0,
+     125.0,
+     123.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 20.0,
+    "dL": 20.0,
+    "dchroma": 0.0,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     5.0,
+     0.82
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     148.0,
+     125.0,
+     123.0
+    ],
+    "ring_lab_r": [
+     148.0,
+     125.0,
+     123.0
+    ]
+   },
+   "e2e": {
+    "wx": 5.0,
+    "wy": 0.85,
+    "height_suspect": false
+   }
+  },
+  {
+   "name": "shadow_deep",
+   "expect": false,
+   "cls": "floor",
+   "note": "floor shadow (L-40, chroma preserved) under/around the base",
+   "label": "red box",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     1000,
+     556
+    ],
+    "legacy_pixel_lab": [
+     128.0,
+     125.0,
+     123.0
+    ],
+    "legacy_patch7x3_lab": [
+     128.0,
+     125.0,
+     123.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 40.0,
+    "dL": 40.0,
+    "dchroma": 0.0,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     5.0,
+     0.82
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     128.0,
+     125.0,
+     123.0
+    ],
+    "ring_lab_r": [
+     128.0,
+     125.0,
+     123.0
+    ]
+   },
+   "e2e": {
+    "wx": 5.0,
+    "wy": 0.85,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "shadow_vdeep",
+   "expect": false,
+   "cls": "floor",
+   "note": "floor shadow (L-70, chroma preserved) under/around the base",
+   "label": "red box",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     1000,
+     556
+    ],
+    "legacy_pixel_lab": [
+     98.0,
+     125.0,
+     123.0
+    ],
+    "legacy_patch7x3_lab": [
+     98.0,
+     125.0,
+     123.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 70.0,
+    "dL": 70.0,
+    "dchroma": 0.0,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     5.0,
+     0.82
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     98.0,
+     125.0,
+     123.0
+    ],
+    "ring_lab_r": [
+     98.0,
+     125.0,
+     123.0
+    ]
+   },
+   "e2e": {
+    "wx": 5.0,
+    "wy": 0.85,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "shadow_contact",
+   "expect": false,
+   "cls": "floor",
+   "note": "deep contact shadow covering the probe row (wider than the probe ring)",
+   "label": "red box",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     1000,
+     556
+    ],
+    "legacy_pixel_lab": [
+     123.0,
+     126.0,
+     123.0
+    ],
+    "legacy_patch7x3_lab": [
+     123.0,
+     126.0,
+     123.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 45.01,
+    "dL": 45.0,
+    "dchroma": 1.0,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     5.0,
+     0.82
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     123.0,
+     126.0,
+     123.0
+    ],
+    "ring_lab_r": [
+     123.0,
+     126.0,
+     123.0
+    ]
+   },
+   "e2e": {
+    "wx": 5.0,
+    "wy": 0.85,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "shadow_contact_narrow",
+   "expect": false,
+   "cls": "floor",
+   "note": "deep but 20 px-wide contact shadow: sides of the probe row stay bright",
+   "label": "red box",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     1000,
+     556
+    ],
+    "legacy_pixel_lab": [
+     123.0,
+     126.0,
+     123.0
+    ],
+    "legacy_patch7x3_lab": [
+     123.0,
+     126.0,
+     123.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 45.01,
+    "dL": 45.0,
+    "dchroma": 1.0,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     5.0,
+     0.82
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "ring_lab_r": [
+     168.0,
+     125.0,
+     123.0
+    ]
+   },
+   "e2e": {
+    "wx": 5.0,
+    "wy": 0.85,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "dark_card_wide",
+   "expect": false,
+   "cls": "floor",
+   "note": "wide flat dark neutral card in front of the base (shadow/card ambiguity)",
+   "label": "red box",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     1000,
+     556
+    ],
+    "legacy_pixel_lab": [
+     65.0,
+     128.0,
+     128.0
+    ],
+    "legacy_patch7x3_lab": [
+     65.0,
+     128.0,
+     128.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 103.16,
+    "dL": 103.0,
+    "dchroma": 5.83,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     5.0,
+     0.82
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     65.0,
+     128.0,
+     128.0
+    ],
+    "ring_lab_r": [
+     65.0,
+     128.0,
+     128.0
+    ]
+   },
+   "e2e": {
+    "wx": 5.0,
+    "wy": 0.85,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "occluder_narrow",
+   "expect": false,
+   "cls": "floor",
+   "note": "narrow (16 px) dark object in front of the base, ring stays floor",
+   "label": "red box",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     1000,
+     556
+    ],
+    "legacy_pixel_lab": [
+     65.0,
+     128.0,
+     128.0
+    ],
+    "legacy_patch7x3_lab": [
+     65.0,
+     128.0,
+     128.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 103.16,
+    "dL": 103.0,
+    "dchroma": 5.83,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     5.0,
+     0.82
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "ring_lab_r": [
+     168.0,
+     125.0,
+     123.0
+    ]
+   },
+   "e2e": {
+    "wx": 5.0,
+    "wy": 0.85,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "dark_mat_thing",
+   "expect": false,
+   "cls": "floor",
+   "note": "object resting on a flat DARK neutral mat (registered as a cover)",
+   "label": "red box",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     960,
+     436
+    ],
+    "legacy_pixel_lab": [
+     113.0,
+     128.0,
+     128.0
+    ],
+    "legacy_patch7x3_lab": [
+     113.0,
+     128.0,
+     128.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 55.31,
+    "dL": 55.0,
+    "dchroma": 5.83,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     4.8,
+     1.42
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     113.0,
+     128.0,
+     128.0
+    ],
+    "ring_lab_r": [
+     113.0,
+     128.0,
+     128.0
+    ]
+   },
+   "e2e": {
+    "wx": 4.8,
+    "wy": 1.45,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "tight_bbox_speckle",
+   "expect": false,
+   "cls": "floor",
+   "note": "detector bbox 3 px tight: speckled dark object edge sits on the probe row",
+   "label": "red box",
+   "decision": true,
+   "ok": false,
+   "diag": {
+    "legacy_probe_px": [
+     1000,
+     556
+    ],
+    "legacy_pixel_lab": [
+     42.0,
+     131.0,
+     129.0
+    ],
+    "legacy_patch7x3_lab": [
+     42.0,
+     131.0,
+     129.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 126.29,
+    "dL": 126.0,
+    "dchroma": 8.49,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     5.0,
+     0.82
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     42.0,
+     131.0,
+     129.0
+    ],
+    "ring_lab_r": [
+     233.0,
+     128.0,
+     128.0
+    ]
+   },
+   "e2e": {
+    "wx": 5.0,
+    "wy": 0.85,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "on_table",
+   "expect": true,
+   "cls": "elevated",
+   "note": "object on the synthetic-room table region (genuine suspect)",
+   "label": "thing",
+   "decision": true,
+   "ok": true,
+   "diag": {
+    "legacy_probe_px": [
+     626,
+     682
+    ],
+    "legacy_pixel_lab": [
+     95.0,
+     106.0,
+     146.0
+    ],
+    "legacy_patch7x3_lab": [
+     95.0,
+     106.0,
+     146.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 78.86,
+    "dL": 73.0,
+    "dchroma": 29.83,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     3.13,
+     0.19
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     95.0,
+     106.0,
+     146.0
+    ],
+    "ring_lab_r": [
+     95.0,
+     106.0,
+     146.0
+    ]
+   },
+   "e2e": {
+    "wx": 3.13,
+    "wy": 0.22,
+    "height_suspect": true
+   }
+  },
+  {
+   "name": "edge_polygon",
+   "expect": true,
+   "cls": "unverifiable",
+   "note": "probe falls outside the floor polygon (py>690): cannot verify",
+   "label": "thing",
+   "decision": true,
+   "ok": true,
+   "diag": {
+    "legacy_probe_px": [
+     120,
+     692
+    ],
+    "legacy_pixel_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_patch7x3_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "floor_lab": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "legacy_delta_norm": 0.0,
+    "dL": 0.0,
+    "dchroma": 0.0,
+    "metres_per_px_at_base_row": 0.005,
+    "probe_world_0.03m": [
+     0.6,
+     0.14
+    ],
+    "m_per_6px": 0.03,
+    "ring_lab_l": [
+     168.0,
+     125.0,
+     123.0
+    ],
+    "ring_lab_r": [
+     168.0,
+     125.0,
+     123.0
+    ]
+   },
+   "e2e": {
+    "wx": 0.6,
+    "wy": 0.17,
+    "height_suspect": true
+   }
+  }
+ ],
+ "flake": {
+  "floor_only": {
+   "n": 200,
+   "suspect_rate": 0.12,
+   "flags": 24,
+   "noise_only": {
+    "n": 176,
+    "flags": 0,
+    "rate": 0.0
+   },
+   "injected": {
+    "n": 24,
+    "flags": 24,
+    "rate": 1.0
+   }
+  },
+  "mat_thing": {
+   "n": 200,
+   "suspect_rate": 1.0,
+   "flags": 200,
+   "noise_only": {
+    "n": 176,
+    "flags": 176,
+    "rate": 1.0
+   },
+   "injected": {
+    "n": 24,
+    "flags": 24,
+    "rate": 1.0
+   }
+  },
+  "shadow_contact": {
+   "n": 200,
+   "suspect_rate": 1.0,
+   "flags": 200,
+   "noise_only": {
+    "n": 176,
+    "flags": 176,
+    "rate": 1.0
+   },
+   "injected": {
+    "n": 24,
+    "flags": 24,
+    "rate": 1.0
+   }
+  },
+  "tight_bbox_speckle": {
+   "n": 200,
+   "suspect_rate": 1.0,
+   "flags": 200,
+   "noise_only": {
+    "n": 176,
+    "flags": 176,
+    "rate": 1.0
+   },
+   "injected": {
+    "n": 24,
+    "flags": 24,
+    "rate": 1.0
+   }
+  }
+ }
+}

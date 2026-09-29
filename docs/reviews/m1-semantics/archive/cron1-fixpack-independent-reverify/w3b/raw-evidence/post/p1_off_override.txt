@@ -1,0 +1,40 @@
+[find] ignored: --semantics off disables the semantic layer
+{
+  "config": "/home/freakymustard/.hermes/cache/scratch/wave3/w3b/out/enabled.json",
+  "source": "synthetic",
+  "mission": "patrol",
+  "jevs": false,
+  "link": "MockLink",
+  "metrics": {
+    "duration_s": 3.1,
+    "frames": 40,
+    "distance_m": 0.47,
+    "min_obstacle_ahead_m": 0.94,
+    "collision_reflex_events": 0,
+    "reflex_reasons": {},
+    "stuck_s": 0.0,
+    "stuck_fraction": 0.0,
+    "watchdog_bad_s": 0.1,
+    "no_telemetry_s": 0.0,
+    "lost_pose_s": 0.0,
+    "goals_reached": 0,
+    "goals_expected": null
+  },
+  "control": {
+    "modes": {
+      "baseline": 40
+    },
+    "reflexes": {},
+    "replans": 4,
+    "path_unknown": 0
+  },
+  "jev": null,
+  "semantics": null,
+  "transport": {
+    "link": "mock",
+    "commands": 43,
+    "ttl_ok": true
+  }
+}
+
+summary written to runs/summary_20260929-011232.json

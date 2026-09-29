@@ -1,0 +1,21 @@
+weight blend sweep (top-1 accuracy on 51-case corpus, threshold 0.34, cutoff 0.8):
+  w_recall= 1.0 w_precision= 0.0  acc=51/51=1.000  fails=none
+    ^ plain recall note: with a token-pair gate negatives still hold, but every
+      recall=1 tie (all labels containing the token) loses the length signal;
+      check specific cases: 'mat' vs 'yoga mat extra large' -> 1.0 both,
+  w_recall= 0.0 w_precision= 1.0  acc=47/51=0.922  fails=["S1-07:'grab the bottle'->None", "S1-08:'bring me the bottle'->None", "S1-11:'yoga mat'->blue mat", "S1-14:'find the bottle'->None"]
+  w_recall= 0.5 w_precision= 0.5  acc=51/51=1.000  fails=none
+  w_recall= 0.6 w_precision= 0.4  acc=51/51=1.000  fails=none
+  w_recall= 0.7 w_precision= 0.3  acc=51/51=1.000  fails=none
+  w_recall= 0.8 w_precision= 0.2  acc=51/51=1.000  fails=none
+  w_recall= 0.9 w_precision= 0.1  acc=51/51=1.000  fails=none
+
+unintended-ambiguity check (proposed scores, expected-set size 1, >=2 candidates):
+  S1-01  'go to the blue mat'         top='blue mat'             margin=0.5000  ok
+  S1-03  'the blue box'               top='blue box'             margin=0.5000  ok
+  S1-11  'yoga mat'                   top='yoga mat extra large' margin=0.3500  ok
+  S1-12  'the red mat'                top='red mat'              margin=0.5000  ok
+  S1-13  'find the blue box'          top='blue box'             margin=0.5000  ok
+
+determinism under different hash seeds (top-1 lists must be identical):
+  3 seeds x 51 cases identical: True

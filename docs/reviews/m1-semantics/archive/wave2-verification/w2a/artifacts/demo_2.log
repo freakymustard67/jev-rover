@@ -1,0 +1,17 @@
+CLAIM 2: object on a non-floor-coloured mat -> height_suspect=True
+config: floor.lab_tolerance=26.0 project.probe_px=6 project.point_by_label={'blue mat': 'centroid'}
+floor LAB=[168.0, 125.0, 123.0]  mat LAB=[101.0, 144.0, 76.0]  distance=84.0
+
+[on mat] bbox_px=(570, 450, 630, 510) probe_px=(600, 516) probe LAB distance from floor=84.0 (>= tol 26.0 means 'not floor')
+
+[on bare floor] bbox_px=(970, 490, 1030, 550) probe_px=(1000, 556) probe LAB distance from floor=0.0 (>= tol 26.0 means 'not floor')
+
+[direct probe path: project_detections -> height_suspect]
+    on mat:   rejected=0 world=(3.0,1.2) height_suspect=True
+    on floor: rejected=0 world=(5.0,0.85) height_suspect=False
+
+[end-to-end path: SemanticsRunner worker with the mat frame]
+    merged: id=obj_0001 label=blue mat world=(3.0,1.2) height_suspect=True conf=0.9 worker_errors=0
+
+VERDICT claim 2: CONFIRMED
+incident code: semantics.py L176-203 (probe below bbox base vs floor colour; no mat/furniture distinction)

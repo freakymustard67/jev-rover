@@ -1,0 +1,20 @@
+semantics: Jev payload ships a compact state digest
+
+build_state() now swaps observed.semantics for SemanticMap.jev_digest():
+per object only {label, x, y} rounded to 2 dp and confidence; height_suspect
+and motion appear only when set; id/sources/plane_assumed/first_seen_s/
+last_seen_s are dropped from the Jev view; objects below min_confidence are
+dropped; the list is capped at 25 nearest-to-rover first with objects_more;
+the diff is counts-only plus the first 3 ids per bucket. age_s/passes/model
+and the destination stay. Scene.to_dict() and every disk/log artifact keep
+the full 11-field schema untouched.
+
+Measured through the real pipeline (SyntheticRoom -> Perception ->
+FakeVision -> merge -> snapshot -> build_state; 2 passes, jitter and one
+0.40 m move, destination set), len(json.dumps(build_state)) convention:
+  objects:     8     10    15    20    30
+  before:   5681  6134  7266  8398 10729   (bound crossed at ~9.4 objects)
+  after:    4433  4563  4918  5236  5658   (30 ships 25 + objects_more 4)
+The size bound now runs on the integration path (20 realistic fixtures, one
+pass: 5115 B digest, 7590 B scene.to_dict()); the schema test keeps
+serialization only, and jev_digest shape/drop/cap gains unit coverage.

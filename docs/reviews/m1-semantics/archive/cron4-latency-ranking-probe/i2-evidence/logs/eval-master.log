@@ -1,0 +1,22 @@
+floor_only             expect=False got=False OK  cls=floor        probe=1000,556 patchLAB=[168.0, 125.0, 123.0] floorLAB=[168.0, 125.0, 123.0] |d|=   0.0 dL=   0.0 dC=  0.0 m/6px=0.0300
+mat_thing              expect=False got=True  XX  cls=floor        probe=600,516 patchLAB=[101.0, 144.0, 76.0] floorLAB=[168.0, 125.0, 123.0] |d|=  84.0 dL=  67.0 dC= 50.7 m/6px=0.0300
+mat_itself             expect=False got=True  XX  cls=floor        probe=600,546 patchLAB=[101.0, 144.0, 76.0] floorLAB=[168.0, 125.0, 123.0] |d|=  84.0 dL=  67.0 dC= 50.7 m/6px=0.0300
+mat_edge_floor         expect=False got=False OK  cls=floor        probe=600,536 patchLAB=[168.0, 125.0, 123.0] floorLAB=[168.0, 125.0, 123.0] |d|=   0.0 dL=   0.0 dC=  0.0 m/6px=0.0300
+shadow_mild            expect=False got=False OK  cls=floor        probe=1000,556 patchLAB=[148.0, 125.0, 123.0] floorLAB=[168.0, 125.0, 123.0] |d|=  20.0 dL=  20.0 dC=  0.0 m/6px=0.0300
+shadow_deep            expect=False got=True  XX  cls=floor        probe=1000,556 patchLAB=[128.0, 125.0, 123.0] floorLAB=[168.0, 125.0, 123.0] |d|=  40.0 dL=  40.0 dC=  0.0 m/6px=0.0300
+shadow_vdeep           expect=False got=True  XX  cls=floor        probe=1000,556 patchLAB=[98.0, 125.0, 123.0] floorLAB=[168.0, 125.0, 123.0] |d|=  70.0 dL=  70.0 dC=  0.0 m/6px=0.0300
+shadow_contact         expect=False got=True  XX  cls=floor        probe=1000,556 patchLAB=[123.0, 126.0, 123.0] floorLAB=[168.0, 125.0, 123.0] |d|=  45.0 dL=  45.0 dC=  1.0 m/6px=0.0300
+shadow_contact_narrow  expect=False got=True  XX  cls=floor        probe=1000,556 patchLAB=[123.0, 126.0, 123.0] floorLAB=[168.0, 125.0, 123.0] |d|=  45.0 dL=  45.0 dC=  1.0 m/6px=0.0300
+dark_card_wide         expect=False got=True  XX  cls=floor        probe=1000,556 patchLAB=[65.0, 128.0, 128.0] floorLAB=[168.0, 125.0, 123.0] |d|= 103.2 dL= 103.0 dC=  5.8 m/6px=0.0300
+occluder_narrow        expect=False got=True  XX  cls=floor        probe=1000,556 patchLAB=[65.0, 128.0, 128.0] floorLAB=[168.0, 125.0, 123.0] |d|= 103.2 dL= 103.0 dC=  5.8 m/6px=0.0300
+dark_mat_thing         expect=False got=True  XX  cls=floor        probe=960,436 patchLAB=[113.0, 128.0, 128.0] floorLAB=[168.0, 125.0, 123.0] |d|=  55.3 dL=  55.0 dC=  5.8 m/6px=0.0300
+tight_bbox_speckle     expect=False got=True  XX  cls=floor        probe=1000,556 patchLAB=[42.0, 131.0, 129.0] floorLAB=[168.0, 125.0, 123.0] |d|= 126.3 dL= 126.0 dC=  8.5 m/6px=0.0300
+on_table               expect=True  got=True  OK  cls=elevated     probe=626,682 patchLAB=[95.0, 106.0, 146.0] floorLAB=[168.0, 125.0, 123.0] |d|=  78.9 dL=  73.0 dC= 29.8 m/6px=0.0300
+edge_polygon           expect=True  got=True  OK  cls=unverifiable probe=120,692 patchLAB=[168.0, 125.0, 123.0] floorLAB=[168.0, 125.0, 123.0] |d|=   0.0 dL=   0.0 dC=  0.0 m/6px=0.0300
+
+clone=clone-master commit=9c33ec0  FP=10 FN=0  fp_cases=['mat_thing', 'mat_itself', 'shadow_deep', 'shadow_vdeep', 'shadow_contact', 'shadow_contact_narrow', 'dark_card_wide', 'occluder_narrow', 'dark_mat_thing', 'tight_bbox_speckle'] fn_cases=[]
+flake floor_only             suspect 24/200  noise-only 0/176  injected 24/24
+flake mat_thing              suspect 200/200  noise-only 176/176  injected 24/24
+flake shadow_contact         suspect 200/200  noise-only 176/176  injected 24/24
+flake tight_bbox_speckle     suspect 200/200  noise-only 176/176  injected 24/24
+wrote /home/freakymustard/.hermes/cache/scratch/i2/out-master.json

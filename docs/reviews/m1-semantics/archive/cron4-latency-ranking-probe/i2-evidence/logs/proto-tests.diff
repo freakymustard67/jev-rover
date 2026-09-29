@@ -1,0 +1,145 @@
+diff --git a/tests/test_semantics_projection.py b/tests/test_semantics_projection.py
+index d60188c..118c4b5 100644
+--- a/tests/test_semantics_projection.py
++++ b/tests/test_semantics_projection.py
+@@ -2,13 +2,15 @@
+ import math
+ from dataclasses import replace
+ 
++import cv2
+ import numpy as np
+ import pytest
+ 
+ from config import SemanticsConfig
+-from perception import Perception
++from perception import Homography, Perception
+ from semantics import (Detection, FakeVision, WorldFixture, anchor_point,
+-                       height_suspect, project_detections, resolve_anchor_kind)
++                       height_suspect, probe_point, probe_surface,
++                       project_detections, resolve_anchor_kind)
+ from synthetic import SyntheticRoom
+ 
+ WARM = 6
+@@ -107,3 +109,122 @@ def test_anchor_helpers():
+     assert resolve_anchor_kind(cfg.project, "mat") == "bbox_bottom_center"
+     cfg.project.point_by_label["mat"] = "centroid"
+     assert resolve_anchor_kind(cfg.project, "MAT") == "centroid"
++
++
++# ------------------------------------------------- I2 probe hardening tests
++
++def _bbox_and_probe(perc, synth_cfg, label, x, y, w, h):
++    bb = FakeVision.from_world([WorldFixture(label, x, y, w, h)], perc.homography).fixtures[0].bbox_px
++    bbox = (float(bb[0]), float(bb[1]), float(bb[2]), float(bb[3]))
++    return bbox
++
++
++def test_probe_median_and_metric_offset_match_legacy_on_the_flat_room(synth_cfg):
++    """On the shipped top-down room, probe_m=0.03 m must land on the same pixel
++    as probe_px=6 (200 px/m), and a single dead pixel must not flip the flag."""
++    perc, syn, frame = _perception(synth_cfg)
++    ctx = perc.semantic_context(1.0)
++    proj = synth_cfg.semantics.project
++    bbox = _bbox_and_probe(perc, synth_cfg, "thing", 3.0, 1.2, 0.4, 0.4)
++    px, py = probe_point(frame, bbox, ctx, proj)
++    legacy = (int(round((bbox[0] + bbox[2]) / 2.0)), int(round(bbox[3])) + int(proj.probe_px))
++    assert (px, py) == legacy
++    assert height_suspect(frame, bbox, 3.0, 1.2, ctx, proj) is False
++    noisy = frame.copy()
++    noisy[py, px] = (0, 0, 0)                        # one dead pixel under the base
++    assert height_suspect(noisy, bbox, 3.0, 1.2, ctx, proj) is False
++    dark = frame.copy()
++    dark[py - 1:py + 2, px - 3:px + 4] = 0           # a real dark band still flags
++    assert height_suspect(dark, bbox, 3.0, 1.2, ctx, proj) is True
++
++
++def _darken_floor(frame, x0, x1, y0, y1, dl):
++    """Darken a rectangle by dl in LAB L, chroma preserved (a shadow)."""
++    lab = cv2.cvtColor(frame[y0:y1, x0:x1], cv2.COLOR_BGR2LAB).astype(np.float32)
++    lab[..., 0] = np.clip(lab[..., 0] - dl, 0, 255)
++    frame[y0:y1, x0:x1] = cv2.cvtColor(lab.astype(np.uint8), cv2.COLOR_LAB2BGR)
++
++
++def test_shadow_is_floor_but_a_flat_dark_object_is_not(synth_cfg):
++    perc, syn, frame = _perception(synth_cfg)
++    ctx = perc.semantic_context(1.0)
++    proj = synth_cfg.semantics.project
++    bbox = _bbox_and_probe(perc, synth_cfg, "thing", 5.0, 1.0, 0.3, 0.3)
++    px, py = probe_point(frame, bbox, ctx, proj)
++
++    shadow = frame.copy()
++    _darken_floor(shadow, px - 40, px + 40, py - 25, py + 25, 40.0)   # wide shadow band
++    assert height_suspect(shadow, bbox, 5.0, 1.0, ctx, proj) is False
++
++    narrow = frame.copy()
++    _darken_floor(narrow, px - 8, px + 8, py - 25, py + 25, 40.0)     # 16 px wide
++    assert height_suspect(narrow, bbox, 5.0, 1.0, ctx, proj) is True
++
++    card = frame.copy()
++    card[py - 1:py + 2, px - 3:px + 4] = (60, 60, 60)                 # dark neutral patch
++    assert height_suspect(card, bbox, 5.0, 1.0, ctx, proj) is True
++
++
++def test_registered_cover_is_floor_unregistered_is_not(synth_cfg):
++    perc, syn, frame = _perception(synth_cfg)
++    ctx = perc.semantic_context(1.0)
++    proj = synth_cfg.semantics.project
++    bbox = _bbox_and_probe(perc, synth_cfg, "thing", 3.0, 1.2, 0.3, 0.3)
++    mat = frame.copy()                                # a blue mat under the base
++    p0 = perc.homography.world_to_img([[2.6, 1.6]])[0]
++    p1 = perc.homography.world_to_img([[3.4, 0.8]])[0]
++    cv2.rectangle(mat, (int(p0[0]), int(p0[1])), (int(p1[0]), int(p1[1])), (180, 90, 40), -1)
++    assert height_suspect(mat, bbox, 3.0, 1.2, ctx, proj) is True
++    registered = replace(proj, cover_lab=[[101.0, 144.0, 76.0]])
++    assert height_suspect(mat, bbox, 3.0, 1.2, ctx, registered) is False
++    assert probe_surface(mat, bbox, 3.0, 1.2, ctx, registered) == "cover"
++
++
++def _oblique_homography():
++    """Pinhole fixed overhead camera (pitch 35.5 deg, 2.0 m) -> floor homography."""
++    th = math.radians(35.5)
++    c, s = math.cos(th), math.sin(th)
++    rot = np.array([[1, 0, 0], [0, -s, -c], [0, c, -s]], float)   # rows: right, down, forward
++    cam = np.array([3.2, -0.8, 2.0])
++    k = np.array([[900.0, 0, 640], [0, 900, 360], [0, 0, 1.0]])
++
++    def project(x, y):
++        pc = rot @ (np.array([float(x), float(y), 0.0]) - cam)
++        pc = pc / pc[2]
++        return [float(v) for v in (k @ pc)[:2]]
++
++    img = [project(0, 0), project(6.4, 0), project(6.4, 3.6), project(0, 3.6)]
++    return Homography(img, [[0, 0], [6.4, 0], [6.4, 3.6], [0, 3.6]])
++
++
++def test_metric_probe_offset_is_constant_in_metres_on_an_oblique_rig():
++    from types import SimpleNamespace
++    from config import ProjectConfig
++    h = _oblique_homography()
++    ctx = SimpleNamespace(homography=h)
++    proj = ProjectConfig(probe_m=0.03, probe_px=6)
++    legacy = []
++    for row in (120, 360, 600):
++        base = h.img_to_world([[640, row]])[0]
++        mpp = float(np.linalg.norm(h.img_to_world([[640, row + 1]])[0] - base))
++        bbox = (590.0, float(row - 100), 690.0, float(row))
++        px, py = probe_point(None, bbox, ctx, proj)
++        got = float(np.linalg.norm(h.img_to_world([[px, py]])[0] - base))
++        assert abs(got - 0.03) < mpp * 1.2, (row, got, mpp)
++        legacy.append(float(np.linalg.norm(h.img_to_world([[640, row + 6]])[0] - base)))
++    assert legacy[0] > 3 * legacy[-1], legacy        # the legacy 6 px is not metric
++
++
++def test_probe_surface_reasons(synth_cfg):
++    perc, syn, frame = _perception(synth_cfg)
++    ctx = perc.semantic_context(1.0)
++    proj = synth_cfg.semantics.project
++    bbox = _bbox_and_probe(perc, synth_cfg, "thing", 3.0, 1.2, 0.4, 0.4)
++    assert probe_surface(frame, bbox, 3.0, 1.2, ctx, proj) == "floor"
++    assert probe_surface(frame, bbox, 3.0, 1.2, replace(ctx, floor_lab=None),
++                         proj) == "no-floor-sample"
++    stale = replace(ctx, grid_t=10.0, grid_last_seen=np.zeros_like(ctx.grid_last_seen))
++    assert probe_surface(frame, bbox, 3.0, 1.2, stale, proj) == "unobserved"
++    h, w = frame.shape[:2]
++    off = (600.0, 700.0, 640.0, float(h - 1))
++    assert probe_surface(frame, off, 3.0, 0.2, ctx, proj) == "off-frame"

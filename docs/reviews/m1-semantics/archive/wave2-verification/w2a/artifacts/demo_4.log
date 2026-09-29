@@ -1,0 +1,13 @@
+CLAIM 4: score-0.05 detection within match radius still updates the object
+config: min_confidence=0.5 match_radius_m=0.5 ema_alpha=0.4 move_threshold_m=0.25
+
+pass 1: obj_0001 'red box' at (3.0, 1.0) conf=0.90 height_suspect=False
+pass 2 detection: 'red box' at (3.3, 1.0) score=0.05 height_suspect=True (distance 0.3 m <= match radius 0.5)
+    result: x=3.12 (EMA from 3.0: expected 3.12) conf=0.05 height_suspect=True motion=moved diff.moved=['obj_0001'] diff.appeared=[]
+    -> position moved 0.12 m by the 0.05-score detection; confidence overwritten 0.90 -> 0.05; height_suspect overwritten False -> True
+
+[related] an UNMATCHED 0.05-score detection creates a new object silently (min_confidence only gates diff.appeared):
+    objects_in_map=1 conf=0.05 diff.appeared=[]
+
+VERDICT claim 4: CONFIRMED
+incident code: semantics.py L271-280 (no min_confidence filter on matching), L284-285 (verbatim overwrite)

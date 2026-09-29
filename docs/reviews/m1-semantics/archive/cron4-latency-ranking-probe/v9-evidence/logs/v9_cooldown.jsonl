@@ -1,0 +1,1 @@
+{"allowed_after_expiry": true, "blocked_during_cooldown": true, "cooldown_until": 6.01, "counters_unchanged": true, "errors": 1, "rec": "cooldown", "skipped_after": {"budget": 0, "inflight": 0, "interval": 0, "no_context": 0}, "skipped_before": {"budget": 0, "inflight": 0, "interval": 0, "no_context": 0}, "stale_dropped": 0, "store_passes": 0}

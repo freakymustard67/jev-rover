@@ -1,0 +1,66 @@
+{
+  "room": "w3b3",
+  "saved_at": 1790624312.7003598,
+  "map": {
+    "age_s": 0.0,
+    "passes": 3,
+    "model": "fake",
+    "objects": [
+      {
+        "id": "obj_0001",
+        "label": "blue mat",
+        "x": 3.0,
+        "y": 1.2,
+        "confidence": 0.9,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 0.0,
+        "last_seen_s": 0.0,
+        "motion": "static"
+      },
+      {
+        "id": "obj_0002",
+        "label": "Blue Mat",
+        "x": 3.02,
+        "y": 1.19,
+        "confidence": 0.9,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 1.0,
+        "last_seen_s": 1.0,
+        "motion": "static"
+      },
+      {
+        "id": "obj_0003",
+        "label": "blue mats",
+        "x": 3.0,
+        "y": 1.2,
+        "confidence": 0.9,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 2.0,
+        "last_seen_s": 2.0,
+        "motion": "static"
+      }
+    ],
+    "destination": null,
+    "diff": {
+      "appeared": [
+        "obj_0003"
+      ],
+      "moved": [],
+      "vanished": [
+        "obj_0001"
+      ]
+    }
+  }
+}

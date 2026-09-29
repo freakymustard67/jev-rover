@@ -1,0 +1,413 @@
+From e1da1a47ca5f30877ccef71af9e4be0954771c1a Mon Sep 17 00:00:00 2001
+From: i9 subagent <i9@local>
+Date: Tue, 29 Sep 2026 08:31:50 +0530
+Subject: [PATCH 2/2] =?UTF-8?q?test(link):=20scan-payload=20roundtrip,=20b?=
+ =?UTF-8?q?inary-leak=20regression,=20chunk=20limits=20(v6=20=C2=A75.1-3)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+tests/test_link_scan_payload.py:
+- encode -> UDP -> decode roundtrip over the fake-ESP32 pattern
+  (tests/test_link.py): int8 negative angles, -128 sentinel,
+  range_mm=4000, status 0xFE, all flag combos, exact sample equality
+- a 181-sample scan tiled over three datagrams reassembles complete
+  with [-90, +90] covered
+- one telemetry() drain handles both a JSON telemetry packet and a
+  binary chunk (each on its own path)
+- regression: the exact check_parser.py bytes (v6 §2.5) no longer
+  raise out of telemetry(); they are counted as rejected scan traffic,
+  Hardware is untouched, and a later JSON packet still parses
+- strict-decode rejects: truncation, trailing bytes, version 2,
+  reserved bit 7, angle +100, range 5000, n_samples > 64
+
+tests/test_scan_chunk_limits.py:
+- chunk_count == ceil(N/64) and contiguous tiling for N in {37,91,181}
+- every datagram <= 1472 B for all flag combos; <= 512 B for the
+  core/+signal variants at chunk 64 and for +ambient/+t_us with the
+  §2.4 reduced chunks (62/49); the 528/656 B chunk-64 overage for
+  +ambient/+t_us is pinned as the spec's own numbers
+- a scan missing a chunk is reported incomplete (missing/quality) via
+  assemble_scan(), via assembler timeout, and via newer-scan_id
+  supersede; mixed scan_ids and lying chunk_count raise
+---
+ tests/test_link_scan_payload.py | 212 ++++++++++++++++++++++++++++++++
+ tests/test_scan_chunk_limits.py | 147 ++++++++++++++++++++++
+ 2 files changed, 359 insertions(+)
+ create mode 100644 tests/test_link_scan_payload.py
+ create mode 100644 tests/test_scan_chunk_limits.py
+
+diff --git a/tests/test_link_scan_payload.py b/tests/test_link_scan_payload.py
+new file mode 100644
+index 0000000..19bd402
+--- /dev/null
++++ b/tests/test_link_scan_payload.py
+@@ -0,0 +1,212 @@
++"""Scan-chunk codec over the real UDP path (v6 §5 items 1-2).
++
++Item 1: encode -> socket -> decode round trip covering int8 negative angles,
++range_mm=4000, status 0xFE, all flag combos, chunk tiling of a 181-sample scan,
++and one telemetry() drain handling BOTH a JSON telemetry packet and a binary
++chunk (each on its own code path, neither silently dropped).
++
++Item 2: regression for the verified v6 §2.5 leak — the exact check_parser.py
++bytes must not raise out of telemetry() (pre-fix: UnicodeDecodeError), must be
++counted as rejected scan traffic, must not pollute Hardware, and a subsequent
++JSON telemetry packet must still parse.
++"""
++import json
++import socket
++import time
++
++import pytest
++
++from link import UDPLink
++from scan_payload import (
++    CHUNK_HEADER_LEN,
++    SCAN_CHUNK_MAX,
++    ScanChunk,
++    ScanPayloadError,
++    ScanSample,
++    chunk_plan,
++    decode_scan_chunk,
++    encode_scan_chunk,
++    is_scan_chunk,
++)
++
++# --- exact bytes from the verified bad-behaviour repro (check_parser.py, v6 §2.5)
++LEAK_REAL = bytes([0x53, 0x01, 0x29, 0x00, 0x00, 0x03, 0x00, 0x40,
++                   0xD3, 0x2C, 0x01, 0x00])
++LEAK_ASCII = bytes([0x53, 0x01, 0x29, 0x00, 0x00, 0x03, 0x00, 0x40,
++                    0x00, 0x2C, 0x01, 0x01])
++
++FLAG_COMBOS = [
++    (False, False, False),
++    (True, False, False),
++    (False, True, False),
++    (False, False, True),
++    (True, True, True),
++]
++
++
++def _udp_pair():
++    esp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
++    esp.bind(("127.0.0.1", 0))
++    esp.settimeout(2.0)
++    link = UDPLink("127.0.0.1", esp.getsockname()[1], local_port=0)
++    return esp, link
++
++
++def _to_link(esp, link, payload: bytes) -> None:
++    esp.sendto(payload, ("127.0.0.1", link.sock.getsockname()[1]))
++
++
++def _sample(i: int, signal: bool, ambient: bool, t_us: bool) -> ScanSample:
++    """Sample for global sweep index i (0..180): 1 deg steps, -90..+90."""
++    return ScanSample(
++        angle_dd=-128 if i == 3 else -90 + i,
++        range_mm=4000 if i == 5 else 100 + i,
++        status=0xFE if i == 7 else (0x00 if i % 2 == 0 else 0x01),
++        signal_cmcps=(600 + i) if signal else None,
++        ambient_cmcps=(40 + i) if ambient else None,
++        t_us=(i * 33) if t_us else None,
++    )
++
++
++def test_scan_chunk_roundtrip_over_udp():
++    esp, link = _udp_pair()
++    try:
++        for k, (sig, amb, tus) in enumerate(FLAG_COMBOS):
++            samples = tuple(_sample(i, sig, amb, tus) for i in range(64))
++            chunk = ScanChunk(scan_id=100 + k, chunk_idx=0, chunk_count=3,
++                              first_idx=0, t0_ms=1234, period_us=33000,
++                              samples=samples, partial=(k % 2 == 0))
++            _to_link(esp, link, encode_scan_chunk(chunk))
++            time.sleep(0.05)
++            link.telemetry(1.0 + k)
++            got = link.last_scan
++            assert got is not None
++            assert got.samples == samples                       # exact round trip
++            assert got.has_signal is sig
++            assert got.has_ambient is amb
++            assert got.has_t_us is tus
++            assert got.sample_size == 4 + 2 * sig + 2 * amb + 2 * tus
++            assert got.datagram_size == CHUNK_HEADER_LEN + 64 * got.sample_size
++            assert got.partial is (k % 2 == 0)
++        # int8 negatives, the -128 no-sample sentinel, range_mm=4000, status 0xFE
++        last = link.last_scan
++        assert last is not None
++        assert last.samples[0].angle_dd == -90
++        assert last.samples[3].angle_dd == -128
++        assert last.samples[5].range_mm == 4000
++        assert last.samples[7].status == 0xFE
++        assert last.has_timeouts is True
++        assert link.scan_rx == len(FLAG_COMBOS)
++        assert link.scan_rx_errors == 0
++    finally:
++        link.close()
++        esp.close()
++
++
++def test_scan_181_tiles_and_assembles_over_udp():
++    esp, link = _udp_pair()
++    try:
++        plan = chunk_plan(181)
++        assert plan == [(0, 64), (64, 64), (128, 53)]
++        for k, (first, count) in enumerate(plan):
++            samples = tuple(_sample(first + j, True, False, False) for j in range(count))
++            chunk = ScanChunk(scan_id=9, chunk_idx=k, chunk_count=len(plan),
++                              first_idx=first, t0_ms=first * 33, period_us=33000,
++                              samples=samples)
++            _to_link(esp, link, encode_scan_chunk(chunk))
++        time.sleep(0.05)
++        link.telemetry(3.0)
++        scans = link.take_scans()
++        assert len(scans) == 1
++        asm = scans[0]
++        assert asm.scan_id == 9 and asm.complete and asm.missing == []
++        got = asm.samples()
++        assert len(got) == 181
++        assert got[0].angle_dd == -90 and got[-1].angle_dd == 90   # covers [0, 181)
++        assert link.scan_rx == 3
++    finally:
++        link.close()
++        esp.close()
++
++
++def test_scan_chunk_and_json_in_one_drain():
++    esp, link = _udp_pair()
++    try:
++        samples = tuple(_sample(i, False, False, False) for i in range(3))
++        chunk = ScanChunk(scan_id=5, chunk_idx=0, chunk_count=1, first_idx=0,
++                          t0_ms=0, period_us=0, samples=samples)
++        _to_link(esp, link, encode_scan_chunk(chunk))
++        _to_link(esp, link, json.dumps({
++            "seq": 11, "t": 2.0, "dist_front_m": 0.7, "dist_rear_m": None,
++            "batt_v": 7.2, "reflex": False, "watchdog": False, "uptime_s": 4.0,
++        }).encode())
++        time.sleep(0.05)
++        hw = link.telemetry(2.0)                 # single drain, both packets
++        assert hw.dist_front_m == 0.7 and hw.batt_v == 7.2
++        assert hw.watchdog_ok is True
++        assert link.scan_rx == 1 and link.telemetry_rx == 1
++        assert link.last_scan is not None and link.last_scan.scan_id == 5
++        assert link.stats()["scan_rx"] == 1
++        scans = link.take_scans()                # chunk_count=1 => complete
++        assert len(scans) == 1 and scans[0].complete and scans[0].scan_id == 5
++    finally:
++        link.close()
++        esp.close()
++
++
++def test_binary_packet_never_escapes_parser():
++    """v6 §2.5 regression: the exact check_parser.py bytes."""
++    esp, link = _udp_pair()
++    try:
++        _to_link(esp, link, LEAK_REAL)    # pre-fix: UnicodeDecodeError escaped
++        _to_link(esp, link, LEAK_ASCII)   # pre-fix: silently dropped as bad JSON
++        time.sleep(0.05)
++        hw = link.telemetry(1.0)          # must NOT raise
++        assert hw.dist_front_m is None    # no Hardware pollution from scan traffic
++        assert link.telemetry_rx == 0
++        assert link.scan_rx == 0
++        assert link.scan_rx_errors == 2   # both are truncated v1 chunks: counted
++        # a subsequent JSON telemetry packet still parses
++        _to_link(esp, link, json.dumps({
++            "seq": 12, "t": 1.0, "dist_front_m": 0.5, "batt_v": 7.4,
++            "watchdog": False,
++        }).encode())
++        time.sleep(0.05)
++        hw = link.telemetry(1.1)
++        assert hw.dist_front_m == 0.5 and hw.watchdog_ok is True
++        assert link.stats()["telemetry_rx"] == 1
++    finally:
++        link.close()
++        esp.close()
++
++
++def test_decode_rejects_malformed_chunks():
++    good = encode_scan_chunk(ScanChunk(
++        scan_id=1, chunk_idx=0, chunk_count=1, first_idx=0, t0_ms=0,
++        period_us=0, samples=(ScanSample(-45, 4000, 0xFE),)))
++    assert decode_scan_chunk(good).samples[0].angle_dd == -45
++    assert is_scan_chunk(good) and not is_scan_chunk(b'{"seq": 1}')
++    with pytest.raises(ScanPayloadError):
++        decode_scan_chunk(good[:-1])                      # truncated vs header
++    with pytest.raises(ScanPayloadError):
++        decode_scan_chunk(good + b"\x00")                 # trailing bytes
++    bad_ver = bytearray(good)
++    bad_ver[1] = (bad_ver[1] & ~0b11) | 0b10
++    with pytest.raises(ScanPayloadError):
++        decode_scan_chunk(bytes(bad_ver))                 # version 2
++    resv = bytearray(good)
++    resv[1] |= 0x80
++    with pytest.raises(ScanPayloadError):
++        decode_scan_chunk(bytes(resv))                    # reserved bit7
++    bad_angle = bytearray(good)
++    bad_angle[16] = 0x64                                  # +100 deg
++    with pytest.raises(ScanPayloadError):
++        decode_scan_chunk(bytes(bad_angle))
++    bad_range = bytearray(good)
++    bad_range[17:19] = (5000).to_bytes(2, "little")
++    with pytest.raises(ScanPayloadError):
++        decode_scan_chunk(bytes(bad_range))
++    with pytest.raises(ScanPayloadError):
++        encode_scan_chunk(ScanChunk(                      # n_samples > 64
++            scan_id=1, chunk_idx=0, chunk_count=2, first_idx=0, t0_ms=0,
++            period_us=0, samples=tuple(ScanSample(0, 1, 0) for _ in range(SCAN_CHUNK_MAX + 1))))
+diff --git a/tests/test_scan_chunk_limits.py b/tests/test_scan_chunk_limits.py
+new file mode 100644
+index 0000000..e76377e
+--- /dev/null
++++ b/tests/test_scan_chunk_limits.py
+@@ -0,0 +1,147 @@
++"""v6 §5 item 3: chunk-count math, datagram size caps, missing-chunk visibility.
++
++Framing rules pinned to spec v1 (v6-sweep-payload.md §2):
++
++* chunk <= 64 samples; default framing gives chunk_count == ceil(N/64) (§2.3).
++* every datagram beats the 1472 B IPv4 no-fragment limit (§2.4).
++* the 512 B policy cap is met at chunk 64 by the core and +signal variants
++  (272 / 400 B) and by +ambient / +t_us only with reduced chunks — 62 / 49
++  samples, exactly §2.4's "max samples per chunk for a 512 B datagram budget";
++  at chunk 64 those variants are 528 / 656 B, the spec's own
++  "(<512 False, <1472 True)" cells.
++* a scan with a missing chunk is reported incomplete/partial (`missing`,
++  `quality`, or a mixed-scan_id error) — never silently accepted as a scan.
++"""
++import math
++from dataclasses import replace
++
++import pytest
++
++from scan_payload import (
++    CHUNK_HEADER_LEN,
++    SCAN_CHUNK_MAX,
++    ScanAssembler,
++    ScanChunk,
++    ScanPayloadError,
++    ScanSample,
++    assemble_scan,
++    chunk_plan,
++    decode_scan_chunk,
++    encode_scan_chunk,
++)
++
++N_LIST = (37, 91, 181)
++FLAG_COMBOS = [
++    (False, False, False), (True, False, False), (False, True, False),
++    (False, False, True), (True, True, False), (True, False, True),
++    (False, True, True), (True, True, True),
++]
++
++
++def _sample(i, sig, amb, tus):
++    return ScanSample(angle_dd=-90 + i, range_mm=1000 + i, status=0,
++                      signal_cmcps=(500 + i) if sig else None,
++                      ambient_cmcps=(30 + i) if amb else None,
++                      t_us=(i * 33) if tus else None)
++
++
++def _chunks(n, flags, chunk_max=SCAN_CHUNK_MAX):
++    sig, amb, tus = flags
++    plan = chunk_plan(n, chunk_max)
++    return [
++        ScanChunk(scan_id=42, chunk_idx=k, chunk_count=len(plan), first_idx=first,
++                  t0_ms=first * 33, period_us=33000,
++                  samples=tuple(_sample(first + j, sig, amb, tus) for j in range(count)))
++        for k, (first, count) in enumerate(plan)
++    ]
++
++
++@pytest.mark.parametrize("n", N_LIST)
++def test_chunk_count_is_ceil_n_over_64(n):
++    plan = chunk_plan(n)
++    assert len(plan) == math.ceil(n / SCAN_CHUNK_MAX)
++    # (first_idx, n_samples) tile [0, N) exactly once, contiguously
++    covered = []
++    first = 0
++    for f, c in plan:
++        assert f == first and 1 <= c <= SCAN_CHUNK_MAX
++        covered.extend(range(f, f + c))
++        first += c
++    assert covered == list(range(n))
++
++
++@pytest.mark.parametrize("flags", FLAG_COMBOS)
++@pytest.mark.parametrize("n", N_LIST)
++def test_every_datagram_within_limits(n, flags):
++    sig, amb, tus = flags
++    size = 4 + 2 * sig + 2 * amb + 2 * tus
++    for chunk in _chunks(n, flags):
++        data = encode_scan_chunk(chunk)
++        assert decode_scan_chunk(data).samples == chunk.samples
++        assert len(data) == CHUNK_HEADER_LEN + chunk.n_samples * size
++        assert len(data) <= 1472, "must beat the IPv4 no-fragment limit (§2.4)"
++        if not amb and not tus:
++            assert len(data) <= 512, "core/+signal meet the 512 B policy (§2.4)"
++
++
++@pytest.mark.parametrize("flags", [(True, True, False), (True, True, True),
++                                   (False, True, False), (False, False, True)])
++def test_reduced_chunks_keep_ambient_and_t_us_within_512(flags):
++    sig, amb, tus = flags
++    size = 4 + 2 * sig + 2 * amb + 2 * tus
++    safe_max = min(SCAN_CHUNK_MAX, (512 - CHUNK_HEADER_LEN) // size)  # 62 / 49 per §2.4
++    for n in N_LIST:
++        for chunk in _chunks(n, flags, chunk_max=safe_max):
++            data = encode_scan_chunk(chunk)
++            assert len(data) <= 512
++            assert decode_scan_chunk(data).samples == chunk.samples
++
++
++def test_chunk_64_overage_for_ambient_and_t_us_is_the_spec_numbers():
++    """§2.4: D +ambient 528 B / E +t_us 656 B at chunk 64 "(<512 False, <1472 True)"."""
++    for flags, big in [((True, True, False), 16 + 64 * 8), ((True, True, True), 16 + 64 * 10)]:
++        sizes = [len(encode_scan_chunk(c)) for c in _chunks(181, flags)]
++        assert big in sizes and big > 512 and big <= 1472
++
++
++def test_missing_chunk_is_never_silently_accepted():
++    chunks = _chunks(181, (False, False, False))
++    assert len(chunks) == 3
++    partial = assemble_scan([chunks[0], chunks[2]])          # chunk 1 lost
++    assert partial.complete is False
++    assert partial.missing == [1]
++    assert partial.quality == pytest.approx(2 / 3)
++    full = assemble_scan(chunks)
++    assert full.complete is True and full.missing == [] and full.quality == 1.0
++    assert len(full.samples()) == 181
++
++
++def test_assembler_reports_timeout_and_supersede_as_partial():
++    chunks = _chunks(181, (False, False, False))
++    a = ScanAssembler(timeout_s=0.5)
++    assert a.add(chunks[0], 0.0) is None
++    assert a.in_flight is not None and not a.in_flight.complete
++    assert a.poll(0.4) is None                     # within timeout: still in flight
++    out = a.poll(0.6)                              # 0.6 s > 0.5 s: closed as partial
++    assert out is not None and out.complete is False and out.missing == [1, 2]
++    assert a.poll(0.7) is None                     # reported exactly once
++    # a newer scan_id supersedes an unfinished scan: reported, not swallowed
++    b = ScanAssembler()
++    assert b.add(chunks[0], 0.0) is None
++    out = b.add(replace(chunks[0], scan_id=43), 0.1)
++    assert out is not None and out.scan_id == 42 and out.complete is False
++    # a full set completes and is returned by the completing add()
++    c = ScanAssembler()
++    results = [c.add(ch, float(k)) for k, ch in enumerate(chunks)]
++    assert results[0] is None and results[1] is None
++    assert results[2] is not None and results[2].complete is True
++
++
++def test_inconsistent_and_mixed_scan_ids_raise_not_assemble():
++    chunks = _chunks(91, (False, False, False))
++    with pytest.raises(ScanPayloadError):
++        assemble_scan([chunks[0], replace(chunks[1], scan_id=43)])
++    d = ScanAssembler()
++    assert d.add(chunks[0], 0.0) is None
++    with pytest.raises(ScanPayloadError):          # same scan_id, chunk_count lies
++        d.add(replace(chunks[1], chunk_count=5), 0.1)
+-- 
+2.47.3
+

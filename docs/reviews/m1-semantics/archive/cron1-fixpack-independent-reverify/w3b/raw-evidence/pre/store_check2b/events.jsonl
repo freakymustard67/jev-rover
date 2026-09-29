@@ -1,0 +1,2 @@
+{"t": 0.0, "appeared": ["obj_0001"], "moved": [], "vanished": [], "labels": {"obj_0001": "blue mat"}}
+{"t": 2.0, "appeared": [], "moved": [], "vanished": ["obj_0001"], "labels": {"obj_0001": "blue mat"}}

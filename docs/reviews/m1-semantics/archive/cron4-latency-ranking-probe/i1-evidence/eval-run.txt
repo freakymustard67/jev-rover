@@ -1,0 +1,93 @@
+corpus: 51 cases (9 negatives), min_label_score=0.34, fuzzy_token_cutoff=0.8
+top-1 accuracy  baseline(Jaccard) = 34/51 = 0.667
+top-1 accuracy  proposed(0.7/0.3+difflib+foldv2) = 51/51 = 1.000
+
+id     cat                    query                        baseline                 proposed b_ok p_ok margin_b margin_p delta
+------------------------------------------------------------------------------------------------------------------------------
+S1-01  exact                  go to the blue mat           blue mat                 blue mat True True     None      0.5 
+S1-02  negative               find the llama                   None                     None True True     None     None 
+S1-03  exact                  the blue box                 blue box                 blue box True True     None      0.5 
+S1-04  exact                  where is the charger          charger                  charger True True     None     None 
+S1-05  ambiguity              mat                          blue mat                 blue mat True True      0.0      0.0 
+S1-06  negative               tidy the garage                  None                     None True True     None     None 
+S1-07  verbose-label-knife-edge grab the bottle                  None     plastic water bottle False True     None     None FIXED
+S1-08  verbose-label-knife-edge bring me the bottle              None     plastic water bottle False True     None     None FIXED
+S1-09  verbose-label          fetch the water bottle     plastic water bottle     plastic water bottle True True     None     None 
+S1-10  typo                   chargr                           None                  charger False True     None     None FIXED
+S1-11  verbose-label          yoga mat                   yoga mat extra large     yoga mat extra large True True     None     0.35 
+S1-12  exact                  the red mat                   red mat                  red mat True True     None      0.5 
+S1-13  exact                  find the blue box            blue box                 blue box True True     None      0.5 
+S1-14  verbose-label-knife-edge find the bottle                  None     plastic water bottle False True     None     None FIXED
+S1-15  negative               bring the umbrella               None                     None True True     None     None 
+S1-16  verbose-label          where is the water bottle  plastic water bottle     plastic water bottle True True     None     None 
+S1-17  exact                  head to the charger           charger                  charger True True     None     None 
+S2-01  verbose-label          go to the mug              coffee mug               coffee mug True True     None     None 
+S2-02  exact                  where is the kettle            kettle                   kettle True True     None     None 
+S2-03  exact                  the trash bin               trash bin                trash bin True True     None     None 
+S2-04  exact                  go to the dining table     dining table             dining table True True     None     None 
+S2-05  morphology-es          glasses                          None               wine glass False True     None     None FIXED
+S2-06  verbose-label          the sink                   kitchen sink             kitchen sink True True     None     None 
+S2-07  verbose-label          find the sink              kitchen sink             kitchen sink True True     None     None 
+S2-08  negative               where is the swimming pool       None                     None True True     None     None 
+S2-09  negative               turn on the faucet               None                     None True True     None     None 
+S2-10  verbose-label          bring me the coffee              None               coffee mug False True     None     None FIXED
+S2-11  negative-morphology    wash the dishes                  None                     None True True     None     None 
+S3-01  morphology-ies         where are the batteries          None                  battery False True     None     None FIXED
+S3-02  morphology-es          go to the boxes                  None            cardboard box False True     None     None FIXED
+S3-03  exact                  grab the charger              charger                  charger True True     None     None 
+S3-04  exact                  head to the workbench       workbench                workbench True True     None     None 
+S3-05  exact                  find the red toolbox       red toolbox              red toolbox True True     None     None 
+S3-06  morphology-s           the bikes                        bike                     bike True True     None     None 
+S3-07  exact                  find the battery              battery                  battery True True     None     None 
+S3-08  exact                  bring me the charger please    charger                  charger True True     None     None 
+S3-09  negative               go to the helicopter             None                     None True True     None     None 
+S3-10  morphology-singular    the box                    cardboard box            cardboard box True True     None     None 
+S3-11  negative               the motorcycle                   None                     None True True     None     None 
+S3-12  typo-morphology        battries                         None                  battery False True     None     None FIXED
+S4-01  typo                   chargrer                         None                  charger False True     None     None FIXED
+S4-02  typo                   batery                           None                  battery False True     None     None FIXED
+S4-03  typo-morphology        bateries                         None                  battery False True     None     None FIXED
+S4-04  typo-verbose           watter bottle                    None     plastic water bottle False True     None     None FIXED
+S4-05  typo                   chager                           None                  charger False True     None     None FIXED
+S4-06  typo-verbose           plasic water bottle        plastic water bottle     plastic water bottle True True     None     None 
+S4-07  typo                   battry                           None                  battery False True     None     None FIXED
+S4-08  typo                   the matt                         None                 blue mat False True     None     None FIXED
+S4-09  typo                   chargre                          None                  charger False True     None     None FIXED
+S4-10  negative-typo          find the lamma                   None                     None True True     None     None 
+S4-11  exact                  where is the charger          charger                  charger True True     None     None 
+
+improvements (baseline wrong -> proposed right): 17
+  + S1-07 'grab the bottle': None -> plastic water bottle
+  + S1-08 'bring me the bottle': None -> plastic water bottle
+  + S1-10 'chargr': None -> charger
+  + S1-14 'find the bottle': None -> plastic water bottle
+  + S2-05 'glasses': None -> wine glass
+  + S2-10 'bring me the coffee': None -> coffee mug
+  + S3-01 'where are the batteries': None -> battery
+  + S3-02 'go to the boxes': None -> cardboard box
+  + S3-12 'battries': None -> battery
+  + S4-01 'chargrer': None -> charger
+  + S4-02 'batery': None -> battery
+  + S4-03 'bateries': None -> battery
+  + S4-04 'watter bottle': None -> plastic water bottle
+  + S4-05 'chager': None -> charger
+  + S4-07 'battry': None -> battery
+  + S4-08 'the matt': None -> blue mat
+  + S4-09 'chargre': None -> charger
+regressions (baseline right -> proposed wrong): 0
+
+separation margin (top1-top2), correct non-negative cases only:
+  baseline: n=1 mean=0.0000 min=0.0000 max=0.0000
+  proposed: n=6 mean=0.3917 min=0.0000 max=0.5000
+
+ambiguity contract (S1-05 'mat'), proposed:
+  top1=blue mat labels=['blue mat', 'red mat', 'yoga mat extra large'] scores=[0.85, 0.85, 0.775] margin=0.0 within_eps=True
+
+shipped-test queries end-to-end (patched resolve_destination, jev=None):
+  resolve('go to the blue mat'      ) ->   'blue mat'  want=  'blue mat'  OK
+  resolve('find the llama'          ) ->         None  want=        None  OK
+  resolve('the blue box'            ) ->   'blue box'  want=  'blue box'  OK
+  resolve('where is the charger'    ) ->    'charger'  want=   'charger'  OK
+  resolve('tidy the garage'         ) ->         None  want=        None  OK
+
+json written: /home/freakymustard/jev-rover-research/runs/20260928-2342/i1-evidence/eval-results.json

@@ -1,0 +1,5 @@
+9c33ec06afcc644c23deef76447b4a2370de31c1 docs: planning package (semantics proposal, M1 plan, sweep validation, sim + prototype)
+Python 3.11.16
+Tuesday 29 September 2026 05:40:44 AM IST
+4
+6.12.107+deb13-amd64

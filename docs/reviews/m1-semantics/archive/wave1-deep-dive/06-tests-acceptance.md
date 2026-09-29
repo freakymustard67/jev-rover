@@ -1,0 +1,30 @@
+**1. Suite result — verified, but it is 78 tests, not 25**
+- Exact command run: `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider --durations=10` → **78 passed, 0 failed, 0 skipped, 0 errors, 14.44s** (pytest 9.1.1, pytest 9.1.1 `.venv` present).
+- Composition (collect counts, exact): 25 legacy — test_control 7, test_link 2, test_perception_synthetic 6, test_scene_geometry 5, test_tactics 5 — **+42 M1 semantics** (schema 9, projection 8, merge 9, destination 5, worker 7, integration 4) **+11 collected by default from `docs/planning/prototype/test_april_sem.py`**. There is no pytest.ini/pyproject/testpaths, so `docs/` is collected; the suite is not 78 product tests. README.md:48 still claims "25 tests" — stale. The plan's "~22 new" shipped as 42; all 6 planned files exist.
+- Slowest: `test_stale_result_is_dropped` 1.10s, `test_pose_converges_after_a_sudden_turn` 1.03s, `test_failure_cooldown` 1.01s, `test_slow_vision_never_blocks_the_caller` 0.97s.
+- Cache hygiene: my runs wrote nothing — `.pytest_cache` and `tests/__pycache__` mtimes are unchanged (19:23–23:11) and a controlled fresh+stale-pyc experiment under both flags produced zero pycs. Observation: `docs/planning/prototype/__pycache__/*.pyc` carry mtime 00:05:08 (inside the session window) but cannot be from my flagged runs; an unflagged invocation wrote them. Recommend `testpaths = tests` (or `norecursedirs = docs`) so the prototype stops riding along.
+
+**2. Coverage map vs plan (per §5/§6)**
+- Delivered well: projection (world round-trip, per-label anchor override, reject-not-clamp, height_suspect floor/furniture/frame-exit, dedupe, anchor helpers); merge (appear/move/vanish, raw-displacement regression, large-jump→new object, id stability, EMA convergence, min_confidence, rejected propagation, latest.json round-trip incl. events.jsonl fields, snapshot-copy aliasing); destination (ranking, ambiguity→exactly one fake-Jev Choice with code-owned options, deterministic no-Jev fallback, below-threshold, standoff + degenerate approach); worker (non-blocking submit, single in-flight, age-stale, budget, cooldown, no-context refusal, stats shape); integration (e2e pass→destination, two-pass move, slow-vision non-block, disabled default).
+- Weak/placeholder/missing:
+  - **Acceptance #5 loop-rate invariant is not implemented as written** — replaced by the submit-<50ms + poll-cheap test; no fps/cadence assertion anywhere.
+  - **height_suspect untested branches**: probe outside the floor polygon (semantics.py:195) and the promised "cell never observed" branch (semantics.py:203). The floor_lab=None test exits earlier at the line-187 fallback, so it does not cover the observed() path.
+  - **No run.py-level tests**: acceptance #2's "summary null / zero worker threads" and acceptance #3's `--semantics fake --semantics-once --find "blue mat"` are code-only/manual. `close()`-joins-thread is asserted nowhere.
+  - Plan's "stale pass_id N−1 after N" cannot be tested as written: queue(1) + single-inflight makes an older pid structurally impossible; the age-based reformulation is the correct test. Not a gap, worth documenting.
+  - Tolerances slightly loosened vs plan (0.03 m vs promised 0.02 m round-trip) — harmless given integer bbox rounding.
+
+**3. Feasibility — both stands**
+- Inverse homography exists: `perception.Homography.world_to_img` (perception.py:132); `FakeVision.from_world` already uses it to build fixtures (semantics.py:96–111). Round-trip fixtures are sound and in use.
+- ≥6 warm frames works: tests use `WARM = 6`, SyntheticRoom.render() + `perception.process(frame, i/15)` at model time — offline, no camera; the 42 green semantics tests prove grid/floor warm in 6 frames.
+
+**4. Robustness**
+- Loop-rate test as planned (1s window, ±20% baseline ratio) is the flakiest item on a loaded box. Better formulations, in order: (a) absolute cadence — while `SlowVision.sleep(2.0)` is in flight, time 200 `maybe_pass/poll` iterations and assert median per-iteration < 5 ms (no baseline ratio, median kills scheduler outliers); (b) if a ratio is wanted, median of ≥3 windows with a tolerant bound (≤1.5× baseline) and a slow vision sleeping longer than the window; (c) keep today's submit-<50ms check only after warm-up.
+- State size (measured read-only, scratch script below): base `build_state` = 2039 B; 10 minimal objects = 4333 B; fully populated (sources/times/motion/destination/diff) = 4634 B. The 6 KB bound holds with ~1.4–1.7 KB headroom; safer as "delta < 3 KB" plus the absolute bound, since size depends on the rest of the scene.
+- Worker timing: replace single-sample `<50ms` with warm-up + median-of-5 (or 200 ms bound on CI); poll loop as median per-poll (<2 ms). Budget/cooldown/stale already use the injected model clock `t` → deterministic; keep that pattern. `test_stale_result_is_dropped` wastes ~1s because `_drain` can't observe the drop; polling until `stale_dropped` increments cuts runtime without weakening it.
+- If semantics-off byte-identity is to be an acceptance, add a smoke test that runs `run.py --source synthetic --seconds 1 --semantics off` in a tmp cwd and asserts `summary["semantics"] is None` + no `SemanticWorker` thread.
+
+**5. Summary schema claim — half true**
+- Written at run.py:368–381: `"semantics": runner.stats() if runner else None` → `runs/summary_<stamp>.json`; existing `runs/summary_20260928-231002.json` shows `"semantics": null` for a disabled run.
+- `stats()` (semantics.py:556–569) exposes passes, passes_started, errors, last_error, rejected_total, stale_dropped, median_ms, and `skipped {interval, budget, inflight, no_context}`. **Budget ✓ and errors ✓ appear under "semantics"; there is no cooldown counter** — the cooldown block (semantics.py:511–512) returns False without incrementing anything. Acceptance #4's "cooldown counters visible" is not met as written; add `skipped["cooldown"] += 1` plus a summary-shape assertion.
+
+**Files/artifacts**: created only `/home/freakymustard/.hermes/cache/scratch/taskA7/{measure_state.py, probe/test_probe.py, probe2/t.py}`. No repo file modified (git status clean before and after; no caches written by my runs).

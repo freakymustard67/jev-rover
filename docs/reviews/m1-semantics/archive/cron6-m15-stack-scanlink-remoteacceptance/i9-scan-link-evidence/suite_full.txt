@@ -1,0 +1,23 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/freakymustard/.hermes/cache/scratch/c6/i9-repo
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.15.1
+collected 120 items
+
+tests/test_control.py .......                                            [  5%]
+tests/test_link.py ..                                                    [  7%]
+tests/test_link_scan_payload.py .....                                    [ 11%]
+tests/test_perception_synthetic.py ......                                [ 16%]
+tests/test_scan_chunk_limits.py ...................................      [ 45%]
+tests/test_scene_geometry.py .....                                       [ 50%]
+tests/test_semantics_destination.py ......                               [ 55%]
+tests/test_semantics_integration.py ....                                 [ 58%]
+tests/test_semantics_merge.py ..............                             [ 70%]
+tests/test_semantics_projection.py .............                         [ 80%]
+tests/test_semantics_schema.py .........                                 [ 88%]
+tests/test_semantics_worker.py .........                                 [ 95%]
+tests/test_tactics.py .....                                              [100%]
+
+============================= 120 passed in 15.02s =============================

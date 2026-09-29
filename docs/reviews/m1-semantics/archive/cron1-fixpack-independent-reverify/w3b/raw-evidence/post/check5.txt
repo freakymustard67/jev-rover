@@ -1,0 +1,13 @@
+OBS probe_px=6 point=bbox_bottom_center patch_const=(7, 3)
+OBS A_probe_at=(600,546) A_base=False A_single_dead_pixel=False
+OBS B_probe_at=(720,476) B_base_on_mat_free_floor=False B_on_nonfloor_mat=True
+OBS C_probe_row_clean=True C_single_pixel_sees=[168, 160, 152] C_hs_now=True
+OBS D_hs_whole_patch_dark=True
+OBS E_hs_probe_off_frame=True
+OBS E_hs_outside_polygon=True
+OBS E_hs_unobserved_cell=True
+OBS F_probe_px0_at=(600,540) F_hs_probe_px0=False
+OBS G_10px_dark_hs=False G_12px_dark_hs=True
+OBS G_probe_row_all_dark_hs=False G_outside_row_hs=False G_outside_cols_hs=False
+EXPECT_AFTER_FIX (0007): A_single_dead_pixel=False (median survives), A_base=False; B_on_nonfloor_mat=True (M1 rule intact); D=True; E all True; C is the behaviour delta (see report)
+PRE_PATCH_SYMPTOM: A_single_dead_pixel=True (one pixel flips it), C_hs_now=False

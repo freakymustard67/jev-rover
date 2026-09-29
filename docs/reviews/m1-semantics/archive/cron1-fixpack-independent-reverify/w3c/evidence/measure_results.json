@@ -1,0 +1,422 @@
+{
+ "baseline_no_semantics": {
+  "test_bytes": 3566,
+  "compact_bytes": 3227
+ },
+ "files": {},
+ "fixed_prompt_overhead": {
+  "questions_test_bytes": 5394,
+  "questions_compact_bytes": 5277,
+  "maneuvers_rubric_bytes": 1945,
+  "mission_bytes": 215
+ },
+ "test_fixture_10_objects": {
+  "test_bytes": 4333,
+  "compact_bytes": 3942,
+  "objects": 10,
+  "state": {
+   "robot": {
+    "type": "indoor differential-drive rover; can turn in place; no arm",
+    "footprint_radius_m": 0.18,
+    "max_speed_mps": 0.6,
+    "max_turn_deg_s": 120,
+    "sensors": {
+     "camera": "fixed overhead camera, whole room; blind behind tall furniture; occlusion_risk says how much of the 1.5 m ring around the rover has never been seen",
+     "distance": "front time-of-flight; an ESP32 reflex stops forward motion below 0.18 m regardless of anything Jev says; no rear sensor"
+    },
+    "latency": "judgment arrives about 0.1-0.3 s after the scene; commands stream at 20 Hz",
+    "note": "Distances are metres from the camera map. 'unseen' limit means no recent observation, not a wall. The rover cannot climb and cannot see under furniture."
+   },
+   "mission": {
+    "mode": "goto",
+    "instruction": null,
+    "route": null
+   },
+   "observed": {
+    "t": 5.0,
+    "frame_id": 0,
+    "pose": {
+     "x": 0.0,
+     "y": 0.0,
+     "yaw_deg": 0.0
+    },
+    "twist": {
+     "v_mps": 0.0,
+     "w_deg_s": 0.0
+    },
+    "quality": {
+     "fps": 0.0,
+     "frame_age_s": 0.0,
+     "pose_source": "tag",
+     "pose_age_s": 0.0,
+     "tag_visible": false,
+     "occlusion_risk": 0.0,
+     "unknowns_near_rover": 0
+    },
+    "sectors": [],
+    "nearest_m": null,
+    "nearest_bearing_deg": null,
+    "clear_ahead_m": null,
+    "free_runs_deg": [],
+    "widest_run_deg": 0.0,
+    "widest_run_clearance_m": 0.0,
+    "widest_run_center_deg": null,
+    "tracks": [],
+    "nogo_hit": false,
+    "target": {
+     "visible": false,
+     "mode": "none",
+     "bearing_deg": null,
+     "range_m": null,
+     "x": null,
+     "y": null,
+     "vx": null,
+     "vy": null,
+     "unseen_for_s": 0.0
+    },
+    "goal": {
+     "type": "none",
+     "name": null,
+     "index": 0,
+     "x": null,
+     "y": null,
+     "yaw_deg": null,
+     "bearing_deg": null,
+     "range_m": null,
+     "progress_s": 0.0,
+     "no_progress_s": 0.0,
+     "path_valid": false,
+     "path_len_m": null,
+     "path_through_unknown": false,
+     "path_bearing_deg": null
+    },
+    "dynamics": {
+     "cmd_v_mps": 0.0,
+     "obs_v_mps": 0.0,
+     "slip_ratio": 0.0,
+     "no_progress_s": 0.0,
+     "blocked_forward": false,
+     "hard_reflex": false,
+     "reflex_reason": ""
+    },
+    "hardware": {
+     "dist_front_m": null,
+     "dist_rear_m": null,
+     "batt_v": null,
+     "watchdog_ok": false,
+     "reflex": false,
+     "telemetry_age_s": null
+    },
+    "semantics": {
+     "age_s": 0.4,
+     "passes": 3,
+     "model": "fake-vision-v0",
+     "objects": [
+      {
+       "id": "obj_0000",
+       "label": "thing 0",
+       "x": 1.0,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      },
+      {
+       "id": "obj_0001",
+       "label": "thing 1",
+       "x": 1.1,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      },
+      {
+       "id": "obj_0002",
+       "label": "thing 2",
+       "x": 1.2,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      },
+      {
+       "id": "obj_0003",
+       "label": "thing 3",
+       "x": 1.3,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      },
+      {
+       "id": "obj_0004",
+       "label": "thing 4",
+       "x": 1.4,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      },
+      {
+       "id": "obj_0005",
+       "label": "thing 5",
+       "x": 1.5,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      },
+      {
+       "id": "obj_0006",
+       "label": "thing 6",
+       "x": 1.6,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      },
+      {
+       "id": "obj_0007",
+       "label": "thing 7",
+       "x": 1.7000000000000002,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      },
+      {
+       "id": "obj_0008",
+       "label": "thing 8",
+       "x": 1.8,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      },
+      {
+       "id": "obj_0009",
+       "label": "thing 9",
+       "x": 1.9,
+       "y": 2.0,
+       "confidence": 0.9,
+       "sources": [
+        "vision"
+       ],
+       "plane_assumed": "floor",
+       "height_suspect": false,
+       "first_seen_s": 0.0,
+       "last_seen_s": 0.0,
+       "motion": "static"
+      }
+     ],
+     "destination": null,
+     "diff": {
+      "appeared": [],
+      "moved": [],
+      "vanished": []
+     }
+    },
+    "sweep": null
+   }
+  }
+ },
+ "runs": {
+  "8": {
+   "label": "realistic_8",
+   "n_objects": 8,
+   "objects_in_map": 8,
+   "passes": 2,
+   "test_bytes": 5674,
+   "compact_bytes": 5133,
+   "sweep_present": false,
+   "destination_present": true
+  },
+  "9": {
+   "label": "realistic_9",
+   "n_objects": 9,
+   "objects_in_map": 9,
+   "passes": 2,
+   "test_bytes": 5905,
+   "compact_bytes": 5342,
+   "sweep_present": false,
+   "destination_present": true
+  },
+  "10": {
+   "label": "realistic_10",
+   "n_objects": 10,
+   "objects_in_map": 10,
+   "passes": 2,
+   "test_bytes": 6125,
+   "compact_bytes": 5540,
+   "sweep_present": false,
+   "destination_present": true
+  },
+  "15": {
+   "label": "realistic_15",
+   "n_objects": 15,
+   "objects_in_map": 15,
+   "passes": 2,
+   "test_bytes": 7253,
+   "compact_bytes": 6558,
+   "sweep_present": false,
+   "destination_present": true
+  },
+  "20": {
+   "label": "realistic_20",
+   "n_objects": 20,
+   "objects_in_map": 20,
+   "passes": 2,
+   "test_bytes": 8397,
+   "compact_bytes": 7592,
+   "sweep_present": false,
+   "destination_present": true
+  },
+  "30": {
+   "label": "realistic_30",
+   "n_objects": 30,
+   "objects_in_map": 30,
+   "passes": 2,
+   "test_bytes": 10719,
+   "compact_bytes": 9694,
+   "sweep_present": false,
+   "destination_present": true
+  },
+  "20,no_dest": {
+   "label": "realistic_20_no_dest",
+   "n_objects": 20,
+   "objects_in_map": 20,
+   "passes": 2,
+   "test_bytes": 8267,
+   "compact_bytes": 7473,
+   "sweep_present": false,
+   "destination_present": false
+  },
+  "20,sweep": {
+   "label": "realistic_20_sweep",
+   "n_objects": 20,
+   "objects_in_map": 20,
+   "passes": 2,
+   "test_bytes": 8782,
+   "compact_bytes": 7943,
+   "sweep_present": true,
+   "destination_present": true
+  }
+ },
+ "fit_test_convention_6000": {
+  "a": 3833.3701298701303,
+  "b_per_object": 229.05194805194805,
+  "n_cross": 9.45912003175143,
+  "residual_max": 17.4090909090919
+ },
+ "fit_compact_6000": {
+  "a": 3468.3701298701303,
+  "b_per_object": 207.05194805194805,
+  "n_cross": 12.227027535595557,
+  "residual_max": 17.4090909090919
+ },
+ "components_20": {
+  "full_test_bytes": 8397,
+  "robot_block": 716,
+  "mission_block": 65,
+  "observed_without_semantics": 2751,
+  "semantics_total": 4851,
+  "semantics_diff": 65,
+  "semantics_destination": 151,
+  "semantics_objects": 4566,
+  "semantics_scalars": 54
+ },
+ "per_field_bytes_20": {
+  "plane_assumed": 520,
+  "height_suspect": 480,
+  "label": 467,
+  "sources": 460,
+  "first_seen_s": 420,
+  "last_seen_s": 400,
+  "motion": 399,
+  "confidence": 396,
+  "id": 360,
+  "y": 332,
+  "x": 279
+ },
+ "per_field_compact_20": {
+  "plane_assumed": 500,
+  "height_suspect": 460,
+  "label": 447,
+  "sources": 440,
+  "first_seen_s": 400,
+  "last_seen_s": 380,
+  "motion": 379,
+  "confidence": 376,
+  "id": 340,
+  "y": 312,
+  "x": 259
+ },
+ "per_object_mean_test_bytes": 228.3,
+ "single_pass_20": {
+  "test_bytes": 8696,
+  "compact_bytes": 7850
+ },
+ "sweep_20_surcharge_test_bytes": 385,
+ "destination_surcharge_test_bytes": 130,
+ "state_note": "all sizes = len(json.dumps(state)); compact = pydantic_core.to_json (SDK wire)",
+ "cheap_10_single_pass_no_dest": {
+  "test_bytes": 6406,
+  "compact_bytes": 5789
+ },
+ "build_state_ms_10_objects": 1.454,
+ "build_state_ms_20_objects": 1.605
+}

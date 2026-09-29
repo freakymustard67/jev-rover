@@ -1,0 +1,2 @@
+{"max_ms": 1.032, "mean_ms": 0.744, "objects": 2, "p50_ms": 0.736, "p95_ms": 0.907, "passes": 30, "rec": "poll_merge_single", "reps": 30, "res": "1280x720", "scale": 1.0}
+{"max_ms": 0.836, "mean_ms": 0.648, "objects": 2, "p50_ms": 0.626, "p95_ms": 0.803, "passes": 30, "rec": "poll_merge_single", "reps": 30, "res": "640x360", "scale": 0.5}
