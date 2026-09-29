@@ -1,0 +1,16 @@
+OBS vanish_passes=2 max_misses=None
+OBS t=0.0 ids=['obj_0001']
+OBS t=1.0 ids=['obj_0001'] misses={'obj_0001': 1} vanished=[]
+OBS t=2.0 ids=['obj_0001'] misses={'obj_0001': 2} vanished=['obj_0001']
+OBS t=3.0 ids=['obj_0001'] misses={'obj_0001': 3} vanished=[]
+OBS t=4.0 ids=['obj_0001'] misses={'obj_0001': 4} vanished=[]
+OBS t=5.0 ids=['obj_0001'] misses={'obj_0001': 5} vanished=[]
+OBS t=6.0 ids=['obj_0001'] misses={'obj_0001': 6} vanished=[]
+OBS alive_after_6_missed_passes=True
+OBS return_ids=['obj_0001'] return_appeared=[] return_vanished=[] return_labels=['blue mat']
+OBS return_reused_obj_0001=True
+OBS churn_map_size=1 churn_next_id=2
+OBS churn_ids=['obj_0001']
+OBS bad_cap_validation=ConfigError: badcap.semantics: unknown key(s): max_misses
+EXPECT_AFTER_FIX (max_misses=3, vanish_passes=2): evicted at the 3rd miss, ids=[] at t=3.0, return creates obj_0002 + appeared=['obj_0002'], reused=False
+PRE_PATCH_SYMPTOM: obj_0001 kept forever, return reuses obj_0001 (silent resurrection)

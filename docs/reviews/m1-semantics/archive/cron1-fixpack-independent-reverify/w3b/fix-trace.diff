@@ -1,0 +1,12 @@
+diff --git a/run.py b/run.py
+index 9c38ed6..954215e 100644
+--- a/run.py
++++ b/run.py
+@@ -368,7 +368,6 @@ def main(argv=None) -> int:
+                               f"jev={judg.get('maneuver')}({judg.get('source')},"
+                               f"{judg.get('age_s')}) risk={judg.get('risk')} "
+                               f"cmd=({cmd.v_mps:+.2f},{cmd.w_deg_s:+.0f},{cmd.source})")
+-                print(trace_line)
+ 
+             if args.video or args.show:
+                 canvas = renderer.draw(frame, scene, judg, cmd, executor.path)

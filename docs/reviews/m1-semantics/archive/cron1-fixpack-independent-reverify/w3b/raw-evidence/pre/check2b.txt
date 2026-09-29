@@ -1,0 +1,11 @@
+OBS default max_misses=None
+OBS misses=1 alive=True
+OBS misses=2 alive=True
+OBS misses=3 alive=True
+OBS misses=4 alive=True
+OBS misses=5 alive=True
+OBS misses=6 alive=True
+OBS misses=7 alive=True
+OBS misses=8 alive=True
+OBS misses=9 alive=True
+OBS misses=10 alive=True

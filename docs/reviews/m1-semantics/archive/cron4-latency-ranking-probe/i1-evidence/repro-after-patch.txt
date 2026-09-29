@@ -1,0 +1,72 @@
+== 1) knife-edge: Jaccard vs min_label_score=0.34 ==
+  query='bottle'                   -> [('plastic water bottle', 0.8)]
+  query='bring me the bottle'      -> [('plastic water bottle', 0.45)]
+  query='mat'                      -> [('blue mat', 0.85), ('red mat', 0.85), ('yoga mat extra large', 0.775)]
+  query='box'                      -> [('blue box', 0.85), ('cardboard box', 0.85)]
+  query='glass'                    -> [('wine glass', 0.85)]
+  query='water bottle'             -> [('plastic water bottle', 0.9)]
+
+== 2) raw Jaccard numbers for the knife-edge pair ==
+  tokens('bottle')=['bottle'] tokens('plastic water bottle')=['bottle', 'plastic', 'water']
+  |q&w|=1  |q|w|=3  Jaccard=0.3333  < 0.34 -> dropped
+  tokens('mat')=['mat'] tokens('yoga mat extra large')=['extra', 'large', 'mat', 'yoga'] Jaccard=0.2500
+
+== 3) morphology failures (_fold on unpatched code) ==
+  fold('boxes') = 'box'
+  fold('batteries') = 'battery'
+  fold('glasses') = 'glass'
+  fold('chargers') = 'charger'
+  fold('dishes') = 'dish'
+  fold('mats') = 'mat'
+  fold('kites') = 'kite'
+
+== 4) typo queries -> no candidates (require difflib fallback) ==
+  query='chargr'                 -> [('charger', 1.0)]
+  query='chager'                 -> [('charger', 1.0)]
+  query='chargrer'               -> [('charger', 1.0)]
+  query='batery'                 -> [('battery', 1.0)]
+  query='battry'                 -> [('battery', 1.0)]
+  query='bateries'               -> [('battery', 1.0)]
+  query='watter bottle'          -> [('plastic water bottle', 0.9)]
+  query='plasic water bottle'    -> [('plastic water bottle', 1.0)]
+  query='waterbottle'            -> NO CANDIDATES -> None
+
+== 5) difflib.SequenceMatcher ratios: positive typo pairs ==
+  ratio('chargr', 'charger') = 0.9231  >=0.80
+  ratio('chager', 'charger') = 0.9231  >=0.80
+  ratio('chargrer', 'charger') = 0.9333  >=0.80
+  ratio('batery', 'battery') = 0.9231  >=0.80
+  ratio('battry', 'battery') = 0.9231  >=0.80
+  ratio('bateries', 'battery') = 0.6667  < 0.75
+  ratio('watter', 'water') = 0.9091  >=0.80
+  ratio('plasic', 'plastic') = 0.9231  >=0.80
+  ratio('boxe', 'box') = 0.8571  >=0.80
+  ratio('socks', 'sock') = 0.8889  >=0.80
+
+== 6) difflib ratios: negative pairs (must stay below cutoff) ==
+  ratio('garage', 'charger') = 0.6154  ok (<0.75)
+  ratio('garage', 'charge') = 0.6667  ok (<0.75)
+  ratio('llama', 'mat') = 0.5000  ok (<0.75)
+  ratio('llama', 'blue') = 0.2222  ok (<0.75)
+  ratio('umbrella', 'blue') = 0.3333  ok (<0.75)
+  ratio('helicopter', 'workbench') = 0.1053  ok (<0.75)
+  ratio('helicopter', 'charger') = 0.3529  ok (<0.75)
+  ratio('swimming', 'sink') = 0.5000  ok (<0.75)
+  ratio('pool', 'toolbox') = 0.5455  ok (<0.75)
+  ratio('robot', 'workbench') = 0.2857  ok (<0.75)
+  ratio('robot', 'toolbox') = 0.5000  ok (<0.75)
+  ratio('tidy', 'table') = 0.2222  ok (<0.75)
+  ratio('floor', 'toolbox') = 0.3333  ok (<0.75)
+  ratio('charge', 'charger') = 0.9231  !! ABOVE 0.75
+  ratio('hallway', 'glass') = 0.1667  ok (<0.75)
+
+== 7) resolve_destination end-to-end on unpatched code ==
+  resolve('go to the blue mat'        ) -> blue mat
+  resolve('find the llama'            ) -> None
+  resolve('the blue box'              ) -> blue box
+  resolve('where is the charger'      ) -> charger
+  resolve('mat'                       ) -> blue mat
+  resolve('tidy the garage'           ) -> None
+  resolve('grab the bottle'           ) -> plastic water bottle
+  resolve('go to the boxes'           ) -> blue box
+  resolve('where are the batteries'   ) -> battery

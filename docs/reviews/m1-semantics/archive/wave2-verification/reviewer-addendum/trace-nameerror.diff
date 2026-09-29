@@ -1,0 +1,25 @@
+From e6be51d5ae09773305ad75e2632fd81fd5c9e25f Mon Sep 17 00:00:00 2001
+From: Hermes Review <hermes@local>
+Date: Tue, 29 Sep 2026 01:06:53 +0530
+Subject: [PATCH] run: drop dead print(trace_line) - fixes --trace NameError
+
+print(trace_line) referenced an undefined name left behind when the trace f-string was introduced (dead since c93e25c). The preceding print already emits the full trace line. Verified on the synthetic room: NameError before, clean trace output after.
+---
+ run.py | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/run.py b/run.py
+index 9c38ed6..954215e 100644
+--- a/run.py
++++ b/run.py
+@@ -368,7 +368,6 @@ def main(argv=None) -> int:
+                               f"jev={judg.get('maneuver')}({judg.get('source')},"
+                               f"{judg.get('age_s')}) risk={judg.get('risk')} "
+                               f"cmd=({cmd.v_mps:+.2f},{cmd.w_deg_s:+.0f},{cmd.source})")
+-                print(trace_line)
+ 
+             if args.video or args.show:
+                 canvas = renderer.draw(frame, scene, judg, cmd, executor.path)
+-- 
+2.47.3
+

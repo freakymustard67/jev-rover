@@ -1,0 +1,61 @@
+From 46a2eb8808b492a14a43c1ac5bc5c1b505645327 Mon Sep 17 00:00:00 2001
+From: Hermes Fix Package <hermes@local>
+Date: Tue, 29 Sep 2026 00:59:38 +0530
+Subject: [PATCH 12/12] tests: scope pytest to tests/ and fix stale README
+ counts
+
+Without testpaths, 'pytest' also collected docs/planning/prototype/
+test_april_sem.py (11 tests), so the default suite was not the product
+suite. Add pytest.ini with testpaths = tests (prototype stays runnable
+explicitly) and correct the README: 80 tests (25 legacy + 55 semantics),
+not 25/67.
+
+Evidence: ../evidence/fix12-full.txt, ../evidence/fix12-prototype-explicit.txt
+---
+ README.md  | 6 ++++--
+ pytest.ini | 2 ++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+ create mode 100644 pytest.ini
+
+diff --git a/README.md b/README.md
+index f9a22cb..34479e6 100644
+--- a/README.md
++++ b/README.md
+@@ -45,7 +45,7 @@ should emit a route name, never motor commands.
+ 
+ ```bash
+ ./setup.sh
+-.venv/bin/python -m pytest                                     # 25 tests
++.venv/bin/python -m pytest                                     # 80 tests
+ .venv/bin/python run.py --config config/room.synthetic.json \
+     --source synthetic --mission patrol --seconds 30 --no-jev  # baseline drive
+ ```
+@@ -244,7 +244,7 @@ hardware.
+ | `mission.py` | natural-language missions as Choice + Noul over known routes; re-exports destination resolution |
+ | `semantics.py` | triggered semantic layer: FakeVision, projection, merge/diff, destinations (M1) |
+ | `firmware/` | reference ESP32 sketch and wire protocol |
+-| `tests/` | 67 tests: geometry signs, synthetic perception e2e, planner, reflexes, Jev gating, semantics (no network) |
++| `tests/` | 80 tests (25 legacy + 55 semantics): geometry signs, synthetic perception e2e, planner, reflexes, Jev gating, semantics (no network) |
+ 
+ ## Honest limitations
+ 
+@@ -271,6 +271,8 @@ hardware.
+ * `sweep-validation.md` — simulation evidence for marker-less localization
+   (180° ToF sweep + desmear; desmear is mandatory for moving sweeps)
+ * `prototype/` — pre-implementation validation scripts and their tests
++  (opt-in: `.venv/bin/python -m pytest docs/planning/prototype`; the default
++  `testpaths` is `tests/`)
+ * `../tools/sim/tof_sim.py` — the sweep simulator (numpy-only)
+ 
+ **Status:** M1 (offline semantic skeleton) shipped —
+diff --git a/pytest.ini b/pytest.ini
+new file mode 100644
+index 0000000..5ee6477
+--- /dev/null
++++ b/pytest.ini
+@@ -0,0 +1,2 @@
++[pytest]
++testpaths = tests
+-- 
+2.47.3
+

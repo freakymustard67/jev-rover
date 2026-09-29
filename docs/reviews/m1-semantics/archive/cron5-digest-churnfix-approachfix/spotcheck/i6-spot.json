@@ -1,0 +1,9712 @@
+{
+ "configs": [
+  {
+   "alive_end_mean": 5.0,
+   "appeared_mean": 5.0,
+   "first_vanish_pass_hist": {},
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 0.0,
+   "mover_ids_mean": 0.0,
+   "name": "S1-stationary-s0.03",
+   "new_ids_max": 5,
+   "new_ids_mean": 5.0,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.03,
+   "vanished_mean": 0.0
+  },
+  {
+   "alive_end_mean": 5.0,
+   "appeared_mean": 5.0,
+   "first_vanish_pass_hist": {},
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 4.9,
+   "mover_ids_mean": 0.0,
+   "name": "S1-stationary-s0.10",
+   "new_ids_max": 5,
+   "new_ids_mean": 5.0,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.1,
+   "vanished_mean": 0.0
+  },
+  {
+   "alive_end_mean": 3.0,
+   "appeared_mean": 3.0,
+   "first_vanish_pass_hist": {},
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 8.2,
+   "mover_ids_mean": 1.0,
+   "name": "S2-mover-d0.2-s0.03",
+   "new_ids_max": 3,
+   "new_ids_mean": 3.0,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.03,
+   "vanished_mean": 0.0
+  },
+  {
+   "alive_end_mean": 3.0,
+   "appeared_mean": 3.0,
+   "first_vanish_pass_hist": {},
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 9.0,
+   "mover_ids_mean": 1.0,
+   "name": "S2-mover-d0.5-s0.03",
+   "new_ids_max": 3,
+   "new_ids_mean": 3.0,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.03,
+   "vanished_mean": 0.0
+  },
+  {
+   "alive_end_mean": 3.4,
+   "appeared_mean": 3.4,
+   "first_vanish_pass_hist": {
+    "3": 4
+   },
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 10.3,
+   "mover_ids_mean": 1.4,
+   "name": "S2-mover-d0.5-s0.10",
+   "new_ids_max": 4,
+   "new_ids_mean": 3.4,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.1,
+   "vanished_mean": 0.4
+  },
+  {
+   "alive_end_mean": 5.9,
+   "appeared_mean": 5.9,
+   "first_vanish_pass_hist": {
+    "4": 10
+   },
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 6.1,
+   "mover_ids_mean": 3.9,
+   "name": "S2-mover-d0.8-s0.03",
+   "new_ids_max": 6,
+   "new_ids_mean": 5.9,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.03,
+   "vanished_mean": 2.0
+  },
+  {
+   "alive_end_mean": 5.7,
+   "appeared_mean": 5.7,
+   "first_vanish_pass_hist": {
+    "2": 1,
+    "3": 2,
+    "4": 5,
+    "5": 2
+   },
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 8.1,
+   "mover_ids_mean": 3.7,
+   "name": "S2-mover-d0.8-s0.10",
+   "new_ids_max": 7,
+   "new_ids_mean": 5.7,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.1,
+   "vanished_mean": 2.3
+  },
+  {
+   "alive_end_mean": 12.0,
+   "appeared_mean": 12.0,
+   "first_vanish_pass_hist": {
+    "2": 10
+   },
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 0.0,
+   "mover_ids_mean": 10.0,
+   "name": "S2-mover-d1.2-s0.03",
+   "new_ids_max": 12,
+   "new_ids_mean": 12.0,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.03,
+   "vanished_mean": 8.0
+  },
+  {
+   "alive_end_mean": 1.0,
+   "appeared_mean": 1.0,
+   "first_vanish_pass_hist": {},
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 0.0,
+   "mover_ids_mean": 0.0,
+   "name": "S3a-onepass-miss",
+   "new_ids_max": 1,
+   "new_ids_mean": 1.0,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.03,
+   "vanished_mean": 0.0
+  },
+  {
+   "alive_end_mean": 1.0,
+   "appeared_mean": 2.0,
+   "first_vanish_pass_hist": {
+    "4": 10
+   },
+   "max_last_seen_end_mean": 540.0,
+   "moved_mean": 0.0,
+   "mover_ids_mean": 0.0,
+   "name": "S3b-twopass-miss",
+   "new_ids_max": 1,
+   "new_ids_mean": 1.0,
+   "resurrections_announced_mean": 1.0,
+   "resurrections_mean": 1.0,
+   "seeds": 10,
+   "sigma": 0.03,
+   "vanished_mean": 1.0
+  },
+  {
+   "alive_end_mean": 1.0,
+   "appeared_mean": 1.0,
+   "first_vanish_pass_hist": {
+    "3": 10
+   },
+   "max_last_seen_end_mean": 60.0,
+   "moved_mean": 0.0,
+   "mover_ids_mean": 0.0,
+   "name": "S4a-phantom-alive",
+   "new_ids_max": 1,
+   "new_ids_mean": 1.0,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.03,
+   "vanished_mean": 1.0
+  },
+  {
+   "alive_end_mean": 1.0,
+   "appeared_mean": 1.0,
+   "first_vanish_pass_hist": {
+    "3": 10
+   },
+   "max_last_seen_end_mean": 60.0,
+   "moved_mean": 0.0,
+   "mover_ids_mean": 0.0,
+   "name": "S4b-phantom-alive-s0.10",
+   "new_ids_max": 1,
+   "new_ids_mean": 1.0,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.1,
+   "vanished_mean": 1.0
+  },
+  {
+   "alive_end_mean": 1.0,
+   "appeared_mean": 0.0,
+   "first_vanish_pass_hist": {
+    "2": 10
+   },
+   "max_last_seen_end_mean": 0.0,
+   "moved_mean": 0.0,
+   "mover_ids_mean": 0.0,
+   "name": "S6-weak-but-real",
+   "new_ids_max": 1,
+   "new_ids_mean": 1.0,
+   "resurrections_announced_mean": 0.0,
+   "resurrections_mean": 0.0,
+   "seeds": 10,
+   "sigma": 0.03,
+   "vanished_mean": 1.0
+  }
+ ],
+ "repo": "/home/freakymustard/.hermes/cache/scratch/i6/repo",
+ "runs": {
+  "S1-stationary-s0.03": [
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.03,
+    "vanished": 0
+   }
+  ],
+  "S1-stationary-s0.10": [
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 7,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      3
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 7,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 1,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 4,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 5,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      4
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 7,
+    "mover_label_ids": 0,
+    "name": "S1-stationary-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      5,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.1,
+    "vanished": 0
+   }
+  ],
+  "S2-mover-d0.2-s0.03": [
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.2-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.03,
+    "vanished": 0
+   }
+  ],
+  "S2-mover-d0.5-s0.03": [
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.03",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.03,
+    "vanished": 0
+   }
+  ],
+  "S2-mover-d0.5-s0.10": [
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 10,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 11,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 4,
+    "appeared": 4,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3,
+     9,
+     9,
+     7
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 2,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 4,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 4,
+    "appeared": 4,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3,
+     9,
+     9,
+     7
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 2,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 4,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 10,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 12,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 4,
+    "appeared": 4,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3,
+     9,
+     9,
+     7
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 11,
+    "mover_label_ids": 2,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 4,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 3,
+    "appeared": 3,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9,
+     9,
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 11,
+    "mover_label_ids": 1,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 3,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.1,
+    "vanished": 0
+   },
+   {
+    "alive_end": 4,
+    "appeared": 4,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3,
+     9,
+     9,
+     7
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 11,
+    "mover_label_ids": 2,
+    "name": "S2-mover-d0.5-s0.10",
+    "new_ids": 4,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.1,
+    "vanished": 1
+   }
+  ],
+  "S2-mover-d0.8-s0.03": [
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.03,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.03,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.03,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.03,
+    "vanished": 2
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     5,
+     2
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 7,
+    "mover_label_ids": 3,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.03,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.03,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.03,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.03,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.03,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 6,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.03",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.03,
+    "vanished": 2
+   }
+  ],
+  "S2-mover-d0.8-s0.10": [
+   {
+    "alive_end": 7,
+    "appeared": 7,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     2,
+     2,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 7,
+    "mover_label_ids": 5,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 7,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      1
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.1,
+    "vanished": 3
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": 5,
+    "id_lifetimes": [
+     5,
+     9,
+     9,
+     5,
+     1
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 3,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.1,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     5,
+     2,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.1,
+    "vanished": 2
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     4,
+     3
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 3,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.1,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3,
+     9,
+     9,
+     4,
+     4,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 9,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.1,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     3,
+     4,
+     1
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 7,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      0,
+      1,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.1,
+    "vanished": 3
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     3,
+     5,
+     2
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.1,
+    "vanished": 3
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4,
+     9,
+     9,
+     5,
+     2
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 8,
+    "mover_label_ids": 3,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.1,
+    "vanished": 2
+   },
+   {
+    "alive_end": 5,
+    "appeared": 5,
+    "first_vanish_pass": 5,
+    "id_lifetimes": [
+     5,
+     9,
+     9,
+     5,
+     1
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 10,
+    "mover_label_ids": 3,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 5,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      2
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.1,
+    "vanished": 2
+   },
+   {
+    "alive_end": 6,
+    "appeared": 6,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3,
+     9,
+     9,
+     5,
+     3,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 7,
+    "mover_label_ids": 4,
+    "name": "S2-mover-d0.8-s0.10",
+    "new_ids": 6,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      2
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      1,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.1,
+    "vanished": 2
+   }
+  ],
+  "S2-mover-d1.2-s0.03": [
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.03,
+    "vanished": 8
+   },
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.03,
+    "vanished": 8
+   },
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.03,
+    "vanished": 8
+   },
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.03,
+    "vanished": 8
+   },
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.03,
+    "vanished": 8
+   },
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.03,
+    "vanished": 8
+   },
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.03,
+    "vanished": 8
+   },
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.03,
+    "vanished": 8
+   },
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.03,
+    "vanished": 8
+   },
+   {
+    "alive_end": 12,
+    "appeared": 12,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2,
+     9,
+     9,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     0
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 10,
+    "name": "S2-mover-d1.2-s0.03",
+    "new_ids": 12,
+    "per_pass": [
+     [
+      3,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ],
+     [
+      1,
+      1,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.03,
+    "vanished": 8
+   }
+  ],
+  "S3a-onepass-miss": [
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.03,
+    "vanished": 0
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": null,
+    "id_lifetimes": [
+     9
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3a-onepass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.03,
+    "vanished": 0
+   }
+  ],
+  "S3b-twopass-miss": [
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 0,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 1,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 2,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 3,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 4,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 5,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 6,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 7,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 8,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 2,
+    "first_vanish_pass": 4,
+    "id_lifetimes": [
+     4
+    ],
+    "max_last_seen_end": 540.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S3b-twopass-miss",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 1,
+    "resurrections_announced": 1,
+    "seed": 9,
+    "sigma": 0.03,
+    "vanished": 1
+   }
+  ],
+  "S4a-phantom-alive": [
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4a-phantom-alive",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.03,
+    "vanished": 1
+   }
+  ],
+  "S4b-phantom-alive-s0.10": [
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.1,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 1,
+    "first_vanish_pass": 3,
+    "id_lifetimes": [
+     3
+    ],
+    "max_last_seen_end": 60.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S4b-phantom-alive-s0.10",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.1,
+    "vanished": 1
+   }
+  ],
+  "S6-weak-but-real": [
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 0,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 1,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 2,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 3,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 4,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 5,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 6,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 7,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 8,
+    "sigma": 0.03,
+    "vanished": 1
+   },
+   {
+    "alive_end": 1,
+    "appeared": 0,
+    "first_vanish_pass": 2,
+    "id_lifetimes": [
+     2
+    ],
+    "max_last_seen_end": 0.0,
+    "moved": 0,
+    "mover_label_ids": 0,
+    "name": "S6-weak-but-real",
+    "new_ids": 1,
+    "per_pass": [
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "resurrections": 0,
+    "resurrections_announced": 0,
+    "seed": 9,
+    "sigma": 0.03,
+    "vanished": 1
+   }
+  ]
+ },
+ "seeds": 10,
+ "tag": "spotcheck"
+}

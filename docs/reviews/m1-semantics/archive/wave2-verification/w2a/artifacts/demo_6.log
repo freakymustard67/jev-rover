@@ -1,0 +1,14 @@
+CLAIM 6: 'blue mat' vs 'Blue Mat' -> duplicate object
+pass 1: 'blue mat'  -> obj_0001 label='blue mat'
+pass 2: 'Blue Mat' -> ids=['obj_0001', 'obj_0002'] labels=['blue mat', 'Blue Mat']
+    diff.appeared=['obj_0002'] (the case-variant was announced as a NEW object), diff.moved=[]
+
+[dedupe] same pass, overlapping bboxes, labels differing only by case -> kept=2 labels=['Blue Mat', 'blue mat'] (semantics.py L161 exact-compares labels)
+
+[query] rank_candidates('go to the blue mat') on the duplicated map:
+    'blue mat' id=obj_0001 score=1.00 conf=0.9
+    'Blue Mat' id=obj_0002 score=1.00 conf=0.9
+    resolve_destination -> 'blue mat' object_id=obj_0001 at (3.0,1.2) (two labels tie at score 1.00; the pick falls to the deterministic fallback)
+
+VERDICT claim 6: CONFIRMED
+incident code: semantics.py L273 (raw != compare), L161 (dedupe), vs case-folded lookups at L93/L120/L129/L592

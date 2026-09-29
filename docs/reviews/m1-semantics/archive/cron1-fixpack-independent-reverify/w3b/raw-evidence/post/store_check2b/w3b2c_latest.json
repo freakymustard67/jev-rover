@@ -1,0 +1,16 @@
+{
+  "room": "w3b2c",
+  "saved_at": 1790624759.2268972,
+  "map": {
+    "age_s": 0.0,
+    "passes": 11,
+    "model": "fake",
+    "objects": [],
+    "destination": null,
+    "diff": {
+      "appeared": [],
+      "moved": [],
+      "vanished": []
+    }
+  }
+}

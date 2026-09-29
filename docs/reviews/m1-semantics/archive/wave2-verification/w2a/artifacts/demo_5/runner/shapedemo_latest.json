@@ -1,0 +1,34 @@
+{
+  "room": "shapedemo",
+  "saved_at": 1790623322.2034628,
+  "map": {
+    "age_s": 0.0,
+    "passes": 1,
+    "model": "fixed-vision",
+    "objects": [
+      {
+        "id": "obj_0001",
+        "label": "blue mat",
+        "x": 1.5,
+        "y": 2.4,
+        "confidence": 0.92,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 1.0,
+        "last_seen_s": 1.0,
+        "motion": "static"
+      }
+    ],
+    "destination": null,
+    "diff": {
+      "appeared": [
+        "obj_0001"
+      ],
+      "moved": [],
+      "vanished": []
+    }
+  }
+}

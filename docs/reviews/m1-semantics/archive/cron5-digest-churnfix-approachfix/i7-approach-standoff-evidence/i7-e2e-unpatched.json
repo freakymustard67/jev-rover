@@ -1,0 +1,2418 @@
+{
+  "repo": "/home/freakymustard/.hermes/cache/scratch/i7/repo-base",
+  "has_project_to_free": false,
+  "results": [
+    {
+      "case": "r=0.15 raw standoff=0.35 jev=True",
+      "obj_r": 0.15,
+      "kind": "raw",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": true,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.389,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.07,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.42,
+      "min_surface_gap_m": 0.27,
+      "end_pose": [
+        1.58,
+        2.0
+      ],
+      "end_source": "reflex:map_brake",
+      "tail_sources": [
+        "reflex:map_brake"
+      ],
+      "still_last6s_s": 6.07,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {
+        "map_brake": 653
+      },
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "jev:hold_course",
+          0.91,
+          1.26
+        ],
+        [
+          5.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          10.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          15.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          20.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          25.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          30.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          35.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          40.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ]
+      ]
+    },
+    {
+      "case": "r=0.15 raw standoff=0.35 jev=False",
+      "obj_r": 0.15,
+      "kind": "raw",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": false,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.389,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.15,
+      "latch_0.30": true,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.5,
+      "min_surface_gap_m": 0.35,
+      "end_pose": [
+        1.5,
+        2.0
+      ],
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {},
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "path",
+          0.91,
+          1.26
+        ],
+        [
+          5.0,
+          1.5,
+          2.0,
+          0.0,
+          0.0,
+          -84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          10.0,
+          1.5,
+          2.0,
+          5.6,
+          0.0,
+          84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          15.0,
+          1.5,
+          2.0,
+          0.0,
+          0.0,
+          -84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          20.0,
+          1.5,
+          2.0,
+          5.6,
+          0.0,
+          84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          25.0,
+          1.5,
+          2.0,
+          0.0,
+          0.0,
+          -84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          30.0,
+          1.5,
+          2.0,
+          5.6,
+          0.0,
+          84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          35.0,
+          1.5,
+          2.0,
+          0.0,
+          0.0,
+          -84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          40.0,
+          1.5,
+          2.0,
+          5.6,
+          0.0,
+          84.0,
+          "baseline",
+          0.15,
+          0.5
+        ]
+      ]
+    },
+    {
+      "case": "r=0.15 proj standoff=0.35 jev=True",
+      "obj_r": 0.15,
+      "kind": "proj",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": true,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.389,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.07,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.42,
+      "min_surface_gap_m": 0.27,
+      "end_pose": [
+        1.58,
+        2.0
+      ],
+      "end_source": "reflex:map_brake",
+      "tail_sources": [
+        "reflex:map_brake"
+      ],
+      "still_last6s_s": 6.07,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {
+        "map_brake": 653
+      },
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "jev:hold_course",
+          0.91,
+          1.26
+        ],
+        [
+          5.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          10.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          15.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          20.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          25.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          30.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          35.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ],
+        [
+          40.0,
+          1.58,
+          2.0,
+          0.0,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.07,
+          0.42
+        ]
+      ]
+    },
+    {
+      "case": "r=0.15 proj standoff=0.35 jev=False",
+      "obj_r": 0.15,
+      "kind": "proj",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": false,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.389,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.15,
+      "latch_0.30": true,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.5,
+      "min_surface_gap_m": 0.35,
+      "end_pose": [
+        1.5,
+        2.0
+      ],
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {},
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "path",
+          0.91,
+          1.26
+        ],
+        [
+          5.0,
+          1.5,
+          2.0,
+          0.0,
+          0.0,
+          -84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          10.0,
+          1.5,
+          2.0,
+          5.6,
+          0.0,
+          84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          15.0,
+          1.5,
+          2.0,
+          0.0,
+          0.0,
+          -84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          20.0,
+          1.5,
+          2.0,
+          5.6,
+          0.0,
+          84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          25.0,
+          1.5,
+          2.0,
+          0.0,
+          0.0,
+          -84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          30.0,
+          1.5,
+          2.0,
+          5.6,
+          0.0,
+          84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          35.0,
+          1.5,
+          2.0,
+          0.0,
+          0.0,
+          -84.0,
+          "baseline",
+          0.15,
+          0.5
+        ],
+        [
+          40.0,
+          1.5,
+          2.0,
+          5.6,
+          0.0,
+          84.0,
+          "baseline",
+          0.15,
+          0.5
+        ]
+      ]
+    },
+    {
+      "case": "r=0.15 rule standoff=0.5 jev=True",
+      "obj_r": 0.15,
+      "kind": "rule",
+      "standoff": 0.5,
+      "standoff_used": 0.5,
+      "jev": true,
+      "approach": [
+        1.5,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.389,
+      "goal": [
+        1.5,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.5,
+        2.0
+      ],
+      "min_dist_goal_m": 0.04,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.54,
+      "min_surface_gap_m": 0.39,
+      "end_pose": [
+        1.46,
+        2.0
+      ],
+      "end_source": "jev:hold_course",
+      "tail_sources": [
+        "jev:hold_course"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.72,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "jev:hold_course",
+          0.76,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.15 rule standoff=0.5 jev=False",
+      "obj_r": 0.15,
+      "kind": "rule",
+      "standoff": 0.5,
+      "standoff_used": 0.5,
+      "jev": false,
+      "approach": [
+        1.5,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.389,
+      "goal": [
+        1.5,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.5,
+        2.0
+      ],
+      "min_dist_goal_m": 0.04,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.54,
+      "min_surface_gap_m": 0.39,
+      "end_pose": [
+        1.46,
+        2.0
+      ],
+      "end_source": "path",
+      "tail_sources": [
+        "path"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.72,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "path",
+          0.76,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.15 rec standoff=0.55 jev=True",
+      "obj_r": 0.15,
+      "kind": "rec",
+      "standoff": 0.55,
+      "standoff_used": 0.55,
+      "jev": true,
+      "approach": [
+        1.45,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.389,
+      "goal": [
+        1.45,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.45,
+        2.0
+      ],
+      "min_dist_goal_m": 0.03,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.58,
+      "min_surface_gap_m": 0.43,
+      "end_pose": [
+        1.42,
+        2.0
+      ],
+      "end_source": "jev:hold_course",
+      "tail_sources": [
+        "jev:hold_course"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.68,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "jev:hold_course",
+          0.71,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.15 rec standoff=0.55 jev=False",
+      "obj_r": 0.15,
+      "kind": "rec",
+      "standoff": 0.55,
+      "standoff_used": 0.55,
+      "jev": false,
+      "approach": [
+        1.45,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.389,
+      "goal": [
+        1.45,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.45,
+        2.0
+      ],
+      "min_dist_goal_m": 0.03,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.58,
+      "min_surface_gap_m": 0.43,
+      "end_pose": [
+        1.42,
+        2.0
+      ],
+      "end_source": "path",
+      "tail_sources": [
+        "path"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.68,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "path",
+          0.71,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.3 raw standoff=0.35 jev=True",
+      "obj_r": 0.3,
+      "kind": "raw",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": true,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": true,
+      "blocked_radius_m": 0.535,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": false,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.225,
+      "latch_0.30": true,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.574,
+      "min_surface_gap_m": 0.274,
+      "end_pose": [
+        1.427,
+        1.976
+      ],
+      "end_source": "reflex:map_brake",
+      "tail_sources": [
+        "reflex:map_brake"
+      ],
+      "still_last6s_s": 6.07,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {
+        "map_brake": 656
+      },
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.737,
+          1.999,
+          -1.4,
+          0.56,
+          -22.0,
+          "jev:hold_course",
+          0.913,
+          1.263
+        ],
+        [
+          5.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          10.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          15.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          20.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          25.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          30.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          35.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          40.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ]
+      ]
+    },
+    {
+      "case": "r=0.3 raw standoff=0.35 jev=False",
+      "obj_r": 0.3,
+      "kind": "raw",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": false,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": true,
+      "blocked_radius_m": 0.535,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": false,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.303,
+      "latch_0.30": false,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.652,
+      "min_surface_gap_m": 0.352,
+      "end_pose": [
+        1.349,
+        1.973
+      ],
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {},
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.737,
+          1.999,
+          -1.4,
+          0.56,
+          -22.0,
+          "path",
+          0.913,
+          1.263
+        ],
+        [
+          5.0,
+          1.349,
+          1.973,
+          7.4,
+          0.0,
+          84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          10.0,
+          1.349,
+          1.973,
+          1.8,
+          0.0,
+          -84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          15.0,
+          1.349,
+          1.973,
+          7.4,
+          0.0,
+          84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          20.0,
+          1.349,
+          1.973,
+          1.8,
+          0.0,
+          -84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          25.0,
+          1.349,
+          1.973,
+          7.4,
+          0.0,
+          84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          30.0,
+          1.349,
+          1.973,
+          1.8,
+          0.0,
+          -84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          35.0,
+          1.349,
+          1.973,
+          7.4,
+          0.0,
+          84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          40.0,
+          1.349,
+          1.973,
+          1.8,
+          0.0,
+          -84.0,
+          "baseline",
+          0.303,
+          0.652
+        ]
+      ]
+    },
+    {
+      "case": "r=0.3 proj standoff=0.35 jev=True",
+      "obj_r": 0.3,
+      "kind": "proj",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": true,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": true,
+      "blocked_radius_m": 0.535,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": false,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.225,
+      "latch_0.30": true,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.574,
+      "min_surface_gap_m": 0.274,
+      "end_pose": [
+        1.427,
+        1.976
+      ],
+      "end_source": "reflex:map_brake",
+      "tail_sources": [
+        "reflex:map_brake"
+      ],
+      "still_last6s_s": 6.07,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {
+        "map_brake": 656
+      },
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.737,
+          1.999,
+          -1.4,
+          0.56,
+          -22.0,
+          "jev:hold_course",
+          0.913,
+          1.263
+        ],
+        [
+          5.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          10.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          15.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          20.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          25.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          30.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          35.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ],
+        [
+          40.0,
+          1.427,
+          1.976,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.225,
+          0.574
+        ]
+      ]
+    },
+    {
+      "case": "r=0.3 proj standoff=0.35 jev=False",
+      "obj_r": 0.3,
+      "kind": "proj",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": false,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": true,
+      "blocked_radius_m": 0.535,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": false,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.303,
+      "latch_0.30": false,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.652,
+      "min_surface_gap_m": 0.352,
+      "end_pose": [
+        1.349,
+        1.973
+      ],
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {},
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.737,
+          1.999,
+          -1.4,
+          0.56,
+          -22.0,
+          "path",
+          0.913,
+          1.263
+        ],
+        [
+          5.0,
+          1.349,
+          1.973,
+          7.4,
+          0.0,
+          84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          10.0,
+          1.349,
+          1.973,
+          1.8,
+          0.0,
+          -84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          15.0,
+          1.349,
+          1.973,
+          7.4,
+          0.0,
+          84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          20.0,
+          1.349,
+          1.973,
+          1.8,
+          0.0,
+          -84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          25.0,
+          1.349,
+          1.973,
+          7.4,
+          0.0,
+          84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          30.0,
+          1.349,
+          1.973,
+          1.8,
+          0.0,
+          -84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          35.0,
+          1.349,
+          1.973,
+          7.4,
+          0.0,
+          84.0,
+          "baseline",
+          0.303,
+          0.652
+        ],
+        [
+          40.0,
+          1.349,
+          1.973,
+          1.8,
+          0.0,
+          -84.0,
+          "baseline",
+          0.303,
+          0.652
+        ]
+      ]
+    },
+    {
+      "case": "r=0.3 rule standoff=0.65 jev=True",
+      "obj_r": 0.3,
+      "kind": "rule",
+      "standoff": 0.65,
+      "standoff_used": 0.65,
+      "jev": true,
+      "approach": [
+        1.35,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.535,
+      "goal": [
+        1.35,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.35,
+        2.0
+      ],
+      "min_dist_goal_m": 0.05,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.7,
+      "min_surface_gap_m": 0.4,
+      "end_pose": [
+        1.3,
+        2.0
+      ],
+      "end_source": "jev:hold_course",
+      "tail_sources": [
+        "jev:hold_course"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.56,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "jev:hold_course",
+          0.61,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.3 rule standoff=0.65 jev=False",
+      "obj_r": 0.3,
+      "kind": "rule",
+      "standoff": 0.65,
+      "standoff_used": 0.65,
+      "jev": false,
+      "approach": [
+        1.35,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.535,
+      "goal": [
+        1.35,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.35,
+        2.0
+      ],
+      "min_dist_goal_m": 0.05,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.7,
+      "min_surface_gap_m": 0.4,
+      "end_pose": [
+        1.3,
+        2.0
+      ],
+      "end_source": "path",
+      "tail_sources": [
+        "path"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.56,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "path",
+          0.61,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.3 rec standoff=0.7000000000000001 jev=True",
+      "obj_r": 0.3,
+      "kind": "rec",
+      "standoff": 0.7000000000000001,
+      "standoff_used": 0.7,
+      "jev": true,
+      "approach": [
+        1.3,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.535,
+      "goal": [
+        1.3,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.3,
+        2.0
+      ],
+      "min_dist_goal_m": 0.04,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.74,
+      "min_surface_gap_m": 0.44,
+      "end_pose": [
+        1.26,
+        2.0
+      ],
+      "end_source": "jev:hold_course",
+      "tail_sources": [
+        "jev:hold_course"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.52,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "jev:hold_course",
+          0.56,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.3 rec standoff=0.7000000000000001 jev=False",
+      "obj_r": 0.3,
+      "kind": "rec",
+      "standoff": 0.7000000000000001,
+      "standoff_used": 0.7,
+      "jev": false,
+      "approach": [
+        1.3,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.535,
+      "goal": [
+        1.3,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.3,
+        2.0
+      ],
+      "min_dist_goal_m": 0.04,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.74,
+      "min_surface_gap_m": 0.44,
+      "end_pose": [
+        1.26,
+        2.0
+      ],
+      "end_source": "path",
+      "tail_sources": [
+        "path"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.52,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "path",
+          0.56,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.4 raw standoff=0.35 jev=True",
+      "obj_r": 0.4,
+      "kind": "raw",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": true,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": true,
+      "blocked_radius_m": 0.637,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": false,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.318,
+      "latch_0.30": false,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.667,
+      "min_surface_gap_m": 0.267,
+      "end_pose": [
+        1.334,
+        1.966
+      ],
+      "end_source": "reflex:map_brake",
+      "tail_sources": [
+        "reflex:map_brake"
+      ],
+      "still_last6s_s": 6.07,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {
+        "map_brake": 658
+      },
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.734,
+          1.998,
+          -2.9,
+          0.51,
+          -44.0,
+          "jev:hold_course",
+          0.916,
+          1.266
+        ],
+        [
+          5.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          10.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          15.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          20.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          25.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          30.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          35.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          40.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ]
+      ]
+    },
+    {
+      "case": "r=0.4 raw standoff=0.35 jev=False",
+      "obj_r": 0.4,
+      "kind": "raw",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": false,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": true,
+      "blocked_radius_m": 0.637,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": false,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.435,
+      "latch_0.30": false,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.784,
+      "min_surface_gap_m": 0.384,
+      "end_pose": [
+        1.217,
+        1.963
+      ],
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {},
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.734,
+          1.998,
+          -2.9,
+          0.51,
+          -44.0,
+          "path",
+          0.916,
+          1.266
+        ],
+        [
+          5.0,
+          1.217,
+          1.963,
+          0.7,
+          0.0,
+          -84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          10.0,
+          1.217,
+          1.963,
+          6.3,
+          0.0,
+          84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          15.0,
+          1.217,
+          1.963,
+          0.7,
+          0.0,
+          -84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          20.0,
+          1.217,
+          1.963,
+          6.3,
+          0.0,
+          84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          25.0,
+          1.217,
+          1.963,
+          0.7,
+          0.0,
+          -84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          30.0,
+          1.217,
+          1.963,
+          6.3,
+          0.0,
+          84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          35.0,
+          1.217,
+          1.963,
+          0.7,
+          0.0,
+          -84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          40.0,
+          1.217,
+          1.963,
+          6.3,
+          0.0,
+          84.0,
+          "baseline",
+          0.435,
+          0.784
+        ]
+      ]
+    },
+    {
+      "case": "r=0.4 proj standoff=0.35 jev=True",
+      "obj_r": 0.4,
+      "kind": "proj",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": true,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": true,
+      "blocked_radius_m": 0.637,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": false,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.318,
+      "latch_0.30": false,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.667,
+      "min_surface_gap_m": 0.267,
+      "end_pose": [
+        1.334,
+        1.966
+      ],
+      "end_source": "reflex:map_brake",
+      "tail_sources": [
+        "reflex:map_brake"
+      ],
+      "still_last6s_s": 6.07,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {
+        "map_brake": 658
+      },
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.734,
+          1.998,
+          -2.9,
+          0.51,
+          -44.0,
+          "jev:hold_course",
+          0.916,
+          1.266
+        ],
+        [
+          5.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          10.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          15.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          20.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          25.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          30.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          35.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ],
+        [
+          40.0,
+          1.334,
+          1.966,
+          6.1,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.318,
+          0.667
+        ]
+      ]
+    },
+    {
+      "case": "r=0.4 proj standoff=0.35 jev=False",
+      "obj_r": 0.4,
+      "kind": "proj",
+      "standoff": 0.35,
+      "standoff_used": 0.35,
+      "jev": false,
+      "approach": [
+        1.65,
+        2.0
+      ],
+      "approach_cell_blocked": true,
+      "blocked_radius_m": 0.637,
+      "goal": [
+        1.65,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": false,
+      "plan_found": true,
+      "plan_end": [
+        1.65,
+        2.0
+      ],
+      "min_dist_goal_m": 0.435,
+      "latch_0.30": false,
+      "arrival_0.10": false,
+      "min_dist_center_m": 0.784,
+      "min_surface_gap_m": 0.384,
+      "end_pose": [
+        1.217,
+        1.963
+      ],
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "tail_span_m": 0.0,
+      "reflexes": {},
+      "replans": 57,
+      "trace_5s": [
+        [
+          0.0,
+          0.734,
+          1.998,
+          -2.9,
+          0.51,
+          -44.0,
+          "path",
+          0.916,
+          1.266
+        ],
+        [
+          5.0,
+          1.217,
+          1.963,
+          0.7,
+          0.0,
+          -84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          10.0,
+          1.217,
+          1.963,
+          6.3,
+          0.0,
+          84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          15.0,
+          1.217,
+          1.963,
+          0.7,
+          0.0,
+          -84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          20.0,
+          1.217,
+          1.963,
+          6.3,
+          0.0,
+          84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          25.0,
+          1.217,
+          1.963,
+          0.7,
+          0.0,
+          -84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          30.0,
+          1.217,
+          1.963,
+          6.3,
+          0.0,
+          84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          35.0,
+          1.217,
+          1.963,
+          0.7,
+          0.0,
+          -84.0,
+          "baseline",
+          0.435,
+          0.784
+        ],
+        [
+          40.0,
+          1.217,
+          1.963,
+          6.3,
+          0.0,
+          84.0,
+          "baseline",
+          0.435,
+          0.784
+        ]
+      ]
+    },
+    {
+      "case": "r=0.4 rule standoff=0.75 jev=True",
+      "obj_r": 0.4,
+      "kind": "rule",
+      "standoff": 0.75,
+      "standoff_used": 0.75,
+      "jev": true,
+      "approach": [
+        1.25,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.637,
+      "goal": [
+        1.25,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.25,
+        2.0
+      ],
+      "min_dist_goal_m": 0.03,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.78,
+      "min_surface_gap_m": 0.38,
+      "end_pose": [
+        1.22,
+        2.0
+      ],
+      "end_source": "jev:hold_course",
+      "tail_sources": [
+        "jev:hold_course"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.48,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "jev:hold_course",
+          0.51,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.4 rule standoff=0.75 jev=False",
+      "obj_r": 0.4,
+      "kind": "rule",
+      "standoff": 0.75,
+      "standoff_used": 0.75,
+      "jev": false,
+      "approach": [
+        1.25,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.637,
+      "goal": [
+        1.25,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.25,
+        2.0
+      ],
+      "min_dist_goal_m": 0.03,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.78,
+      "min_surface_gap_m": 0.38,
+      "end_pose": [
+        1.22,
+        2.0
+      ],
+      "end_source": "path",
+      "tail_sources": [
+        "path"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.48,
+      "reflexes": {},
+      "replans": 2,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "path",
+          0.51,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.4 rec standoff=0.8 jev=True",
+      "obj_r": 0.4,
+      "kind": "rec",
+      "standoff": 0.8,
+      "standoff_used": 0.8,
+      "jev": true,
+      "approach": [
+        1.2,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.637,
+      "goal": [
+        1.2,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.2,
+        2.0
+      ],
+      "min_dist_goal_m": 0.02,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.82,
+      "min_surface_gap_m": 0.42,
+      "end_pose": [
+        1.18,
+        2.0
+      ],
+      "end_source": "jev:hold_course",
+      "tail_sources": [
+        "jev:hold_course"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.44,
+      "reflexes": {},
+      "replans": 1,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "jev:hold_course",
+          0.46,
+          1.26
+        ]
+      ]
+    },
+    {
+      "case": "r=0.4 rec standoff=0.8 jev=False",
+      "obj_r": 0.4,
+      "kind": "rec",
+      "standoff": 0.8,
+      "standoff_used": 0.8,
+      "jev": false,
+      "approach": [
+        1.2,
+        2.0
+      ],
+      "approach_cell_blocked": false,
+      "blocked_radius_m": 0.637,
+      "goal": [
+        1.2,
+        2.0
+      ],
+      "goal_projected": false,
+      "goal_cell_free": true,
+      "plan_found": true,
+      "plan_end": [
+        1.2,
+        2.0
+      ],
+      "min_dist_goal_m": 0.02,
+      "latch_0.30": true,
+      "arrival_0.10": true,
+      "min_dist_center_m": 0.82,
+      "min_surface_gap_m": 0.42,
+      "end_pose": [
+        1.18,
+        2.0
+      ],
+      "end_source": "path",
+      "tail_sources": [
+        "path"
+      ],
+      "still_last6s_s": 0.0,
+      "frozen_last6s": false,
+      "tail_span_m": 0.44,
+      "reflexes": {},
+      "replans": 1,
+      "trace_5s": [
+        [
+          0.0,
+          0.74,
+          2.0,
+          0.0,
+          0.6,
+          0.0,
+          "path",
+          0.46,
+          1.26
+        ]
+      ]
+    }
+  ]
+}

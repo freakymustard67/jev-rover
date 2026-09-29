@@ -1,0 +1,46 @@
+Patch verification log (2026-09-29, i5 cron)
+
+## git am on a FRESH clone at bec1d91 (the PR tip)
+$ git clone -q https://github.com/freakymustard67/jev-rover \
+      /home/freakymustard/.hermes/cache/scratch/i5/verify_am
+$ cd /home/freakymustard/.hermes/cache/scratch/i5/verify_am
+$ git checkout -q bec1d91
+$ git am /home/freakymustard/jev-rover-research/runs/20260929-0118/i5-state-digest-evidence/i5-state-digest.patch
+Applying: semantics: Jev payload ships a compact state digest
+$ git log --oneline -2
+e755a9c semantics: Jev payload ships a compact state digest
+bec1d91 docs(reviews): M1 semantics deep review, fix rationale, M2 design note
+$ PYTHONDONTWRITEBYTECODE=1 /home/freakymustard/jev-rover/.venv/bin/python -m pytest -q -p no:cacheprovider
+82 passed in 16.32s
+=> applies cleanly on bec1d91; full suite green (80 pre-existing + 2 added tests;
+   one schema test renamed/adjusted in place).
+
+## git apply --check against master 9c33ec0 (informational; not forced)
+$ git clone -q https://github.com/freakymustard67/jev-rover \
+      /home/freakymustard/.hermes/cache/scratch/i5/verify_master
+$ cd /home/freakymustard/.hermes/cache/scratch/i5/verify_master   # HEAD = 9c33ec0
+$ git apply --check --stat i5-state-digest.patch
+error: patch failed: tests/test_semantics_schema.py:86
+error: tests/test_semantics_schema.py: patch does not apply
+rc=1
+Per-file --include checks:
+  scene.py                        rc=0 (clean)
+  tactics.py                      rc=0 (clean)
+  tests/test_semantics_integration.py rc=0 (clean)
+  tests/test_semantics_schema.py  rc=1 (does not apply)
+$ git apply --3way --check i5-state-digest.patch
+  scene.py                        Applied cleanly.
+  tactics.py                      Applied cleanly.
+  tests/test_semantics_integration.py  Applied cleanly.
+  tests/test_semantics_schema.py  Applied with conflicts.
+  rc=0
+Reason: the 14 commits between 9c33ec0 and bec1d91 rewrote the region around
+tests/test_semantics_schema.py:86-101 (the very test this patch adjusts), so
+that one file's context no longer matches on master. The patch is generated
+against bec1d91 as instructed; on master the production files (scene.py,
+tactics.py) apply cleanly.
+
+## Patch hashes
+sha256(i5-state-digest.patch) = 73717eac6725b9caf9540e1ddea20f8f933766dabb3d74c05a69c292b8095846
+commit in scratch clone:           3c30fcbeb3d6cd371da95aebb22776d08d94fa13 (branch review/i5-state-digest)
+commit after git am (verify_am):   e755a9c (same author/message; committer date differs)

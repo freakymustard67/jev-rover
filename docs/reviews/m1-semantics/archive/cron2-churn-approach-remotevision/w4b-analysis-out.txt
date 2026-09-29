@@ -1,0 +1,91 @@
+== boundary sweep, Jev hold_course, object in grid ==
+r=0.3 s=0.4: blocked=True min_goal=0.176 reach0.30=True still6=6.07 tail_pos_span=(0.0, 0.0) yaw=[7.3,7.3] vmax=0.0 src=['reflex:map_brake'] refx={'map_brake': 656}
+r=0.3 s=0.45: blocked=True min_goal=0.112 reach0.30=True still6=6.07 tail_pos_span=(0.0, 0.0) yaw=[6.1,6.1] vmax=0.0 src=['reflex:map_brake'] refx={'map_brake': 656}
+r=0.3 s=0.5: blocked=True min_goal=0.08 reach0.30=True still6=6.07 tail_pos_span=(0.0, 0.0) yaw=[0.0,0.0] vmax=0.0 src=['reflex:map_brake'] refx={'map_brake': 657}
+r=0.3 s=0.55: blocked=False min_goal=0.03 reach0.30=True still6=0.0 tail_pos_span=(0.6, 0.0) yaw=[0.0,0.0] vmax=0.6 src=['jev:hold_course'] refx={}
+r=0.3 s=0.6: blocked=False min_goal=0.02 reach0.30=True still6=0.0 tail_pos_span=(0.6, 0.0) yaw=[0.0,0.0] vmax=0.6 src=['jev:hold_course'] refx={}
+r=0.4 s=0.4: blocked=True min_goal=0.269 reach0.30=True still6=6.07 tail_pos_span=(0.0, 0.0) yaw=[6.9,6.9] vmax=0.0 src=['reflex:map_brake'] refx={'map_brake': 658}
+r=0.4 s=0.45: blocked=True min_goal=0.21 reach0.30=True still6=6.07 tail_pos_span=(0.0, 0.0) yaw=[6.6,6.6] vmax=0.0 src=['reflex:map_brake'] refx={'map_brake': 658}
+r=0.4 s=0.5: blocked=True min_goal=0.182 reach0.30=True still6=6.07 tail_pos_span=(0.0, 0.0) yaw=[4.0,4.0] vmax=0.0 src=['reflex:map_brake'] refx={'map_brake': 659}
+r=0.4 s=0.55: blocked=True min_goal=0.115 reach0.30=True still6=6.07 tail_pos_span=(0.0, 0.0) yaw=[1.2,1.2] vmax=0.0 src=['reflex:map_brake'] refx={'map_brake': 659}
+r=0.4 s=0.6: blocked=False min_goal=0.06 reach0.30=True still6=6.07 tail_pos_span=(0.0, 0.0) yaw=[0.0,0.0] vmax=0.0 src=['reflex:map_brake'] refx={'map_brake': 659}
+
+== boundary sweep, baseline (no Jev), object in grid ==
+r=0.3 s=0.4: blocked=True min_goal=0.253 reach0.30=True tail_pos_span=(0.0, 0.0) vmax=0.0 src=['baseline'] refx={}
+r=0.3 s=0.45: blocked=True min_goal=0.23 reach0.30=True tail_pos_span=(0.0, 0.0) vmax=0.0 src=['baseline'] refx={}
+r=0.3 s=0.5: blocked=True min_goal=0.16 reach0.30=True tail_pos_span=(0.0, 0.0) vmax=0.0 src=['baseline'] refx={}
+r=0.3 s=0.6: blocked=False min_goal=0.06 reach0.30=True tail_pos_span=(0.0, 0.0) vmax=0.0 src=['baseline'] refx={}
+r=0.4 s=0.4: blocked=True min_goal=0.385 reach0.30=False tail_pos_span=(0.0, 0.0) vmax=0.0 src=['baseline'] refx={}
+r=0.4 s=0.45: blocked=True min_goal=0.326 reach0.30=False tail_pos_span=(0.0, 0.0) vmax=0.0 src=['baseline'] refx={}
+r=0.4 s=0.5: blocked=True min_goal=0.26 reach0.30=True tail_pos_span=(0.0, 0.0) vmax=0.0 src=['baseline'] refx={}
+r=0.4 s=0.6: blocked=False min_goal=0.18 reach0.30=True tail_pos_span=(0.0, 0.0) vmax=0.0 src=['baseline'] refx={}
+
+== stall signatures from earlier results (standoff 0.35 cases) ==
+r=0.3 standoff=0.35 in_grid=True: min_goal=0.303 blocked=True tail_pos_span=(0.0, 0.0) yaw=[1.8,7.4] vmax_tail=0.0 still6=0.0 src=['baseline'] refx={} end_nearest=0.36
+  tail(1 Hz, last 12 s): t,x,y,yaw,v,w,src,d_goal,nearest,no_prog:
+    [33.0, 1.35, 1.97, 7.4, 0.0, 84.0, 'baseline', 0.3, 0.36, 0.0]
+    [34.0, 1.35, 1.97, 1.8, 0.0, -84.0, 'baseline', 0.3, 0.36, 0.0]
+    [35.0, 1.35, 1.97, 7.4, 0.0, 84.0, 'baseline', 0.3, 0.36, 0.0]
+    [36.0, 1.35, 1.97, 1.8, 0.0, -84.0, 'baseline', 0.3, 0.36, 0.0]
+    [37.0, 1.35, 1.97, 7.4, 0.0, 84.0, 'baseline', 0.3, 0.36, 0.0]
+    [38.0, 1.35, 1.97, 1.8, 0.0, -84.0, 'baseline', 0.3, 0.36, 0.0]
+    [39.0, 1.35, 1.97, 7.4, 0.0, 84.0, 'baseline', 0.3, 0.36, 0.0]
+    [40.0, 1.35, 1.97, 1.8, 0.0, -84.0, 'baseline', 0.3, 0.36, 0.0]
+    [41.0, 1.35, 1.97, 7.4, 0.0, 84.0, 'baseline', 0.3, 0.36, 0.0]
+    [42.0, 1.35, 1.97, 1.8, 0.0, -84.0, 'baseline', 0.3, 0.36, 0.0]
+    [43.0, 1.35, 1.97, 7.4, 0.0, 84.0, 'baseline', 0.3, 0.36, 0.0]
+    [44.0, 1.35, 1.97, 1.8, 0.0, -84.0, 'baseline', 0.3, 0.36, 0.0]
+r=0.4 standoff=0.35 in_grid=True: min_goal=0.435 blocked=True tail_pos_span=(0.0, 0.0) yaw=[0.7,6.3] vmax_tail=0.0 still6=0.0 src=['baseline'] refx={} end_nearest=0.39
+  tail(1 Hz, last 12 s): t,x,y,yaw,v,w,src,d_goal,nearest,no_prog:
+    [33.0, 1.22, 1.96, 0.7, 0.0, -84.0, 'baseline', 0.43, 0.39, 0.0]
+    [34.0, 1.22, 1.96, 6.3, 0.0, 84.0, 'baseline', 0.43, 0.39, 0.0]
+    [35.0, 1.22, 1.96, 0.7, 0.0, -84.0, 'baseline', 0.43, 0.39, 0.0]
+    [36.0, 1.22, 1.96, 6.3, 0.0, 84.0, 'baseline', 0.43, 0.39, 0.0]
+    [37.0, 1.22, 1.96, 0.7, 0.0, -84.0, 'baseline', 0.43, 0.39, 0.0]
+    [38.0, 1.22, 1.96, 6.3, 0.0, 84.0, 'baseline', 0.43, 0.39, 0.0]
+    [39.0, 1.22, 1.96, 0.7, 0.0, -84.0, 'baseline', 0.43, 0.39, 0.0]
+    [40.0, 1.22, 1.96, 6.3, 0.0, 84.0, 'baseline', 0.43, 0.39, 0.0]
+    [41.0, 1.22, 1.96, 0.7, 0.0, -84.0, 'baseline', 0.43, 0.39, 0.0]
+    [42.0, 1.22, 1.96, 6.3, 0.0, 84.0, 'baseline', 0.43, 0.39, 0.0]
+    [43.0, 1.22, 1.96, 0.7, 0.0, -84.0, 'baseline', 0.43, 0.39, 0.0]
+    [44.0, 1.22, 1.96, 6.3, 0.0, 84.0, 'baseline', 0.43, 0.39, 0.0]
+r=0.4 standoff=0.35 in_grid=True: min_goal=0.424 blocked=True tail_pos_span=(0.0, 0.0) yaw=[50.6,56.2] vmax_tail=0.0 still6=0.0 src=['baseline'] refx={} end_nearest=0.36
+  tail(1 Hz, last 12 s): t,x,y,yaw,v,w,src,d_goal,nearest,no_prog:
+    [33.0, 1.45, 1.45, 56.2, 0.0, 84.0, 'baseline', 0.42, 0.36, 0.0]
+    [34.0, 1.45, 1.45, 50.6, 0.0, -84.0, 'baseline', 0.42, 0.36, 0.0]
+    [35.0, 1.45, 1.45, 56.2, 0.0, 84.0, 'baseline', 0.42, 0.36, 0.0]
+    [36.0, 1.45, 1.45, 50.6, 0.0, -84.0, 'baseline', 0.42, 0.36, 0.0]
+    [37.0, 1.45, 1.45, 56.2, 0.0, 84.0, 'baseline', 0.42, 0.36, 0.0]
+    [38.0, 1.45, 1.45, 50.6, 0.0, -84.0, 'baseline', 0.42, 0.36, 0.0]
+    [39.0, 1.45, 1.45, 56.2, 0.0, 84.0, 'baseline', 0.42, 0.36, 0.0]
+    [40.0, 1.45, 1.45, 50.6, 0.0, -84.0, 'baseline', 0.42, 0.36, 0.0]
+    [41.0, 1.45, 1.45, 56.2, 0.0, 84.0, 'baseline', 0.42, 0.36, 0.0]
+    [42.0, 1.45, 1.45, 50.6, 0.0, -84.0, 'baseline', 0.42, 0.36, 0.0]
+    [43.0, 1.45, 1.45, 56.2, 0.0, 84.0, 'baseline', 0.42, 0.36, 0.0]
+    [44.0, 1.45, 1.45, 50.6, 0.0, -84.0, 'baseline', 0.42, 0.36, 0.0]
+r=0.4 standoff=0.35 in_grid=True: min_goal=0.318 blocked=True tail_pos_span=(0.0, 0.0) yaw=[6.1,6.1] vmax_tail=0.0 still6=6.07 src=['reflex:map_brake'] refx={'map_brake': 658} end_nearest=0.29
+  tail(1 Hz, last 12 s): t,x,y,yaw,v,w,src,d_goal,nearest,no_prog:
+    [33.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [34.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [35.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [36.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [37.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [38.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [39.0, 1.33, 1.97, 6.1, 0.0, -0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [40.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [41.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [42.0, 1.33, 1.97, 6.1, 0.0, -0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [43.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+    [44.0, 1.33, 1.97, 6.1, 0.0, 0.0, 'reflex:map_brake', 0.32, 0.29, 0.0]
+
+== pipeline E2E numbers ==
+A baseline min_goal 0.345 min_mat 0.333 still6 0.0 end_src baseline reflexes {}
+B jev hold_course min_goal 0.27 min_mat 0.258 still6 6.07 end_src reflex:map_brake reflexes {'map_brake': 573}
+C fix: projected free goal (jev) min_goal 0.045 min_mat 0.268 still6 0.0 end_src jev:hold_course reflexes {}
+
+== blocked radius, pure geometry (no noise), formula check ==
+obj_r=0.2: blocked_radius=0.426 = obj_r + 0.226
+obj_r=0.3: blocked_radius=0.535 = obj_r + 0.235
+obj_r=0.35: blocked_radius=0.576 = obj_r + 0.226
+obj_r=0.4: blocked_radius=0.637 = obj_r + 0.237
+obj_r=0.5: blocked_radius=0.742 = obj_r + 0.242

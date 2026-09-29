@@ -1,0 +1,270 @@
+From 7c5de1f6f27660e9c8cb0b0216f7b0b4c11b9d9f Mon Sep 17 00:00:00 2001
+From: i6-audit <i6-audit@localhost>
+Date: Tue, 29 Sep 2026 06:57:36 +0530
+Subject: [PATCH] fix(semantics): mover carry hysteresis, sub-threshold decay,
+ resurrection event
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+I6 fix pack for SemanticStore.merge (w4a-churn.md §7), computed on top of the
+review/m1-semantics-audit tip (bec1d91):
+
+- SemanticsConfig: new keys carry_factor=2.0, carry_cap_m=1.0,
+  sub_threshold_decay=0.7.
+- merge(): per-object carry radius min(max(R, carry_factor*last raw step),
+  R + carry_cap_m) for matching; the raw step is recorded on every confirmed
+  match, new objects bootstrap carry = R (first hand-off <= 2R), and the
+  per-object step is dropped on eviction.
+- merge(): sub-threshold hits decay stored confidence by sub_threshold_decay
+  BEFORE any last_seen_s/_misses refresh; once the decayed confidence falls
+  below min_confidence the sighting stops counting as seen, so a phantom that
+  only ever fires weak hits cannot pin an object alive forever.
+- merge(): a re-match of an id that had vanished (misses >= vanish_passes)
+  is announced in diff.appeared again (S3 event-log gap: the return used to
+  be silent).
+- tests: 2 existing tests updated for the new semantics; 5 regression tests
+  added (carry hand-off, mover identity at 0.5 m/pass, phantom vanish,
+  stationary no-churn, resurrection announced). Suite: 85 passed.
+---
+ config.py                     |   3 +
+ semantics.py                  |  34 +++++++++++-
+ tests/test_semantics_merge.py | 102 ++++++++++++++++++++++++++++++++--
+ 3 files changed, 130 insertions(+), 9 deletions(-)
+
+diff --git a/config.py b/config.py
+index b962dad..b52041c 100644
+--- a/config.py
++++ b/config.py
+@@ -147,6 +147,9 @@ class SemanticsConfig:
+     move_threshold_m: float = 0.25
+     vanish_passes: int = 2
+     max_misses: int = 10               # evict (cap resurrection) after this many missed passes
++    carry_factor: float = 2.0          # mover hysteresis: eff radius = max(R, factor*last raw step)
++    carry_cap_m: float = 1.0           # ... capped at match_radius_m + carry_cap_m
++    sub_threshold_decay: float = 0.7   # confidence decay per sub-threshold-only pass
+     dedupe_iou: float = 0.5
+     dedupe_center_m: float = 0.15      # ...or same-label bbox centres closer than this (metres)
+     min_interval_s: float = 2.0
+diff --git a/semantics.py b/semantics.py
+index 8c033d9..cd8e189 100644
+--- a/semantics.py
++++ b/semantics.py
+@@ -287,6 +287,7 @@ class SemanticStore:
+         self.diff = SemanticDiff()
+         self.destination: Destination | None = None
+         self._misses: dict[str, int] = {}
++        self._step: dict[str, float] = {}      # last raw displacement per object (mover carry)
+         self._hs_hist: dict[str, list[bool]] = {}
+         self._labels: dict[str, str] = {}
+         self.store_dir = Path(cfg.store_dir)
+@@ -311,11 +312,18 @@ class SemanticStore:
+         det_labels = [canonical_label(d.label) for d in unmatched]
+         for oid, prev in self.objs.items():
+             prev_label = canonical_label(prev.label)
++            # Mover carry hysteresis: an object that moved fast last pass gets
++            # a wider window now (bounded), so a steady mover keeps its id
++            # instead of churning a new one per pass. Fresh objects start at
++            # match_radius_m => first hand-off up to 2*match_radius_m.
++            carry = self._step.get(oid, self.cfg.match_radius_m)
++            radius = min(max(self.cfg.match_radius_m, self.cfg.carry_factor * carry),
++                         self.cfg.match_radius_m + self.cfg.carry_cap_m)
+             for i, d in enumerate(unmatched):
+                 if det_labels[i] != prev_label:
+                     continue
+                 dd = math.hypot(d.x - prev.x, d.y - prev.y)
+-                if dd <= self.cfg.match_radius_m:
++                if dd <= radius:
+                     pairs.append((dd, oid, i))
+         pairs.sort(key=lambda p: p[0])
+ 
+@@ -326,12 +334,29 @@ class SemanticStore:
+             d = unmatched[i]
+             taken.add(i)
+             prev = self.objs[oid]
++            was_gone = self._misses.get(oid, 0) >= self.cfg.vanish_passes
++            if d.confidence < self.cfg.min_confidence:
++                # Sub-threshold sighting: decay confidence first. While the
++                # object is still nominally confirmed this stays freshness-only;
++                # once the decayed confidence falls below min_confidence the
++                # hit stops counting as seen (falls through to miss
++                # accounting), so a phantom that only ever fires weak hits
++                # cannot pin an object alive forever.
++                prev.confidence = round(prev.confidence * self.cfg.sub_threshold_decay, 3)
++                if prev.confidence < self.cfg.min_confidence:
++                    continue
+             prev.last_seen_s = round(t_pass, 2)
+             self._misses[oid] = 0
+             seen.add(oid)
++            if was_gone:
++                # Resurrection is an event: an id that had vanished and is
++                # matched again is announced in diff.appeared, so consumers
++                # watching the event log see the return (it used to be silent
++                # unless the id had been evicted outright).
++                diff.appeared.append(oid)
+             if d.confidence < self.cfg.min_confidence:
+-                # Freshness only: a sub-threshold hit keeps the object alive but
+-                # must not move it or overwrite its flags.
++                # Freshness only: a surviving sub-threshold hit keeps the
++                # object alive but must not move it or overwrite its flags.
+                 continue
+             prev_x, prev_y = prev.x, prev.y
+             prev.x = (1.0 - ema) * prev.x + ema * d.x
+@@ -349,6 +374,7 @@ class SemanticStore:
+             # RAW displacement this pass, before any smoothing: the EMA step is
+             # only alpha * raw and hides moves just above the threshold.
+             raw = math.hypot(d.x - prev_x, d.y - prev_y)
++            self._step[oid] = raw          # arms the mover carry for the next pass
+             prev.motion = "moved" if raw > self.cfg.move_threshold_m else "static"
+             if prev.motion == "moved":
+                 diff.moved.append(oid)
+@@ -362,6 +388,7 @@ class SemanticStore:
+                           sources=list(d.sources))
+             self.objs[oid] = obj
+             self._misses[oid] = 0
++            self._step[oid] = self.cfg.match_radius_m   # bootstrap: first hand-off <= 2R
+             self._labels[oid] = obj.label
+             if obj.confidence >= self.cfg.min_confidence:
+                 diff.appeared.append(oid)
+@@ -383,6 +410,7 @@ class SemanticStore:
+             self._misses.pop(oid, None)
+             self._labels.pop(oid, None)
+             self._hs_hist.pop(oid, None)
++            self._step.pop(oid, None)
+ 
+         self.diff = diff
+         if diff.appeared or diff.moved or diff.vanished:
+diff --git a/tests/test_semantics_merge.py b/tests/test_semantics_merge.py
+index 5a22b88..d8d7a84 100644
+--- a/tests/test_semantics_merge.py
++++ b/tests/test_semantics_merge.py
+@@ -55,10 +55,34 @@ def test_motion_uses_raw_displacement_not_the_ema_step(tmp_path):
+ def test_large_jump_is_a_new_object(tmp_path):
+     st = _store(tmp_path)
+     st.merge([_obj("mat", 1.0, 1.0)], 0, "fake", 0.0)
+-    m = st.merge([_obj("mat", 1.9, 1.0)], 0, "fake", 1.0)   # 0.9 m > match radius
++    m = st.merge([_obj("mat", 2.2, 1.0)], 0, "fake", 1.0)   # 1.2 m > bootstrap carry (2R)
+     assert m.diff.appeared and not m.diff.moved
+ 
+ 
++def test_first_handoff_within_carry_keeps_identity(tmp_path):
++    """Carry hysteresis: a fresh object's window is the bootstrap carry R, so
++    the first hand-off may cover up to 2*match_radius_m (0.9 m < 1.0 m here)."""
++    st = _store(tmp_path)
++    st.merge([_obj("mat", 1.0, 1.0)], 0, "fake", 0.0)
++    m = st.merge([_obj("mat", 1.9, 1.0)], 0, "fake", 1.0)   # 0.9 m, inside 2R
++    assert not m.diff.appeared and not m.diff.vanished
++    assert [o.id for o in m.objects] == ["obj_0001"]
++
++
++def test_mover_hysteresis_keeps_identity_at_half_metre_per_pass(tmp_path):
++    """S2 regression: at R=0.5 a 0.5 m/pass mover used to churn a new id every
++    ~2 passes (8.6 ids / 4.9 vanish events per 10 passes over 100 seeds).
++    Carry hysteresis (factor 2.0, cap 1.0 m) tracks it with one id and keeps
++    the `moved` signal."""
++    st = _store(tmp_path)
++    for k in range(10):
++        m = st.merge([_obj("teddy", 0.6 + 0.5 * k, 2.5)], 0, "fake", float(k))
++        assert [o.id for o in m.objects] == ["obj_0001"], f"churn at pass {k}"
++        if k:
++            assert not m.diff.appeared and not m.diff.vanished, f"churn at pass {k}"
++            assert m.diff.moved == ["obj_0001"], f"motion lost at pass {k}"
++
++
+ def test_ids_stable_with_two_same_label_objects(tmp_path):
+     st = _store(tmp_path)
+     st.merge([_obj("mat", 1.0, 1.0), _obj("mat", 4.0, 1.0)], 0, "fake", 0.0)
+@@ -103,19 +127,85 @@ def test_appeared_respects_min_confidence(tmp_path):
+     assert m.diff.appeared == [], "...but they are not announced as appeared"
+ 
+ 
+-def test_sub_threshold_hits_only_refresh_freshness(tmp_path):
+-    """A low-score detection must not move the object or overwrite its flags."""
++def test_sub_threshold_hits_refresh_only_until_confidence_fades(tmp_path):
++    """A low-score detection must not move the object or overwrite its flags;
++    it only refreshes freshness while the decayed confidence still holds.
++    (Updated for I6: sub-threshold hits decay confidence by 0.7 per pass, so a
++    hit whose decayed confidence drops below min_confidence stops counting as
++    seen — that is what stops a phantom pinning an object alive forever.)"""
+     st = _store(tmp_path)
+     st.merge([_obj("mat", 3.0, 1.2, 0.9, hs=True)], 0, "fake", 0.0)
+     m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 1.0)
+     o = m.objects[0]
+-    assert o.x == 3.0 and o.confidence == 0.9 and o.height_suspect is True
+-    assert o.last_seen_s == 1.0, "sub-threshold hits still count as seen"
++    assert o.x == 3.0 and o.confidence == round(0.9 * 0.7, 3) and o.height_suspect is True
++    assert o.last_seen_s == 1.0, "a holding sub-threshold hit still counts as seen"
+     m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 2.0)
+-    assert not m.diff.vanished, "freshness from low-confidence hits keeps it alive"
++    assert m.objects[0].last_seen_s == 1.0, "a faded hit must not refresh freshness"
++    assert not m.diff.vanished, "one faded pass is one miss; vanish needs two"
+     assert m.diff.moved == [], "no motion is reported from a rejected detection"
+ 
+ 
++def test_phantom_only_sub_threshold_hits_vanishes(tmp_path):
++    """S4 regression: a ghost that only ever fires sub-threshold hits must not
++    pin an object alive. The stored confidence decays 0.9 -> 0.63 (still seen)
++    -> 0.441 -> 0.309 (faded, i.e. two misses) -> vanished on the second faded
++    pass, and last_seen_s stops at the last confirmed sighting."""
++    st = _store(tmp_path)
++    st.merge([_obj("mat", 2.0, 2.0, 0.9)], 0, "fake", 0.0)
++    m = st.merge([_obj("mat", 2.15, 2.0, 0.3)], 0, "fake", 1.0)
++    assert m.objects[0].confidence == round(0.9 * 0.7, 3)   # 0.63 >= 0.5: seen
++    assert m.objects[0].last_seen_s == 1.0 and m.objects[0].x == 2.0
++    m = st.merge([_obj("mat", 2.15, 2.0, 0.3)], 0, "fake", 2.0)
++    assert m.objects[0].confidence == round(0.63 * 0.7, 3)  # 0.441 < 0.5
++    assert m.objects[0].last_seen_s == 1.0, "faded: no freshness refresh"
++    assert m.diff.vanished == [], "first faded pass is only miss #1"
++    m = st.merge([_obj("mat", 2.15, 2.0, 0.3)], 0, "fake", 3.0)
++    assert m.diff.vanished == ["obj_0001"], "phantom must vanish on miss #2"
++    m = st.merge([_obj("mat", 2.15, 2.0, 0.3)], 0, "fake", 4.0)
++    assert m.diff.vanished == [], "vanish fires once"
++    assert m.objects[0].last_seen_s == 1.0, "the phantom never pins freshness again"
++
++
++def test_stationary_scene_is_unchanged_under_noise(tmp_path):
++    """S1 regression: small per-pass jitter must not churn ids or events."""
++    st = _store(tmp_path)
++    base = [("mat", 1.0, 1.0), ("ball", 3.5, 1.0), ("box", 1.0, 3.0),
++            ("cup", 3.5, 3.0), ("charger", 2.25, 2.0)]
++    offs = [(0.01, -0.02), (-0.03, 0.01), (0.02, 0.03), (-0.01, -0.03), (0.03, -0.01)]
++    first_ids = None
++    for k in range(10):
++        ox, oy = offs[k % len(offs)]
++        dets = [_obj(lbl, x + ox, y + oy) for lbl, x, y in base]
++        m = st.merge(dets, 0, "fake", float(k))
++        if k == 0:
++            assert len(m.diff.appeared) == 5
++            first_ids = sorted(m.diff.appeared)
++        else:
++            assert not m.diff.appeared and not m.diff.vanished, m.diff
++            assert m.diff.moved == [], "jitter must not count as movement"
++        assert sorted(o.id for o in m.objects) == first_ids
++
++
++def test_resurrection_after_vanish_emits_appeared(tmp_path):
++    """S3 regression: an id that vanished and re-matches must be announced
++    again in diff.appeared; the return used to be silent."""
++    st = _store(tmp_path)
++    st.merge([_obj("mat", 2.0, 2.0)], 0, "fake", 0.0)
++    st.merge([], 0, "fake", 1.0)
++    m = st.merge([], 0, "fake", 2.0)
++    assert m.diff.vanished == ["obj_0001"]
++    m = st.merge([_obj("mat", 2.0, 2.0)], 0, "fake", 3.0)
++    assert m.diff.appeared == ["obj_0001"], "resurrection must be announced"
++    assert not m.diff.vanished and st.objs["obj_0001"].last_seen_s == 3.0
++
++    # a one-pass miss (never vanished) must NOT re-announce the object
++    st2 = _store(tmp_path)
++    st2.merge([_obj("mat", 2.0, 2.0)], 0, "fake", 0.0)
++    st2.merge([], 0, "fake", 1.0)
++    m = st2.merge([_obj("mat", 2.0, 2.0)], 0, "fake", 2.0)
++    assert m.diff.appeared == [] and not m.diff.vanished, "no flap without a vanish"
++
++
+ def test_height_suspect_flips_only_on_two_of_three(tmp_path):
+     """Hysteresis: one noisy probe must not flap the flag either way."""
+     st = _store(tmp_path)
+-- 
+2.47.3
+

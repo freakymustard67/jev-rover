@@ -1,0 +1,27 @@
+# NOTE: Planner.project_to_free absent (unpatched tree); 'proj' cases fall back to the raw approach point
+# repo /home/freakymustard/.hermes/cache/scratch/i7/repo-base; obj (2.0, 2.0) r in (0.15, 0.30, 0.40); start (0.7, 2.0); cfg standoff 0.35
+[jev  r=0.15 raw  so=0.35] approach_blk=0 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.070 min_gap=0.270 latch=1 arr=1 still6=6.1 frozen=1 src=reflex:map_brake reflexes={'map_brake': 653}
+[base r=0.15 raw  so=0.35] approach_blk=0 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.150 min_gap=0.350 latch=1 arr=0 still6=0.0 frozen=1 src=baseline reflexes={}
+[jev  r=0.15 proj so=0.35] approach_blk=0 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.070 min_gap=0.270 latch=1 arr=1 still6=6.1 frozen=1 src=reflex:map_brake reflexes={'map_brake': 653}
+[base r=0.15 proj so=0.35] approach_blk=0 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.150 min_gap=0.350 latch=1 arr=0 still6=0.0 frozen=1 src=baseline reflexes={}
+[jev  r=0.15 rule so=0.50] approach_blk=0 goal=(1.5, 2.0) proj=0 plan_end=(1.5, 2.0) min_goal=0.040 min_gap=0.390 latch=1 arr=1 still6=0.0 frozen=0 src=jev:hold_course reflexes={}
+[base r=0.15 rule so=0.50] approach_blk=0 goal=(1.5, 2.0) proj=0 plan_end=(1.5, 2.0) min_goal=0.040 min_gap=0.390 latch=1 arr=1 still6=0.0 frozen=0 src=path reflexes={}
+[jev  r=0.15 rec  so=0.55] approach_blk=0 goal=(1.45, 2.0) proj=0 plan_end=(1.45, 2.0) min_goal=0.030 min_gap=0.430 latch=1 arr=1 still6=0.0 frozen=0 src=jev:hold_course reflexes={}
+[base r=0.15 rec  so=0.55] approach_blk=0 goal=(1.45, 2.0) proj=0 plan_end=(1.45, 2.0) min_goal=0.030 min_gap=0.430 latch=1 arr=1 still6=0.0 frozen=0 src=path reflexes={}
+[jev  r=0.30 raw  so=0.35] approach_blk=1 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.225 min_gap=0.274 latch=1 arr=0 still6=6.1 frozen=1 src=reflex:map_brake reflexes={'map_brake': 656}
+[base r=0.30 raw  so=0.35] approach_blk=1 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.303 min_gap=0.352 latch=0 arr=0 still6=0.0 frozen=1 src=baseline reflexes={}
+[jev  r=0.30 proj so=0.35] approach_blk=1 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.225 min_gap=0.274 latch=1 arr=0 still6=6.1 frozen=1 src=reflex:map_brake reflexes={'map_brake': 656}
+[base r=0.30 proj so=0.35] approach_blk=1 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.303 min_gap=0.352 latch=0 arr=0 still6=0.0 frozen=1 src=baseline reflexes={}
+[jev  r=0.30 rule so=0.65] approach_blk=0 goal=(1.35, 2.0) proj=0 plan_end=(1.35, 2.0) min_goal=0.050 min_gap=0.400 latch=1 arr=1 still6=0.0 frozen=0 src=jev:hold_course reflexes={}
+[base r=0.30 rule so=0.65] approach_blk=0 goal=(1.35, 2.0) proj=0 plan_end=(1.35, 2.0) min_goal=0.050 min_gap=0.400 latch=1 arr=1 still6=0.0 frozen=0 src=path reflexes={}
+[jev  r=0.30 rec  so=0.70] approach_blk=0 goal=(1.3, 2.0) proj=0 plan_end=(1.3, 2.0) min_goal=0.040 min_gap=0.440 latch=1 arr=1 still6=0.0 frozen=0 src=jev:hold_course reflexes={}
+[base r=0.30 rec  so=0.70] approach_blk=0 goal=(1.3, 2.0) proj=0 plan_end=(1.3, 2.0) min_goal=0.040 min_gap=0.440 latch=1 arr=1 still6=0.0 frozen=0 src=path reflexes={}
+[jev  r=0.40 raw  so=0.35] approach_blk=1 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.318 min_gap=0.267 latch=0 arr=0 still6=6.1 frozen=1 src=reflex:map_brake reflexes={'map_brake': 658}
+[base r=0.40 raw  so=0.35] approach_blk=1 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.435 min_gap=0.384 latch=0 arr=0 still6=0.0 frozen=1 src=baseline reflexes={}
+[jev  r=0.40 proj so=0.35] approach_blk=1 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.318 min_gap=0.267 latch=0 arr=0 still6=6.1 frozen=1 src=reflex:map_brake reflexes={'map_brake': 658}
+[base r=0.40 proj so=0.35] approach_blk=1 goal=(1.65, 2.0) proj=0 plan_end=(1.65, 2.0) min_goal=0.435 min_gap=0.384 latch=0 arr=0 still6=0.0 frozen=1 src=baseline reflexes={}
+[jev  r=0.40 rule so=0.75] approach_blk=0 goal=(1.25, 2.0) proj=0 plan_end=(1.25, 2.0) min_goal=0.030 min_gap=0.380 latch=1 arr=1 still6=0.0 frozen=0 src=jev:hold_course reflexes={}
+[base r=0.40 rule so=0.75] approach_blk=0 goal=(1.25, 2.0) proj=0 plan_end=(1.25, 2.0) min_goal=0.030 min_gap=0.380 latch=1 arr=1 still6=0.0 frozen=0 src=path reflexes={}
+[jev  r=0.40 rec  so=0.80] approach_blk=0 goal=(1.2, 2.0) proj=0 plan_end=(1.2, 2.0) min_goal=0.020 min_gap=0.420 latch=1 arr=1 still6=0.0 frozen=0 src=jev:hold_course reflexes={}
+[base r=0.40 rec  so=0.80] approach_blk=0 goal=(1.2, 2.0) proj=0 plan_end=(1.2, 2.0) min_goal=0.020 min_gap=0.420 latch=1 arr=1 still6=0.0 frozen=0 src=path reflexes={}
+# results -> i7-e2e-unpatched.json

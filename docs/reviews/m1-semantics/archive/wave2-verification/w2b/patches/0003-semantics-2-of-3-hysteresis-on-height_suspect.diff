@@ -1,0 +1,72 @@
+From 79f94646769885f8da0357a1439ab9e632b11036 Mon Sep 17 00:00:00 2001
+From: Hermes Fix Package <hermes@local>
+Date: Tue, 29 Sep 2026 00:49:13 +0530
+Subject: [PATCH 03/12] semantics: 2-of-3 hysteresis on height_suspect
+
+height_suspect was overwritten by every merged detection, so one noisy
+probe (shadow, edge ringing) flipped the flag. Keep the last three
+observations per object and only flip when two of them agree.
+
+Tests: tests/test_semantics_merge.py::test_height_suspect_flips_only_on_two_of_three
+---
+ semantics.py                  | 11 ++++++++++-
+ tests/test_semantics_merge.py | 14 ++++++++++++++
+ 2 files changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/semantics.py b/semantics.py
+index eb3bd11..d9562b4 100644
+--- a/semantics.py
++++ b/semantics.py
+@@ -252,6 +252,7 @@ class SemanticStore:
+         self.diff = SemanticDiff()
+         self.destination: Destination | None = None
+         self._misses: dict[str, int] = {}
++        self._hs_hist: dict[str, list[bool]] = {}
+         self._labels: dict[str, str] = {}
+         self.store_dir = Path(cfg.store_dir)
+ 
+@@ -299,7 +300,15 @@ class SemanticStore:
+             prev.x = (1.0 - ema) * prev.x + ema * d.x
+             prev.y = (1.0 - ema) * prev.y + ema * d.y
+             prev.confidence = d.confidence
+-            prev.height_suspect = d.height_suspect
++            # height_suspect needs a 2-of-3 majority (hysteresis): a single
++            # noisy probe must not flap the flag in either direction.
++            hist = self._hs_hist.setdefault(oid, [])
++            hist.append(bool(d.height_suspect))
++            del hist[:-3]
++            if sum(hist) >= 2:
++                prev.height_suspect = True
++            elif len(hist) - sum(hist) >= 2:
++                prev.height_suspect = False
+             # RAW displacement this pass, before any smoothing: the EMA step is
+             # only alpha * raw and hides moves just above the threshold.
+             raw = math.hypot(d.x - prev_x, d.y - prev_y)
+diff --git a/tests/test_semantics_merge.py b/tests/test_semantics_merge.py
+index 42822d5..801f13a 100644
+--- a/tests/test_semantics_merge.py
++++ b/tests/test_semantics_merge.py
+@@ -107,6 +107,20 @@ def test_sub_threshold_hits_only_refresh_freshness(tmp_path):
+     assert m.diff.moved == [], "no motion is reported from a rejected detection"
+ 
+ 
++def test_height_suspect_flips_only_on_two_of_three(tmp_path):
++    """Hysteresis: one noisy probe must not flap the flag either way."""
++    st = _store(tmp_path)
++    st.merge([_obj("box", 3.0, 1.0)], 0, "fake", 0.0)
++    m = st.merge([_obj("box", 3.0, 1.0, hs=True)], 0, "fake", 1.0)
++    assert m.objects[0].height_suspect is False, "1 of 1 is not a majority"
++    m = st.merge([_obj("box", 3.0, 1.0, hs=True)], 0, "fake", 2.0)
++    assert m.objects[0].height_suspect is True, "2 of 3 agree -> flip up"
++    m = st.merge([_obj("box", 3.0, 1.0, hs=False)], 0, "fake", 3.0)
++    assert m.objects[0].height_suspect is True, "one clean probe must not flip it back"
++    m = st.merge([_obj("box", 3.0, 1.0, hs=False)], 0, "fake", 4.0)
++    assert m.objects[0].height_suspect is False, "2 of 3 clear -> flip down"
++
++
+ def test_height_suspect_and_rejected_propagate(tmp_path):
+     st = _store(tmp_path)
+     m = st.merge([_obj("box", 3.0, 1.0, hs=True)], rejected=2, model="fake", t_pass=0.0)
+-- 
+2.47.3
+

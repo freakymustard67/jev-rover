@@ -1,0 +1,37 @@
+=========================================================================
+Binary scan-datagram crash: pre-fix RED / post-fix GREEN transcripts
+PR tip before fix: bec1d91fe17682ce38d24e334c94c67fa4bcc685
+Patched tree:      e1da1a4 (exports 0001/0002 .patch in this directory)
+Python:            /home/freakymustard/jev-rover/.venv/bin/python (3.11.16)
+Packet:            exact check_parser.py bytes (v6 §2.5):
+  53 01 29 00 00 03 00 40 d3 2c 01 00   # msg=0x53 flags=0x01 scan_id=41
+                                         # chunk 0/3 first=0 n=64, then 4 sample bytes
+                                         # angle=0xD3=-45, range=0x012C=300, status=0
+=========================================================================
+
+--- PRE-FIX (commit bec1d91, unpatched link.py) -------------------------
+$ PYTHONDONTWRITEBYTECODE=1 /home/freakymustard/jev-rover/.venv/bin/python \
+      crash_repro.py /home/freakymustard/.hermes/cache/scratch/c6/i9-repo
+Traceback (most recent call last):
+  File "/home/freakymustard/jev-rover-research/runs/20260929-0248/i9-scan-link-evidence/crash_repro.py", line 38, in <module>
+    hw = link.telemetry(1.0)
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/freakymustard/.hermes/cache/scratch/c6/i9-repo/link.py", line 108, in telemetry
+    pkt = json.loads(data)
+          ^^^^^^^^^^^^^^^^
+  File "/home/freakymustard/.local/share/uv/python/cpython-3.11.16-linux-x86_64-gnu/lib/python3.11/json/__init__.py", line 341, in loads
+    s = s.decode(detect_encoding(s), 'surrogatepass')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xd3 in position 8: invalid continuation byte
+EXCEPTION ESCAPED telemetry():
+follow-up JSON parsed: dist_front_m=0.5 batt_v=7.4 watchdog_ok=True
+stats: {'link': 'udp', 'commands': 0, 'telemetry_rx': 1, 'send_errors': 0}
+VERDICT: crash escaped (RED)
+
+--- POST-FIX (commit e1da1a4) --------------------------------------------
+$ PYTHONDONTWRITEBYTECODE=1 /home/freakymustard/jev-rover/.venv/bin/python \
+      crash_repro.py /home/freakymustard/.hermes/cache/scratch/c6/i9-repo
+telemetry() returned without raising: Hardware(dist_front_m=None, dist_rear_m=None, batt_v=None, watchdog_ok=False, reflex=False, telemetry_age_s=None)
+follow-up JSON parsed: dist_front_m=0.5 batt_v=7.4 watchdog_ok=True
+stats: {'link': 'udp', 'commands': 0, 'telemetry_rx': 1, 'send_errors': 0, 'scan_rx': 0, 'scan_rx_errors': 1}
+VERDICT: no exception escaped (GREEN)

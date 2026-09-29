@@ -1,0 +1,54 @@
+From 40995d6b4bcea14c323459687f9a79b040b1483f Mon Sep 17 00:00:00 2001
+From: Hermes Fix Package <hermes@local>
+Date: Tue, 29 Sep 2026 00:58:24 +0530
+Subject: [PATCH 11/12] semantics: approach_point never overshoots the
+ destination
+
+When the standoff was larger than the distance to the destination the old
+formula placed the point on the far side of the object (from (3.2,1.0) to
+a destination at (3.0,1.0) with 0.35 m standoff gave (3.35,1.0)). Return
+the destination itself when already inside the standoff ring.
+
+Tests: tests/test_semantics_destination.py::test_approach_point_never_overshoots_the_destination
+---
+ semantics.py                        |  4 +++-
+ tests/test_semantics_destination.py | 11 +++++++++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/semantics.py b/semantics.py
+index 8af1d33..8c033d9 100644
+--- a/semantics.py
++++ b/semantics.py
+@@ -777,7 +777,9 @@ def approach_point(dest: Destination, from_xy: tuple[float, float],
+                    standoff_m: float) -> tuple[float, float]:
+     dx, dy = dest.x - from_xy[0], dest.y - from_xy[1]
+     length = math.hypot(dx, dy)
+-    if length < 1e-9:
++    if length <= standoff_m:
++        # Already inside the standoff ring (or on the object): never step past
++        # the destination to its far side.
+         return dest.x, dest.y
+     return (dest.x - dx / length * standoff_m, dest.y - dy / length * standoff_m)
+ 
+diff --git a/tests/test_semantics_destination.py b/tests/test_semantics_destination.py
+index f7bf00a..a701d0b 100644
+--- a/tests/test_semantics_destination.py
++++ b/tests/test_semantics_destination.py
+@@ -78,3 +78,14 @@ def test_approach_point_standoff():
+     assert ax < 3.0 and abs(ay - 1.0) < 1e-9
+     # degenerate: standing on the object
+     assert approach_point(dest, (3.0, 1.0), 0.35) == (3.0, 1.0)
++
++
++def test_approach_point_never_overshoots_the_destination():
++    from scene import Destination
++    dest = Destination(label="mat", x=3.0, y=1.0, confidence=0.9)
++    # standoff larger than the distance: the old formula flipped to the far side
++    assert approach_point(dest, (3.2, 1.0), 0.35) == (3.0, 1.0)
++    assert approach_point(dest, (2.9, 1.0), 0.35) == (3.0, 1.0)
++    # just outside the ring still lands on the ring
++    ax, ay = approach_point(dest, (2.0, 1.0), 0.35)
++    assert abs(ax - 2.65) < 1e-9 and ay == 1.0
+-- 
+2.47.3
+

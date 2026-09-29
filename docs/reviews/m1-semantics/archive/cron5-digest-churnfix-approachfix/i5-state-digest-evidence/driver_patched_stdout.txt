@@ -1,0 +1,30 @@
+{"n_fixtures": 8, "map_objects": 8, "digest_objects": 8, "objects_more": 0, "pre_bytes": 5681, "build_state_bytes": 4433, "post_bytes": 4433, "saved_bytes": 1248, "saved_pct": 22.0, "post_objects_block_bytes": 603, "post_diff_bytes": 79, "post_destination_bytes": 136, "post_scalars_bytes": 54}
+{"n_fixtures": 9, "map_objects": 9, "digest_objects": 9, "objects_more": 0, "pre_bytes": 5913, "build_state_bytes": 4497, "post_bytes": 4497, "saved_bytes": 1416, "saved_pct": 23.9, "post_objects_block_bytes": 667, "post_diff_bytes": 79, "post_destination_bytes": 136, "post_scalars_bytes": 54}
+{"n_fixtures": 10, "map_objects": 10, "digest_objects": 10, "objects_more": 0, "pre_bytes": 6134, "build_state_bytes": 4563, "post_bytes": 4563, "saved_bytes": 1571, "saved_pct": 25.6, "post_objects_block_bytes": 733, "post_diff_bytes": 79, "post_destination_bytes": 136, "post_scalars_bytes": 54}
+{"n_fixtures": 15, "map_objects": 15, "digest_objects": 15, "objects_more": 0, "pre_bytes": 7266, "build_state_bytes": 4918, "post_bytes": 4918, "saved_bytes": 2348, "saved_pct": 32.3, "post_objects_block_bytes": 1088, "post_diff_bytes": 79, "post_destination_bytes": 136, "post_scalars_bytes": 54}
+{"n_fixtures": 20, "map_objects": 20, "digest_objects": 19, "objects_more": 0, "pre_bytes": 8398, "build_state_bytes": 5236, "post_bytes": 5236, "saved_bytes": 3162, "saved_pct": 37.7, "post_objects_block_bytes": 1406, "post_diff_bytes": 79, "post_destination_bytes": 136, "post_scalars_bytes": 54}
+{"n_fixtures": 30, "map_objects": 30, "digest_objects": 25, "objects_more": 4, "pre_bytes": 10729, "build_state_bytes": 5658, "post_bytes": 5658, "saved_bytes": 5071, "saved_pct": 47.3, "post_objects_block_bytes": 1809, "post_diff_bytes": 79, "post_destination_bytes": 136, "post_scalars_bytes": 54}
+
+== summary ==
+{
+ "root": "/home/freakymustard/.hermes/cache/scratch/i5/repo",
+ "has_digest": true,
+ "state_note": "all sizes = len(json.dumps(state)); default separators",
+ "fit_pre": {
+  "a_intercept": 3841.5,
+  "b_per_object": 229.0,
+  "n_cross_6000": 9.42,
+  "residual_max": 24.4
+ },
+ "fit_post": {
+  "a_intercept": 4011.4,
+  "b_per_object": 56.9,
+  "n_cross_6000": 34.94,
+  "residual_max": 86.2
+ },
+ "bound_check_20": {
+  "post_bytes": 5236,
+  "under_6000": true
+ }
+}
+wrote /home/freakymustard/jev-rover-research/runs/20260929-0118/i5-state-digest-evidence/measure_results_digest.json

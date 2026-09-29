@@ -1,0 +1,8 @@
+# repo /home/freakymustard/.hermes/cache/scratch/i7/repo-base; project_to_free available=False; standoff=0.35
+grid: mat-area occupied cells 180; blocked radius around dest 0.941 m; approach (2.65,1.20) blocked=True
+projected goal: None
+[A raw (jev)] goal=(2.65, 1.2) min_goal=0.27 latch=1 arr=0 min_mat_gap=0.258 still6=6.07 frozen=1 end=reflex:map_brake reflexes={'map_brake': 573}
+[A raw (base)] goal=(2.65, 1.2) min_goal=0.345 latch=0 arr=0 min_mat_gap=0.333 still6=0.0 frozen=1 end=baseline reflexes={}
+[B proj (jev)] goal=(2.65, 1.2) min_goal=0.27 latch=1 arr=0 min_mat_gap=0.258 still6=6.07 frozen=1 end=reflex:map_brake reflexes={'map_brake': 573}
+[B proj (base)] goal=(2.65, 1.2) min_goal=0.345 latch=0 arr=0 min_mat_gap=0.333 still6=0.0 frozen=1 end=baseline reflexes={}
+# results -> i7-pipeline-unpatched.json

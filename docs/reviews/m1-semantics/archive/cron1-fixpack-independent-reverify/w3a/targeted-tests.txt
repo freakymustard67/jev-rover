@@ -1,0 +1,76 @@
+# W3a — per-patch targeted test runs (patched clone, all 12 patches applied)
+
+Clone:    /home/freakymustard/.hermes/cache/scratch/wave3/w3a/clone  @ 2adf06f (12 commits on 9c33ec0)
+Interp:   /home/freakymustard/jev-rover/.venv/bin/python  (Python 3.11.16, pytest 9.1.1)
+Env:      PYTHONDONTWRITEBYTECODE=1, pytest -q -p no:cacheprovider, cwd = clone root
+Date:     2026-09-29 ~01:07 IST
+
+Run by node id, one pytest invocation per patch (patch groups chained with ';' in 4 shell calls).
+
+## patch 0001 — tests/test_semantics_merge.py::test_contested_detection_goes_to_the_nearest_object
+$ python -m pytest tests/test_semantics_merge.py::test_contested_detection_goes_to_the_nearest_object -q -p no:cacheprovider
+.                                                                        [100%]
+1 passed in 0.14s
+
+## patch 0002 — tests/test_semantics_merge.py::test_sub_threshold_hits_only_refresh_freshness
+$ python -m pytest tests/test_semantics_merge.py::test_sub_threshold_hits_only_refresh_freshness -q -p no:cacheprovider
+.                                                                        [100%]
+1 passed in 0.14s
+
+## patch 0003 — tests/test_semantics_merge.py::test_height_suspect_flips_only_on_two_of_three
+$ python -m pytest tests/test_semantics_merge.py::test_height_suspect_flips_only_on_two_of_three -q -p no:cacheprovider
+.                                                                        [100%]
+1 passed in 0.14s
+
+## patch 0004 — tests/test_semantics_merge.py::test_eviction_caps_resurrection_and_map_growth
+##             tests/test_semantics_schema.py::test_build_state_carries_semantics_and_stays_bounded   (modified)
+$ python -m pytest tests/test_semantics_merge.py::test_eviction_caps_resurrection_and_map_growth tests/test_semantics_schema.py::test_build_state_carries_semantics_and_stays_bounded -q -p no:cacheprovider
+..                                                                       [100%]
+2 passed in 0.46s
+
+## patch 0005 — tests/test_semantics_merge.py::test_label_matching_folds_case_and_plurals
+##             tests/test_semantics_projection.py::test_canonical_label_folds_case_and_plurals
+##             tests/test_semantics_projection.py::test_dedupe_and_adapter_filter_are_label_case_insensitive
+$ python -m pytest tests/test_semantics_merge.py::test_label_matching_folds_case_and_plurals tests/test_semantics_projection.py::test_canonical_label_folds_case_and_plurals tests/test_semantics_projection.py::test_dedupe_and_adapter_filter_are_label_case_insensitive -q -p no:cacheprovider
+...                                                                      [100%]
+3 passed in 0.18s
+
+## patch 0006 — tests/test_semantics_projection.py::test_dedupe_collapses_close_world_centres_without_overlap
+##             tests/test_semantics_projection.py::test_projection_dedupes_near_coincident_same_label
+$ python -m pytest tests/test_semantics_projection.py::test_dedupe_collapses_close_world_centres_without_overlap tests/test_semantics_projection.py::test_projection_dedupes_near_coincident_same_label -q -p no:cacheprovider
+..                                                                       [100%]
+2 passed in 0.79s
+
+## patch 0007 — tests/test_semantics_projection.py::test_probe_median_survives_a_single_dead_pixel
+$ python -m pytest tests/test_semantics_projection.py::test_probe_median_survives_a_single_dead_pixel -q -p no:cacheprovider
+.                                                                        [100%]
+1 passed in 0.82s
+
+## patch 0008 — tests/test_semantics_worker.py::test_frame_resolution_mismatch_is_refused_once
+##             tests/test_semantics_worker.py::test_frame_resolution_match_is_accepted
+$ python -m pytest tests/test_semantics_worker.py::test_frame_resolution_mismatch_is_refused_once tests/test_semantics_worker.py::test_frame_resolution_match_is_accepted -q -p no:cacheprovider
+..                                                                       [100%]
+2 passed in 0.32s
+
+## patch 0009 — tests/test_semantics_worker.py::test_failure_cooldown   (extended with skipped["cooldown"] == 1)
+##             tests/test_semantics_worker.py::test_stats_shape        (extended: pins the six-key skipped set)
+$ python -m pytest tests/test_semantics_worker.py::test_failure_cooldown tests/test_semantics_worker.py::test_stats_shape -q -p no:cacheprovider
+..                                                                       [100%]
+2 passed in 1.34s
+
+## patch 0010 — NO test files touched (run.py only; stat: run.py | 60 +++++--- )
+##              no pytest node exists for it; verified at runtime instead (see w3a/semantics-*.txt):
+##              - enabled config, flag unset  -> "[semantics] enabled: ... (mission-start pass + audit every 60s)"
+##              - enabled config + --semantics off -> no banner, summary "semantics": null
+##              - no --semantics-once -> audit cadence banner; with flag -> "(one pass at mission start)"
+
+## patch 0011 — tests/test_semantics_destination.py::test_approach_point_never_overshoots_the_destination
+$ python -m pytest tests/test_semantics_destination.py::test_approach_point_never_overshoots_the_destination -q -p no:cacheprovider
+.                                                                        [100%]
+1 passed in 0.11s
+
+## patch 0012 — NO test functions touched (README.md + new pytest.ini; stat: 2 files, +6/-2)
+##              scope check instead:
+$ python -m pytest --collect-only -q -p no:cacheprovider            -> 80 tests collected in 0.89s   (testpaths = tests)
+$ python -m pytest docs/planning/prototype --collect-only -q -p no:cacheprovider -> 11 tests collected in 0.20s (opt-in still works)
+$ python -m pytest -q -p no:cacheprovider                            -> 80 passed in 17.85s (and 19.18s on the final re-run)

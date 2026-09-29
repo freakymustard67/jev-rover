@@ -1,0 +1,10 @@
+{"max_ms": 55.997, "mean_ms": 40.4519, "p50_ms": 40.6915, "p95_ms": 48.4017, "rec": "block_render", "reps": 300, "res": "1280x720"}
+{"max_ms": 73.1149, "mean_ms": 38.9585, "p50_ms": 38.467, "p95_ms": 43.4058, "rec": "block_process", "reps": 300, "res": "1280x720"}
+{"max_ms": 0.0274, "mean_ms": 0.0108, "p50_ms": 0.0107, "p95_ms": 0.0111, "rec": "block_semantic_context", "reps": 300, "res": "1280x720"}
+{"max_ms": 0.566, "mean_ms": 0.388, "p50_ms": 0.37, "p95_ms": 0.525, "rec": "copy", "reps": 300, "res": "1280x720"}
+{"max_ms": 0.807, "mean_ms": 0.492, "ok": 300, "p95_ms": 0.563, "rec": "maybe_pass_submit_path", "reps": 300, "res": "1280x720"}
+{"max_us": 74.9, "mean_us": 11.2, "rec": "maybe_pass_gated_inflight", "reps": 300, "res": "1280x720", "skipped": {"budget": 0, "inflight": 300, "interval": 0, "no_context": 0}}
+{"max_us": 10.22, "mean_us": 1.77, "rec": "poll_empty", "reps": 300, "res": "1280x720"}
+{"max_us": 2.17, "mean_us": 0.18, "rec": "snapshot_no_map", "reps": 300, "res": "1280x720"}
+{"max_ms": 28.65, "mean_ms": 22.104, "p95_ms": 22.599, "passes": 306, "rec": "poll_merge_path", "reps": 300, "res": "1280x720"}
+{"mean_us": 26.75, "objects": 2, "p95_us": 26.71, "rec": "snapshot_with_map", "reps": 300, "res": "1280x720"}

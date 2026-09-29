@@ -1,0 +1,14 @@
+# states/post_20.json: 19 entries, 5 with optional flags
+{"label": "wooden box", "x": 3.41, "y": 0.76, "confidence": 0.79, "height_suspect": true}
+{"label": "white cable", "x": 3.01, "y": 0.58, "confidence": 0.61, "height_suspect": true}
+{"label": "blue mat", "x": 2.17, "y": 1.01, "confidence": 0.88, "motion": "moved"}
+{"label": "yoga mat", "x": 0.61, "y": 2.71, "confidence": 0.89, "height_suspect": true}
+{"label": "plant pot", "x": 5.91, "y": 2.81, "confidence": 0.76, "height_suspect": true}
+diff: {"appeared": 0, "moved": 1, "vanished": 0, "moved_ids": ["obj_0004"]}
+# states/post_30.json: 25 entries, 4 with optional flags
+{"label": "wooden box", "x": 3.41, "y": 0.76, "confidence": 0.79, "height_suspect": true}
+{"label": "white cable", "x": 3.01, "y": 0.58, "confidence": 0.61, "height_suspect": true}
+{"label": "blue mat", "x": 2.17, "y": 1.01, "confidence": 0.88, "motion": "moved"}
+{"label": "laptop", "x": 0.91, "y": 2.98, "confidence": 0.87, "height_suspect": true}
+diff: {"appeared": 0, "moved": 1, "vanished": 0, "moved_ids": ["obj_0004"]}
+objects_more: 4

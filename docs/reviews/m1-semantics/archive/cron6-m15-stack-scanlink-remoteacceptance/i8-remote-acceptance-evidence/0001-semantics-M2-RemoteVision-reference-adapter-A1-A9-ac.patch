@@ -1,0 +1,1275 @@
+From d8f477b18447840a683cbcccd2317988763bf511 Mon Sep 17 00:00:00 2001
+From: freakymustard67 <freakymustard67@://github.com>
+Date: Tue, 29 Sep 2026 08:32:03 +0530
+Subject: [PATCH] semantics: M2 RemoteVision reference adapter + A1-A9
+ acceptance suite
+
+Forward-landing pack for the planned M2 remote-vision seam (m2-design.md
+section 2.4). build_vision still raises for every non-fake kind at M1, so
+nothing wires this in yet; the call sites are documented in the module
+docstring.
+
+remotevision.py: stdlib-only (urllib) RemoteVision adapter hardened per the
+W4C threat model - protocol echo + model/ms telemetry (A1), 1 MiB response
+cap, frame-px cap before encode and MAX_DETECTIONS=64 truncation (A2),
+https-unless-loopback/LAN-optin with no userinfo, query strings, redirects
+or environment proxies (A3), exactly one HTTP attempt per pass (A4), token
+read at call time from env and scrubbed from every error string (A6),
+0 < timeout_s <= min(max_age_s, 60) and non-empty labels with errors naming
+both config key and env var (A8), static artifact-safe name (A9).
+
+tests/test_remotevision_acceptance.py: self-contained loopback mock driving
+the real SemanticsWorker/SemanticsRunner; ports the w4c driver scenarios
+(timeout/500/malformed/schema/all-invalid/refused) into pytest (A7) and
+covers the remaining A-items. 43 tests added; full suite 123 passed at
+bec1d91. No TLS/proxy/redirect/IPv6/soak coverage (documented).
+
+Evidence: jev-rover-research runs/20260929-0248/i8-remote-acceptance.md
+---
+ remotevision.py                       | 446 +++++++++++++++
+ tests/test_remotevision_acceptance.py | 780 ++++++++++++++++++++++++++
+ 2 files changed, 1226 insertions(+)
+ create mode 100644 remotevision.py
+ create mode 100644 tests/test_remotevision_acceptance.py
+
+diff --git a/remotevision.py b/remotevision.py
+new file mode 100644
+index 0000000..1f775ed
+--- /dev/null
++++ b/remotevision.py
+@@ -0,0 +1,446 @@
++"""RemoteVision — M2 remote-vision adapter (forward-landing reference + A1–A9).
++
++This module is the *planned* M2 seam (docs/reviews/m1-semantics/m2-design.md §2.4)
++built ahead of the M2 branch, hardened against the failure modes catalogued in
++the W4C threat model (runs/20260928-2057/w4c-remotevision-threat.md §4/§5).
++It does not wire itself in: ``semantics.build_vision`` still raises for every
++non-fake kind at PR tip bec1d91; M2 replaces that raise with a construction
++of ``RemoteVision`` from ``SemanticsConfig.model`` (see "M2 wiring" below).
++
++Contract (implements the ``semantics.VisionModel`` protocol — semantics.py:64-68)
++--------------------------------------------------------------------------------
++* endpoint: env ``JEV_ROVER_VISION_ENDPOINT`` wins; else the constructor arg
++  (``semantics.model.endpoint``). Both empty → ``RemoteVisionError`` naming both
++  sources. The effective endpoint is re-validated on every call (A3/A8).
++* token: env ``JEV_ROVER_VISION_TOKEN``, read *at call time*, sent **only** as an
++  ``Authorization: Bearer …`` header, never in the URL or body, never stored, and
++  defensively scrubbed from every error string (A6).
++* request: one POST per pass, JSON — ``{"protocol": 1, "request_id", "labels",
++  "image_b64", "width", "height", "format": "jpeg", "timeout_ms"}``; the JPEG
++  encode happens on the caller's (worker) thread, never the control loop.
++* response: must echo ``protocol`` (A1) and carry ``{"detections": [...]}``;
++  every entry is validated (label, 4 finite bbox numbers, non-degenerate,
++  inside the sent image ±8 px, finite/clamped score). Malformed entries are
++  skipped and counted; **if every entry is malformed the pass fails loudly**
++  instead of returning an empty room (threat #6/D2).
++* every failure raises (``RemoteVisionError`` or a clean stdlib error), so
++  ``SemanticsWorker._run``'s blanket except (semantics.py:542-547) turns it into
++  a ``PassResult(error)`` and ``SemanticsRunner.poll`` arms the runner cooldown
++  (semantics.py:625-627). **One HTTP attempt per pass, no retries** — the runner
++  owns all rate limiting (A4).
++* ``name`` is a static class constant (A9): it is serialized into
++  ``*_latest.json`` as ``map.model`` (semantics.py:399-400 → 417-421), so it must
++  never carry an endpoint, scheme or token.
++
++A-item map: A1 protocol echo + model/ms telemetry; A2 size caps (1 MiB response,
++frame-px cap before encode, MAX_DETECTIONS=64); A3 plaintext/TLS policy and
++endpoint hygiene (no userinfo/query, loopback or explicit opt-in only, no redirect
++following, environment proxies ignored); A4 one attempt per pass; A6 secret
++hygiene; A8 validation bounds (``0 < timeout_s <= min(max_age_s, 60)``, labels
++required for real kinds) with errors naming both the config key and the env var;
++A9 static name.
++
++Divergences from m2-design (flagged in the W4C report, unchanged here):
++D1 request uses a flat ``image_b64`` (this pack's brief) rather than the nested
++``image{format,b64,width,height,scale}``; D3 env names follow m2-design
++(``JEV_ROVER_VISION_*``) rather than the w4c prototype's shorter names.
++
++M2 wiring (one-line call sites, not done here):
++  1. ``semantics.build_vision``: ``kind == "remote"`` → ``RemoteVision(
++     cfg.model.endpoint, cfg.model.timeout_s, labels=cfg.model.labels,
++     max_age_s=cfg.max_age_s, allow_plaintext_lan=cfg.model.allow_plaintext_lan,
++     jpeg_quality=cfg.model.jpeg_quality)``.
++  2. ``SemanticsWorker._run`` (semantics.py:541): pass through
++     ``getattr(vision, "last_model", None)`` / ``getattr(vision, "last_ms", None)``
++     in ``PassResult`` (m2-design.md:464).
++  3. ``config._validate_semantics``: call ``validate_remote_settings(...)`` for
++     ``kind in ("local", "remote")`` so bounds fail at load, not at first pass.
++"""
++from __future__ import annotations
++
++import base64
++import http.client
++import ipaddress
++import json
++import math
++import os
++import re
++import socket
++import urllib.error
++import urllib.parse
++import urllib.request
++import uuid
++from typing import Any, Sequence
++
++import cv2
++import numpy as np
++
++from semantics import MAX_DETECTIONS, Detection
++
++# ---------------------------------------------------------------- constants
++ENDPOINT_ENV = "JEV_ROVER_VISION_ENDPOINT"     # m2-design.md:346
++TOKEN_ENV = "JEV_ROVER_VISION_TOKEN"           # m2-design.md:401
++PROTOCOL = 1                                   # m2-design.md:321
++NAME = "remote-vision-v1"                      # A9: static, artifact-safe
++MAX_RESPONSE_BYTES = 1024 * 1024               # A2: 1 MiB response read cap
++MAX_FRAME_PX = 8_000_000                       # A2: frame-px cap before encode
++TIMEOUT_CAP_S = 60.0                           # A8: absolute timeout ceiling
++MAX_MODEL_CHARS = 64                           # A1: telemetry sanitization
++PLAINTEXT_LOOPBACK = ("localhost",)            # plus ipaddress.is_loopback hosts
++
++_ENDPOINT_SOURCES = f"semantics.model.endpoint / env {ENDPOINT_ENV}"
++_SCRUB_MIN_LEN = 4          # shorter tokens would mangle unrelated text
++
++
++class RemoteVisionError(RuntimeError):
++    """Any remote-adapter / remote-config failure. Deliberately token-scrubbed."""
++
++
++def _scrub(text: str, token: str | None = None) -> str:
++    """Defense in depth (A6): no error string may contain the token.
++
++    Scrubs the raw token plus its URL-quoted and base64 forms (>= 4 chars).
++    """
++    tok = token if token is not None else os.environ.get(TOKEN_ENV, "")
++    if not tok:
++        return text
++    forms = {tok}
++    try:
++        forms.add(urllib.parse.quote(tok, safe=""))
++    except Exception:                                     # pragma: no cover
++        pass
++    forms.add(base64.b64encode(tok.encode("utf-8", "ignore")).decode("ascii"))
++    for form in sorted(forms, key=len, reverse=True):
++        if len(form) >= _SCRUB_MIN_LEN:
++            text = text.replace(form, "***")
++    return text
++
++
++def _is_loopback(host: str | None) -> bool:
++    if not host:
++        return False
++    h = host.strip("[]").lower()
++    if h in PLAINTEXT_LOOPBACK:
++        return True
++    try:
++        return ipaddress.ip_address(h).is_loopback
++    except ValueError:
++        return False
++
++
++# ------------------------------------------------------------- validation (A8)
++def validate_endpoint(url: str, *, allow_plaintext_lan: bool = False) -> urllib.parse.SplitResult:
++    """Validate an endpoint URL; returns its parsed form or raises (A3/A8).
++
++    Policy: scheme must be http/https; no ``user:pass@`` userinfo; no query
++    string or fragment (both are classic places to smuggle a token); a host is
++    required; plaintext http is only allowed for loopback hosts or when
++    ``allow_plaintext_lan`` is explicitly set. Messages name the config key and
++    the env var so an operator knows which of the two sources to fix.
++    """
++    try:
++        parts = urllib.parse.urlsplit(str(url).strip())
++    except ValueError as e:
++        raise RemoteVisionError(
++            f"endpoint rejected ({_ENDPOINT_SOURCES}): unparseable URL ({type(e).__name__})"
++        ) from None
++    if parts.scheme not in ("http", "https"):
++        raise RemoteVisionError(
++            f"endpoint rejected ({_ENDPOINT_SOURCES}): scheme must be http:// or "
++            f"https://, got {parts.scheme or '<none>'!r}"
++        )
++    if parts.username is not None or parts.password is not None:
++        raise RemoteVisionError(
++            f"endpoint rejected ({_ENDPOINT_SOURCES}): embedded credentials "
++            f"(user:pass@) are not allowed — the token comes from env {TOKEN_ENV}"
++        )
++    if parts.query or parts.fragment:
++        raise RemoteVisionError(
++            f"endpoint rejected ({_ENDPOINT_SOURCES}): query strings and fragments "
++            f"are not allowed — the token comes from env {TOKEN_ENV}"
++        )
++    if not parts.hostname:
++        raise RemoteVisionError(
++            f"endpoint rejected ({_ENDPOINT_SOURCES}): missing host")
++    try:
++        parts.port
++    except ValueError:
++        raise RemoteVisionError(
++            f"endpoint rejected ({_ENDPOINT_SOURCES}): invalid port") from None
++    if parts.scheme == "http" and not (allow_plaintext_lan or _is_loopback(parts.hostname)):
++        raise RemoteVisionError(
++            f"endpoint rejected ({_ENDPOINT_SOURCES}): plaintext http is only allowed "
++            f"for loopback hosts, or with allow_plaintext_lan: true (an explicit "
++            f"opt-in: frames and the token then leave the host unencrypted)"
++        )
++    return parts
++
++
++def validate_remote_settings(*, endpoint: str = "", timeout_s: float = 10.0,
++                             labels: Sequence[str] = (), max_age_s: float = 30.0,
++                             allow_plaintext_lan: bool = False,
++                             jpeg_quality: int = 85,
++                             kind: str = "remote") -> None:
++    """Validate the M2 remote knobs at load (A8); raises ``RemoteVisionError``.
++
++    ``timeout_s`` must satisfy ``0 < timeout_s <= min(max_age_s, 60)``: a pass
++    slower than ``max_age_s`` would be merged never (stale-drop, semantics.py:628-630)
++    and 60 s is the absolute ceiling for a control-loop caller. A real kind
++    (``local``/``remote``) needs a non-empty prompt (``labels``). An endpoint —
++    when one is given — must pass ``validate_endpoint``.
++    """
++    where = "semantics.model"
++    if (not isinstance(timeout_s, (int, float)) or isinstance(timeout_s, bool)
++            or not math.isfinite(float(timeout_s))):
++        raise RemoteVisionError(f"{where}.timeout_s must be a finite number, got {timeout_s!r}")
++    cap = min(max_age_s, TIMEOUT_CAP_S) if (
++        isinstance(max_age_s, (int, float)) and not isinstance(max_age_s, bool)
++        and math.isfinite(float(max_age_s)) and max_age_s > 0) else TIMEOUT_CAP_S
++    if not (0 < timeout_s <= cap):
++        raise RemoteVisionError(
++            f"{where}.timeout_s must satisfy 0 < timeout_s <= {cap} "
++            f"(= min(semantics.max_age_s, {TIMEOUT_CAP_S})); got {timeout_s}"
++        )
++    if kind in ("local", "remote") and not [str(x).strip() for x in labels if str(x).strip()]:
++        raise RemoteVisionError(
++            f"{where}.labels must name at least one prompt label for kind={kind!r} "
++            f"(a real model with no prompt can only return nothing)"
++        )
++    if not (isinstance(jpeg_quality, int) and not isinstance(jpeg_quality, bool)
++            and 1 <= jpeg_quality <= 100):
++        raise RemoteVisionError(f"{where}.jpeg_quality must be within [1, 100], got {jpeg_quality!r}")
++    if str(endpoint).strip():
++        validate_endpoint(endpoint, allow_plaintext_lan=allow_plaintext_lan)
++
++
++def resolve_endpoint(configured: str = "") -> str:
++    """Env wins, then the configured endpoint; empty → error naming both (A8)."""
++    env_url = os.environ.get(ENDPOINT_ENV, "").strip()
++    url = env_url or str(configured).strip()
++    if not url:
++        raise RemoteVisionError(
++            f"remote vision endpoint is not set: {_ENDPOINT_SOURCES} are both empty"
++        )
++    return url
++
++
++# ------------------------------------------------------------- transport (A3)
++class _NoRedirect(urllib.request.HTTPRedirectHandler):
++    """Never follow redirects: a cross-host 30x would resend the token (threat #9)."""
++
++    def redirect_request(self, req, fp, code, msg, headers, newurl):   # noqa: D102
++        return None
++
++
++def build_opener() -> urllib.request.OpenerDirector:
++    """Default opener: no redirect following, environment proxies ignored (threat #10)."""
++    return urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirect())
++
++
++def _default_opener(req: urllib.request.Request, timeout: float | None = None):
++    return _DEFAULT_OPENER.open(req, timeout=timeout)
++
++
++_DEFAULT_OPENER = build_opener()
++
++
++# ------------------------------------------------------------------- parsing
++def _clean_model(value: Any) -> str | None:
++    """A1: sanitize a server-reported model string for logs/telemetry."""
++    if not isinstance(value, str):
++        return None
++    text = re.sub(r"[^\x20-\x7e]", "", value).strip()[:MAX_MODEL_CHARS]
++    return text or None
++
++
++def _clean_ms(value: Any) -> int | None:
++    if isinstance(value, bool) or not isinstance(value, (int, float)):
++        return None
++    v = float(value)
++    if not math.isfinite(v) or v < 0 or v > 86_400_000:
++        return None
++    return int(v)
++
++
++def _parse_entry(item: Any, w: int, h: int) -> Detection | None:
++    """Validate one detection entry; None = malformed (skipped, counted)."""
++    if not isinstance(item, dict):
++        return None
++    label = item.get("label")
++    bbox = item.get("bbox_px")
++    score = item.get("score", 1.0)
++    if not isinstance(label, str) or not label.strip():
++        return None
++    if (not isinstance(bbox, (list, tuple)) or len(bbox) != 4
++            or not all(isinstance(v, (int, float)) and not isinstance(v, bool)
++                       and math.isfinite(v) for v in bbox)):
++        return None
++    x0, y0, x1, y1 = (float(v) for v in bbox)
++    if x1 <= x0 or y1 <= y0:                                   # degenerate box
++        return None
++    pad = 8.0                                                  # rounding tolerance
++    if x0 < -pad or y0 < -pad or x1 > w + pad or y1 > h + pad:  # outside sent image
++        return None
++    if (not isinstance(score, (int, float)) or isinstance(score, bool)
++            or not math.isfinite(score)):
++        return None
++    score = min(1.0, max(0.0, float(score)))
++    return Detection(label, (int(round(x0)), int(round(y0)),
++                             int(round(x1)), int(round(y1))), score)
++
++
++def _encode_jpeg(frame: np.ndarray, quality: int, max_px: int, w: int, h: int) -> bytes:
++    """A2: px cap is enforced *before* any encode work."""
++    if w * h > max_px:
++        raise RemoteVisionError(
++            f"frame too large to encode: {w}x{h} ({w * h} px) exceeds the {max_px} px cap")
++    ok, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, int(quality)])
++    if not ok:                                                 # pragma: no cover
++        raise RemoteVisionError("JPEG encode failed")
++    return buf.tobytes()
++
++
++class RemoteVision:
++    """HTTP vision adapter: one POST per pass, env-only secrets, static name."""
++
++    name = NAME                                               # A9: class constant
++
++    def __init__(self, endpoint: str = "", timeout_s: float = 10.0, *,
++                 labels: Sequence[str] = (), max_age_s: float = 30.0,
++                 allow_plaintext_lan: bool = False, jpeg_quality: int = 85,
++                 max_frame_px: int = MAX_FRAME_PX,
++                 response_cap: int = MAX_RESPONSE_BYTES, opener=None):
++        validate_remote_settings(endpoint=endpoint, timeout_s=timeout_s, labels=labels,
++                                 max_age_s=max_age_s,
++                                 allow_plaintext_lan=allow_plaintext_lan,
++                                 jpeg_quality=jpeg_quality)
++        self._endpoint_cfg = str(endpoint or "")
++        self.timeout_s = float(timeout_s)
++        self.labels = [str(x) for x in labels]
++        self.max_age_s = float(max_age_s)
++        self.allow_plaintext_lan = bool(allow_plaintext_lan)
++        self.jpeg_quality = int(jpeg_quality)
++        self.max_frame_px = int(max_frame_px)
++        self.response_cap = int(response_cap)
++        self._opener = opener or _default_opener
++        # A1/A2 telemetry (sanitized; never carries the token or the endpoint)
++        self.last_protocol: int | None = None
++        self.last_model: str | None = None
++        self.last_ms: int | None = None
++        self.last_request_id: str | None = None
++        self.last_skipped = 0
++        self.last_truncated = 0
++
++    # ------------------------------------------------------------------ util
++    def _effective_endpoint(self) -> str:
++        return resolve_endpoint(self._endpoint_cfg)
++
++    def telemetry(self) -> dict[str, Any]:
++        """A1: the safe subset worth surfacing in stats()/PassResult."""
++        return {"protocol": self.last_protocol, "model": self.last_model,
++                "ms": self.last_ms, "request_id": self.last_request_id,
++                "skipped": self.last_skipped, "truncated": self.last_truncated}
++
++    # ----------------------------------------------------------------- infer
++    def infer(self, frame: np.ndarray, *, labels: list[str] | None = None) -> list[Detection]:
++        """One POST, one attempt. Raises RemoteVisionError on any failure (A4)."""
++        try:
++            return self._infer_once(frame, labels=labels)
++        except RemoteVisionError as e:
++            msg = _scrub(str(e))
++            if msg != str(e):
++                raise RemoteVisionError(msg) from None
++            raise
++
++    def _infer_once(self, frame: np.ndarray, *, labels: list[str] | None) -> list[Detection]:
++        url = self._effective_endpoint()
++        parts = validate_endpoint(url, allow_plaintext_lan=self.allow_plaintext_lan)
++        want = [str(x) for x in (self.labels if labels is None else labels)]
++        if not want:
++            raise RemoteVisionError(
++                "remote vision labels are empty: semantics.model.labels (or the "
++                "labels= argument) must name at least one prompt label for a remote model")
++        if frame is None or not isinstance(frame, np.ndarray) or frame.ndim != 3:
++            raise RemoteVisionError("expected a BGR frame (H, W, 3) to send")
++        h, w = int(frame.shape[0]), int(frame.shape[1])
++        if h <= 0 or w <= 0:
++            raise RemoteVisionError(f"bad frame shape: {frame.shape}")
++        jpeg = _encode_jpeg(frame, self.jpeg_quality, self.max_frame_px, w, h)
++
++        request_id = uuid.uuid4().hex[:12]
++        self.last_request_id = request_id
++        payload = {
++            "protocol": PROTOCOL,
++            "request_id": request_id,
++            "labels": want,
++            "image_b64": base64.b64encode(jpeg).decode("ascii"),
++            "width": w,
++            "height": h,
++            "format": "jpeg",
++            "timeout_ms": int(round(self.timeout_s * 1000)),
++        }
++        headers = {"Content-Type": "application/json"}
++        token = os.environ.get(TOKEN_ENV, "")
++        if token:
++            # Header only: never in the URL (config-visible, may be logged) and
++            # never in the body (bodies get captured). A3: only over a transport
++            # the policy allows (https, loopback, or the explicit LAN opt-in).
++            if not (parts.scheme == "https" or self.allow_plaintext_lan
++                    or _is_loopback(parts.hostname)):
++                raise RemoteVisionError(
++                    f"refusing to send env {TOKEN_ENV} over {parts.scheme}://{parts.hostname}")
++            headers["Authorization"] = f"Bearer {token}"
++        req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"),
++                                     headers=headers, method="POST")
++        try:
++            with self._opener(req, timeout=self.timeout_s) as resp:
++                status = int(getattr(resp, "status", 200))
++                raw = resp.read(self.response_cap + 1)
++        except urllib.error.HTTPError as e:                    # 4xx/5xx (+ 30x: never followed)
++            raise RemoteVisionError(_scrub(f"HTTP {e.code}: {e.reason}")) from None
++        except (urllib.error.URLError, TimeoutError, socket.timeout) as e:
++            reason = getattr(e, "reason", e)
++            raise RemoteVisionError(_scrub(
++                f"transport error: {type(reason).__name__}: {reason}")) from None
++        except (OSError, http.client.HTTPException) as e:
++            raise RemoteVisionError(_scrub(
++                f"transport error: {type(e).__name__}: {e}")) from None
++        if not (200 <= status < 300):
++            raise RemoteVisionError(f"HTTP {status}")
++        if len(raw) > self.response_cap:                       # A2
++            raise RemoteVisionError(
++                f"response exceeds the {self.response_cap} byte cap")
++        try:
++            doc = json.loads(raw.decode("utf-8"))
++        except (UnicodeDecodeError, json.JSONDecodeError) as e:
++            raise RemoteVisionError(_scrub(f"malformed JSON: {type(e).__name__}")) from None
++        if not isinstance(doc, dict) or not isinstance(doc.get("detections"), list):
++            raise RemoteVisionError(
++                "schema: expected {'detections': [...], 'protocol': 1}")
++        proto = doc.get("protocol")
++        if isinstance(proto, bool) or not isinstance(proto, int):
++            raise RemoteVisionError(
++                f"response is missing the protocol echo: expected protocol={PROTOCOL}")
++        if proto != PROTOCOL:                                  # A1
++            raise RemoteVisionError(
++                f"protocol mismatch: adapter speaks {PROTOCOL}, response said {proto}")
++        self.last_protocol = proto
++        self.last_model = _clean_model(doc.get("model"))
++        self.last_ms = _clean_ms(doc.get("ms"))
++
++        all_entries = doc["detections"]
++        self.last_truncated = max(0, len(all_entries) - MAX_DETECTIONS)   # A2
++        entries = all_entries[:MAX_DETECTIONS]
++        dets: list[Detection] = []
++        skipped = 0
++        for item in entries:
++            parsed = _parse_entry(item, w, h)
++            if parsed is None:
++                skipped += 1
++                continue
++            dets.append(parsed)
++        self.last_skipped = skipped
++        if entries and not dets:
++            # All-invalid is a protocol failure, not an empty scene (threat #6/D2).
++            raise RemoteVisionError(f"all {skipped} detection entries malformed")
++        return dets
+diff --git a/tests/test_remotevision_acceptance.py b/tests/test_remotevision_acceptance.py
+new file mode 100644
+index 0000000..8f0f476
+--- /dev/null
++++ b/tests/test_remotevision_acceptance.py
+@@ -0,0 +1,780 @@
++"""RemoteVision acceptance pack (M2 forward-landing, A1–A9) — loopback only.
++
++Drives the **real** ``SemanticsWorker``/``SemanticsRunner`` (semantics.py, PR tip
++bec1d91) against ``remotevision.RemoteVision`` talking to a stdlib loopback mock
++(127.0.0.1, ephemeral port). Nothing but 127.0.0.1 is contacted; no TLS, no
++external host, no proxies are exercised (see the report's limitations section).
++
++A-items (runs/20260928-2057/w4c-remotevision-threat.md §5):
++  A1 protocol echo + response model/ms telemetry
++  A2 size caps (1 MiB response, frame-px cap before encode, MAX_DETECTIONS=64)
++  A3 plaintext/TLS policy, endpoint hygiene, no redirects, no env proxies
++  A4 exactly one HTTP attempt per pass (failures go to the runner cooldown)
++  A5 max_passes_per_min=2 → ≤2 POSTs per simulated minute
++  A6 secret hygiene (mandatory): sentinel absent from artifacts/logs/errors
++  A7 failure isolation: timeout/500/malformed/schema/all-invalid/refused
++  A8 validation bounds (timeout, labels, endpoint) naming config key + env var
++  A9 static ``name``, artifact-safe
++
++Run:  PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider \
++          tests/test_remotevision_acceptance.py
++"""
++from __future__ import annotations
++
++import hashlib
++import json
++import re
++import socket
++import threading
++import time
++import urllib.request
++from dataclasses import replace
++from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
++from typing import Any
++
++import numpy as np
++import pytest
++
++import remotevision
++from config import ConfigError, RoomConfig
++from perception import Homography, SemanticContext
++from remotevision import (ENDPOINT_ENV, MAX_FRAME_PX, MAX_RESPONSE_BYTES, NAME,
++                          TOKEN_ENV, RemoteVision, RemoteVisionError)
++from semantics import MAX_DETECTIONS, SemanticsRunner
++
++ROOM = "remoteacc"
++FRAME = np.zeros((120, 160, 3), np.uint8)          # 160x120 px
++SENTINEL = "s3ntinel-t0ken-do-not-leak-9f1c"       # test fixture, not a real secret
++
++STUB_BODY: dict[str, Any] = {
++    "protocol": 1, "model": "stub-model", "ms": 5,
++    "detections": [{"label": "mat", "bbox_px": [20, 30, 60, 70], "score": 0.91},
++                   {"label": "bottle", "bbox_px": [80, 10, 100, 40], "score": 0.77}],
++}
++
++
++# --------------------------------------------------------------------- mock
++def _ok_body(model: str = "mock-model", ms: int = 7, protocol: Any = 1) -> dict:
++    return {"protocol": protocol, "model": model, "ms": ms,
++            "detections": [{"label": "mat", "bbox_px": [20, 30, 60, 70], "score": 0.91},
++                           {"label": "bottle", "bbox_px": [80, 10, 100, 40], "score": 0.77}]}
++
++
++def _many_body(n: int = 65) -> dict:
++    dets = []
++    for i in range(n):
++        col, row = i % 16, i // 16                       # boxes 9x9 on a 160x120 frame
++        x0, y0 = col * 10 + 1, row * 10 + 1
++        dets.append({"label": f"d{i:02d}", "bbox_px": [x0, y0, x0 + 8, y0 + 8], "score": 0.5})
++    return {"protocol": 1, "model": "mock", "ms": 3, "detections": dets}
++
++
++def _atcap_body() -> bytes:
++    prefix, suffix = b'{"protocol": 1, "detections": [], "pad": "', b'"}'
++    return prefix + b"x" * (MAX_RESPONSE_BYTES - len(prefix) - len(suffix)) + suffix
++
++
++def _toobig_body() -> bytes:
++    prefix, suffix = b'{"protocol": 1, "detections": [], "pad": "', b'"}'
++    return prefix + b"x" * (MAX_RESPONSE_BYTES + 1) + suffix
++
++
++class MockVisionServer:
++    """Loopback mock. Modes: ok / slow / http500 / malformed / schema / allinvalid /
++    protocol2 / noproto / proto_bool / hostilemodel / many65 / toobig / atcap / redirect."""
++
++    def __init__(self) -> None:
++        self.mode = "ok"
++        self.sleep_s = 0.6
++        self.redirect_to = ""
++        self.requests: list[dict] = []
++        self.bodies: list[bytes] = []
++        outer = self
++
++        class Handler(BaseHTTPRequestHandler):
++            protocol_version = "HTTP/1.1"
++
++            def log_message(self, *args):                # silence stderr noise
++                pass
++
++            def do_POST(self):
++                n = int(self.headers.get("Content-Length", "0") or "0")
++                body = self.rfile.read(n)
++                outer.requests.append({
++                    "path": self.path,
++                    "authorization": self.headers.get("Authorization", ""),
++                    "headers": {k: v for k, v in self.headers.items()},
++                    "content_type": self.headers.get("Content-Type", ""),
++                    "body_len": len(body),
++                    "mode": outer.mode,
++                })
++                outer.bodies.append(bytes(body))
++                mode = outer.mode
++                if mode == "slow":
++                    time.sleep(outer.sleep_s)
++                try:
++                    if mode == "http500":
++                        self._send(500, b"boom", "text/plain")
++                    elif mode == "malformed":
++                        self._send(200, b'{"protocol": 1, "detections": [oops',
++                                   "application/json")
++                    elif mode == "schema":
++                        self._send(200, json.dumps(
++                            {"protocol": 1, "detections": {"not": "a list"}}).encode(),
++                            "application/json")
++                    elif mode == "allinvalid":
++                        self._send(200, json.dumps(_ok_body() | {
++                            "detections": [{"label": "mat", "bbox_px": [5, 5, 5, 5],
++                                            "score": 0.9}]}).encode(), "application/json")
++                    elif mode == "protocol2":
++                        self._send(200, json.dumps(_ok_body(protocol=2)).encode(),
++                                   "application/json")
++                    elif mode == "noproto":
++                        self._send(200, json.dumps(
++                            {"model": "mock", "detections": []}).encode(), "application/json")
++                    elif mode == "proto_bool":
++                        self._send(200, json.dumps(_ok_body(protocol=True)).encode(),
++                                   "application/json")
++                    elif mode == "hostilemodel":
++                        self._send(200, json.dumps(
++                            {"protocol": 1, "model": "bad\nmodel\x1b[31m",
++                             "detections": []}).encode(), "application/json")
++                    elif mode == "many65":
++                        self._send(200, json.dumps(_many_body()).encode(), "application/json")
++                    elif mode == "toobig":
++                        self._send(200, _toobig_body(), "application/json")
++                    elif mode == "atcap":
++                        self._send(200, _atcap_body(), "application/json")
++                    elif mode == "redirect":
++                        self.send_response(302)
++                        self.send_header("Location", outer.redirect_to)
++                        self.send_header("Content-Length", "0")
++                        self.end_headers()
++                    else:
++                        self._send(200, json.dumps(_ok_body()).encode(), "application/json")
++                except (BrokenPipeError, ConnectionResetError):
++                    pass                                  # client timed out / read cap
++
++            def _send(self, code: int, payload: bytes, ctype: str):
++                self.send_response(code)
++                self.send_header("Content-Type", ctype)
++                self.send_header("Content-Length", str(len(payload)))
++                self.end_headers()
++                self.wfile.write(payload)
++
++        self._httpd = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
++        self.port = self._httpd.server_address[1]
++        self.url = f"http://127.0.0.1:{self.port}/detect"
++        self._thread = threading.Thread(target=self._httpd.serve_forever, daemon=True)
++
++    def start(self) -> "MockVisionServer":
++        self._thread.start()
++        return self
++
++    def stop(self) -> None:
++        self._httpd.shutdown()
++        self._httpd.server_close()
++
++
++def dead_port() -> int:
++    """A 127.0.0.1 port that will refuse connections."""
++    s = socket.socket()
++    s.bind(("127.0.0.1", 0))
++    port = s.getsockname()[1]
++    s.close()
++    return port
++
++
++# ------------------------------------------------------------------ stubs
++class _StubResponse:
++    def __init__(self, payload: bytes, status: int = 200):
++        self._payload, self.status = payload, status
++
++    def read(self, n: int = -1) -> bytes:
++        return self._payload if n is None or n < 0 else self._payload[:n]
++
++    def __enter__(self):
++        return self
++
++    def __exit__(self, *exc):
++        return False
++
++
++class _StubTransport:
++    """Injected transport (m2-design.md:351): captures requests, no socket."""
++
++    def __init__(self, body: dict | bytes | None = None, status: int = 200):
++        self.body = STUB_BODY if body is None else body
++        self.status = status
++        self.calls: list[urllib.request.Request] = []
++
++    def __call__(self, req, timeout=None):
++        self.calls.append(req)
++        payload = self.body if isinstance(self.body, bytes) else json.dumps(self.body).encode()
++        return _StubResponse(payload, self.status)
++
++
++# ------------------------------------------------------------------ helpers
++@pytest.fixture(autouse=True)
++def _clean_env(monkeypatch):
++    """No ambient endpoint/token may leak into a test."""
++    monkeypatch.delenv(ENDPOINT_ENV, raising=False)
++    monkeypatch.delenv(TOKEN_ENV, raising=False)
++
++
++@pytest.fixture()
++def mock():
++    srv = MockVisionServer().start()
++    try:
++        yield srv
++    finally:
++        srv.stop()
++
++
++def _ctx(floor_lab=np.array([180.0, 128.0, 128.0])) -> SemanticContext:
++    # verbatim from tests/test_semantics_worker.py:37-46 (PR tip)
++    H = Homography([[0, 0], [100, 0], [100, 100], [0, 100]],
++                   [[0, 0], [1, 0], [1, 1], [0, 1]])
++    return SemanticContext(
++        homography=H, room_w_m=1.0, room_h_m=1.0, cell_m=0.05,
++        polygon_px=np.array([[0, 0], [100, 0], [100, 100], [0, 100]], float),
++        floor_lab=floor_lab, floor_lab_tolerance=20.0,
++        grid_log_odds=np.zeros((20, 20), np.float32),
++        grid_last_seen=np.zeros((20, 20), np.float32),
++        grid_t=0.0, occupied_thr=0.42, stale_s=3.0)
++
++
++def _runner(vision, tmp_path, **overrides) -> SemanticsRunner:
++    cfg = RoomConfig()
++    cfg.name = ROOM
++    cfg.semantics = replace(cfg.semantics, store_dir=str(tmp_path), **overrides)
++    return SemanticsRunner(cfg, ROOM, vision)
++
++
++def _drain(runner: SemanticsRunner, t: float, deadline: float = 5.0):
++    end = time.time() + deadline
++    while time.time() < end:
++        res = runner.poll(t + 0.001)
++        if res is not None:
++            return res
++        time.sleep(0.005)
++    return None
++
++
++def _wait_error(runner: SemanticsRunner, want: int, deadline: float = 5.0) -> bool:
++    end = time.time() + deadline
++    while time.time() < end:
++        if runner.worker.errors >= want:
++            return True
++        time.sleep(0.005)
++    return False
++
++
++def _consume_error(runner: SemanticsRunner, t: float) -> None:
++    time.sleep(0.05)                                  # let the worker's _push land
++    assert runner.poll(t) is None, "an error result must not merge"
++
++
++# =========================================================== A6 (mandatory)
++def test_a6_sentinel_absent_from_artifacts_stats_and_errors(tmp_path, mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    monkeypatch.setenv(TOKEN_ENV, SENTINEL)
++    vision = RemoteVision(timeout_s=2.0, labels=["mat", "bottle"])
++    runner = _runner(vision, tmp_path, failure_cooldown_s=1.0, min_interval_s=0.0,
++                     max_passes_per_min=200)
++    try:
++        assert runner.maybe_pass(1.0, _ctx(), FRAME, force=True)
++        merged = _drain(runner, 1.0)
++        assert merged is not None and len(merged.objects) == 2
++        mock.mode = "http500"                          # a failing pass must stay clean too
++        assert runner.maybe_pass(10.0, _ctx(), FRAME, force=True)
++        assert _wait_error(runner, 1)
++        _consume_error(runner, 10.0)
++        assert "HTTP 500" in (runner.worker.last_error or "")
++
++        artifacts = {
++            f"{ROOM}_latest.json": (tmp_path / f"{ROOM}_latest.json").read_text(),
++            "events.jsonl": (tmp_path / "events.jsonl").read_text(),
++            "stats()": json.dumps(runner.stats()),
++            "last_error": runner.worker.last_error or "",
++            "telemetry()": json.dumps(vision.telemetry()),
++        }
++        leaked = [name for name, text in artifacts.items() if SENTINEL in text]
++        assert not leaked, f"sentinel leaked into {leaked}"
++        # the mock really did receive the token (proof the pass was authenticated)
++        assert mock.requests and all(
++            r["authorization"] == f"Bearer {SENTINEL}" for r in mock.requests)
++    finally:
++        runner.close()
++
++
++def test_a6_token_rides_only_in_the_authorization_header(mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    monkeypatch.setenv(TOKEN_ENV, SENTINEL)
++    vision = RemoteVision(timeout_s=2.0, labels=["mat", "bottle"])
++    assert [d.label for d in vision.infer(FRAME)] == ["mat", "bottle"]
++    rec = mock.requests[-1]
++    assert rec["authorization"] == f"Bearer {SENTINEL}"
++    assert SENTINEL not in rec["path"]                 # never in the URL
++    assert SENTINEL.encode() not in mock.bodies[-1]    # never in the body
++    for name, value in rec["headers"].items():
++        if name.lower() != "authorization":
++            assert SENTINEL not in value, f"sentinel in header {name!r}"
++
++
++def test_a6_sentinel_never_in_error_text_or_exception(monkeypatch):
++    monkeypatch.setenv(TOKEN_ENV, SENTINEL)
++    monkeypatch.setenv(ENDPOINT_ENV, f"http://127.0.0.1:{dead_port()}/detect")
++    vision = RemoteVision(timeout_s=1.0, labels=["mat"])
++    with pytest.raises(RemoteVisionError) as exc:
++        vision.infer(FRAME)
++    assert SENTINEL not in str(exc.value)
++    assert "Connection refused" in str(exc.value)
++    # hostile endpoints that embed the sentinel are rejected without echoing it
++    for bogus in (f"http://127.0.0.1:9/detect?access_token={SENTINEL}",
++                  f"http://user:{SENTINEL}@127.0.0.1:9/detect"):
++        monkeypatch.setenv(ENDPOINT_ENV, bogus)
++        with pytest.raises(RemoteVisionError) as exc2:
++            vision.infer(FRAME)
++        assert SENTINEL not in str(exc2.value)
++        assert ENDPOINT_ENV in str(exc2.value)
++
++
++def test_a6_config_token_key_is_rejected():
++    stub = {"name": ROOM,
++            "homography": {"image_points_px": [[0, 0], [100, 0], [100, 100], [0, 100]],
++                           "world_points_m": [[0, 0], [1, 0], [1, 1], [0, 1]]},
++            "floor": {"polygon_px": [[0, 0], [100, 0], [100, 100], [0, 100]]},
++            "semantics": {"model": {"kind": "remote", "labels": ["mat"], "token": "x"}}}
++    with pytest.raises(ConfigError) as exc:
++        RoomConfig.from_dict(stub, where=ROOM)
++    assert "unknown key" in str(exc.value) and "token" in str(exc.value)
++    keys = sorted(RoomConfig().to_dict()["semantics"]["model"].keys())
++    assert "token" not in keys
++    assert "endpoint" in keys                          # (persisted when config is saved)
++
++
++# ======================================================================= A1
++def test_a1_protocol_echo_recorded_and_request_shape(mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    vision = RemoteVision(timeout_s=2.0, labels=["mat", "bottle"])
++    assert len(vision.infer(FRAME)) == 2
++    assert vision.last_protocol == 1
++    assert vision.last_model == "mock-model"           # A1: model recorded
++    assert vision.last_ms == 7                         # A1: ms recorded
++    assert vision.telemetry()["model"] == "mock-model"
++    body = json.loads(mock.bodies[-1])
++    assert body["protocol"] == 1 and body["format"] == "jpeg"
++    assert body["width"] == 160 and body["height"] == 120
++    assert body["timeout_ms"] == 2000
++    assert body["labels"] == ["mat", "bottle"]
++    assert body["request_id"] == vision.last_request_id
++    assert body["image_b64"].startswith("/9j/")        # JPEG SOI magic
++    assert mock.requests[-1]["content_type"] == "application/json"
++
++
++@pytest.mark.parametrize("mode", ["protocol2", "noproto", "proto_bool"])
++def test_a1_protocol_mismatch_or_missing_raises(mock, monkeypatch, mode):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    mock.mode = mode
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    with pytest.raises(RemoteVisionError) as exc:
++        vision.infer(FRAME)
++    assert "protocol" in str(exc.value)
++    assert vision.last_protocol is None                # no partial telemetry
++
++
++def test_a1_runner_pass_records_response_telemetry(tmp_path, mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    runner = _runner(vision, tmp_path, min_interval_s=0.0, max_passes_per_min=200)
++    try:
++        assert runner.maybe_pass(1.0, _ctx(), FRAME, force=True)
++        assert _drain(runner, 1.0) is not None
++        assert (vision.last_model, vision.last_ms, vision.last_protocol) == \
++            ("mock-model", 7, 1)
++    finally:
++        runner.close()
++
++
++def test_a1_hostile_model_string_is_sanitized(mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    mock.mode = "hostilemodel"
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    assert vision.infer(FRAME) == []
++    assert vision.last_model == "badmodel[31m"         # control chars stripped
++    assert "\n" not in vision.last_model and len(vision.last_model) <= 64
++
++
++# ======================================================================= A7
++@pytest.mark.parametrize("mode, timeout_s, needle", [
++    ("slow", 0.15, "Timeout"),
++    ("http500", 2.0, "HTTP 500: Internal Server Error"),
++    ("malformed", 2.0, "malformed JSON"),
++    ("schema", 2.0, "schema: expected"),
++    ("allinvalid", 2.0, "all 1 detection entries malformed"),
++    ("refused", 2.0, "Connection refused"),
++], ids=["timeout", "http-500", "malformed-json", "wrong-schema",
++        "all-invalid", "connection-refused"])
++def test_a7_failure_isolated_then_recovery(tmp_path, mock, monkeypatch,
++                                           mode, timeout_s, needle):
++    """w4c driver scenario port: clean error, thread alive, cooldown, recovery."""
++    if mode == "refused":
++        monkeypatch.setenv(ENDPOINT_ENV, f"http://127.0.0.1:{dead_port()}/detect")
++    else:
++        monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++        mock.mode = mode
++    vision = RemoteVision(timeout_s=timeout_s, labels=["mat", "bottle"])
++    runner = _runner(vision, tmp_path, failure_cooldown_s=5.0, min_interval_s=0.0,
++                     max_passes_per_min=200)
++    tb = 100.0
++    try:
++        assert runner.maybe_pass(tb, _ctx(), FRAME, force=True)
++        assert _wait_error(runner, 1)
++        _consume_error(runner, tb)
++        err = runner.worker.last_error or ""
++        assert err.startswith("RemoteVisionError: "), err
++        assert needle in err, err
++        assert abs(runner.fail_cooldown_until - (tb + 5.0)) < 1e-6
++        assert not runner.maybe_pass(tb + 1.0, _ctx(), FRAME, force=True)
++        assert runner.skipped["cooldown"] == 1
++        assert runner.worker._thread.is_alive()
++        assert runner._inflight is None
++        mock.mode = "ok"                               # recovery
++        monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++        assert runner.maybe_pass(tb + 5.0, _ctx(), FRAME, force=True)
++        merged = _drain(runner, tb + 5.0)
++        assert merged is not None and runner.store.passes == 1
++        assert [o.label for o in merged.objects] == ["mat", "bottle"]
++    finally:
++        runner.close()
++
++
++def test_a7_six_consecutive_failures_keep_worker_healthy(tmp_path, mock, monkeypatch):
++    """w4c driver sections D/E: 6 failures interleaved with recoveries, one runner."""
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    vision = RemoteVision(timeout_s=0.15, labels=["mat", "bottle"])
++    runner = _runner(vision, tmp_path, failure_cooldown_s=1.0, min_interval_s=0.0,
++                     max_passes_per_min=200)
++    dead = f"http://127.0.0.1:{dead_port()}/detect"
++    modes = ["http500", "malformed", "schema", "allinvalid", "slow", "refused"]
++    try:
++        assert runner.maybe_pass(1.0, _ctx(), FRAME, force=True)   # baseline
++        assert _drain(runner, 1.0) is not None
++        errors = 0
++        for i, mode in enumerate(modes):
++            t = 10.0 + 5.0 * i
++            if mode == "refused":
++                monkeypatch.setenv(ENDPOINT_ENV, dead)
++            else:
++                mock.mode = mode
++                monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++            assert runner.maybe_pass(t, _ctx(), FRAME, force=True)
++            errors += 1
++            assert _wait_error(runner, errors)
++            _consume_error(runner, t)
++            assert not runner.maybe_pass(t + 0.1, _ctx(), FRAME, force=True), \
++                "cooldown must block the next submit"
++            mock.mode = "ok"
++            monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++            assert runner.maybe_pass(t + 1.0, _ctx(), FRAME, force=True)
++            assert _drain(runner, t + 1.0) is not None, f"recovery failed after {mode}"
++        stats = runner.stats()
++        assert stats["passes"] == 7 and stats["errors"] == 6
++        assert stats["passes_started"] == 13
++        assert stats["skipped"]["cooldown"] == 6
++        assert runner.worker._thread.is_alive()
++    finally:
++        runner.close()
++
++
++def test_a7_slow_server_never_blocks_the_control_loop(tmp_path, mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    mock.mode = "slow"
++    vision = RemoteVision(timeout_s=0.25, labels=["mat"])
++    runner = _runner(vision, tmp_path, failure_cooldown_s=5.0, min_interval_s=0.0,
++                     max_passes_per_min=200)
++    try:
++        t0 = time.time()
++        ok = runner.maybe_pass(2.0, _ctx(), FRAME, force=True)
++        dt = time.time() - t0
++        assert ok and dt < 0.05, f"submit blocked for {dt * 1000:.1f} ms"
++        assert not runner.maybe_pass(2.1, _ctx(), FRAME, force=True)
++        assert runner.skipped["inflight"] == 1
++        t0 = time.time()
++        for _ in range(60):
++            runner.poll(2.0)
++            runner.snapshot(2.0)
++        assert time.time() - t0 < 0.2, "poll+snapshot must stay cheap while in flight"
++        assert _wait_error(runner, 1)
++        _consume_error(runner, 2.0)
++        assert (runner.worker.last_error or "").startswith("RemoteVisionError: transport error")
++        assert runner.worker._thread.is_alive()
++    finally:
++        runner.close()
++
++
++# ======================================================================= A2
++def test_a2_constants_pinned():
++    assert MAX_RESPONSE_BYTES == 1024 * 1024
++    assert MAX_FRAME_PX == 8_000_000
++    assert MAX_DETECTIONS == 64
++
++
++def test_a2_oversized_response_is_rejected(mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    mock.mode = "toobig"
++    vision = RemoteVision(timeout_s=5.0, labels=["mat"])
++    with pytest.raises(RemoteVisionError) as exc:
++        vision.infer(FRAME)
++    assert "cap" in str(exc.value)
++    assert vision.last_protocol is None
++
++
++def test_a2_response_exactly_at_cap_is_accepted(mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    mock.mode = "atcap"
++    vision = RemoteVision(timeout_s=5.0, labels=["mat"])
++    assert vision.infer(FRAME) == []
++
++
++def test_a2_frame_px_cap_applies_before_encode(mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    calls: list[int] = []
++    monkeypatch.setattr(remotevision.cv2, "imencode",
++                        lambda *a, **k: calls.append(1) or (False, None))
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"], max_frame_px=1000)
++    with pytest.raises(RemoteVisionError) as exc:
++        vision.infer(FRAME)                            # 160x120 = 19200 px > 1000
++    assert "frame too large" in str(exc.value)
++    assert calls == [], "the px cap must be checked before any encode"
++    assert mock.requests == [], "oversized frames must never reach the wire"
++
++
++def test_a2_detections_truncated_to_max_detections(mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    mock.mode = "many65"
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    dets = vision.infer(FRAME)
++    assert len(dets) == MAX_DETECTIONS == 64
++    assert vision.last_truncated == 1 and vision.last_skipped == 0
++
++
++def test_a2_cap_holds_through_the_worker(tmp_path, mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    mock.mode = "many65"
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    runner = _runner(vision, tmp_path, min_interval_s=0.0, max_passes_per_min=200)
++    try:
++        assert runner.maybe_pass(1.0, _ctx(), FRAME, force=True)
++        merged = _drain(runner, 1.0)
++        assert merged is not None and runner.worker.errors == 0
++        assert len(merged.objects) <= MAX_DETECTIONS
++    finally:
++        runner.close()
++
++
++# ======================================================================= A4
++def test_a4_one_attempt_per_pass_on_failure(tmp_path, mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    mock.mode = "http500"
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    runner = _runner(vision, tmp_path, failure_cooldown_s=1.0, min_interval_s=0.0,
++                     max_passes_per_min=200)
++    try:
++        accepted = 0
++        for i in range(5):
++            t = 10.0 + 2.0 * i
++            assert runner.maybe_pass(t, _ctx(), FRAME, force=True)
++            accepted += 1
++            assert _wait_error(runner, accepted)
++            _consume_error(runner, t)
++        assert runner.worker.errors == accepted == 5
++        assert len(mock.requests) == accepted, "exactly one POST per pass — no retries"
++    finally:
++        runner.close()
++
++
++def test_a4_healthy_passes_are_one_post_each(tmp_path, mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    runner = _runner(vision, tmp_path, failure_cooldown_s=1.0, min_interval_s=0.0,
++                     max_passes_per_min=200)
++    try:
++        for i in range(3):
++            t = 10.0 + 2.0 * i
++            assert runner.maybe_pass(t, _ctx(), FRAME, force=True)
++            assert _drain(runner, t) is not None
++        assert len(mock.requests) == 3 == runner.worker.started
++        assert runner.worker.errors == 0
++    finally:
++        runner.close()
++
++
++# ======================================================================= A5
++def test_a5_budget_two_posts_per_simulated_minute(tmp_path, mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    runner = _runner(vision, tmp_path, max_passes_per_min=2, min_interval_s=0.0,
++                     failure_cooldown_s=1.0)
++    try:
++        accepted = 0
++        for i in range(120):                           # a simulated minute, 0.5 s steps
++            t = i * 0.5
++            if runner.maybe_pass(t, _ctx(), FRAME, force=True):
++                accepted += 1
++                assert _drain(runner, t) is not None
++        assert accepted == 2, f"budget must cap a minute at 2 passes, got {accepted}"
++        assert len(mock.requests) == 2, "the mock saw more POSTs than the budget allows"
++        assert runner.skipped["budget"] == 118
++    finally:
++        runner.close()
++
++
++# ======================================================================= A9
++def test_a9_name_is_static_and_artifact_safe(tmp_path, mock, monkeypatch):
++    assert RemoteVision.name == remotevision.NAME == NAME == "remote-vision-v1"
++    assert "://" not in RemoteVision.name
++    assert re.fullmatch(r"[a-z0-9][a-z0-9._-]*", RemoteVision.name)
++    rv = RemoteVision(labels=["mat"])
++    assert rv.name == RemoteVision.name and "name" not in vars(rv)
++
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    runner = _runner(vision, tmp_path, min_interval_s=0.0, max_passes_per_min=200)
++    try:
++        assert runner.maybe_pass(1.0, _ctx(), FRAME, force=True)
++        assert _drain(runner, 1.0) is not None
++        doc = json.loads((tmp_path / f"{ROOM}_latest.json").read_text())
++        assert doc["map"]["model"] == RemoteVision.name     # semantics.py:399-400/417-421
++    finally:
++        runner.close()
++
++
++# ======================================================================= A8
++def test_a8_timeout_bounds():
++    with pytest.raises(RemoteVisionError) as exc:
++        RemoteVision(labels=["mat"], timeout_s=0.0)
++    assert "semantics.model.timeout_s" in str(exc.value)
++    with pytest.raises(RemoteVisionError):
++        RemoteVision(labels=["mat"], timeout_s=-1.0)
++    with pytest.raises(RemoteVisionError) as exc2:
++        RemoteVision(labels=["mat"], timeout_s=31.0, max_age_s=30.0)
++    assert "semantics.max_age_s" in str(exc2.value)
++    with pytest.raises(RemoteVisionError):
++        RemoteVision(labels=["mat"], timeout_s=float("inf"), max_age_s=600.0)
++    RemoteVision(labels=["mat"], timeout_s=30.0, max_age_s=30.0)     # exactly max_age_s
++    RemoteVision(labels=["mat"], timeout_s=60.0, max_age_s=600.0)    # exactly the 60 s cap
++    with pytest.raises(RemoteVisionError):
++        RemoteVision(labels=["mat"], timeout_s=60.01, max_age_s=600.0)
++
++
++def test_a8_labels_required_for_remote_kind():
++    with pytest.raises(RemoteVisionError) as exc:
++        RemoteVision(endpoint="https://vision.example.invalid/detect")
++    assert "semantics.model.labels" in str(exc.value)
++    vision = RemoteVision(endpoint="https://vision.example.invalid/detect", labels=["mat"])
++    with pytest.raises(RemoteVisionError) as exc2:
++        vision.infer(FRAME, labels=[])
++    assert "labels" in str(exc2.value)
++
++
++@pytest.mark.parametrize("url", [
++    "://not-a-url at all", "ftp://127.0.0.1/detect", "http://",
++    "http://127.0.0.1:8080/detect?token=abc", "http://user:pw@127.0.0.1:8080/detect"])
++def test_a8_endpoint_rejected_at_load(url):
++    with pytest.raises(RemoteVisionError) as exc:
++        RemoteVision(url, labels=["mat"], timeout_s=2.0)
++    msg = str(exc.value)
++    assert "semantics.model.endpoint" in msg and ENDPOINT_ENV in msg, msg
++
++
++def test_a8_missing_endpoint_names_both_sources(monkeypatch):
++    monkeypatch.delenv(ENDPOINT_ENV, raising=False)
++    vision = RemoteVision(labels=["mat"])
++    with pytest.raises(RemoteVisionError) as exc:
++        vision.infer(FRAME)
++    msg = str(exc.value)
++    assert "semantics.model.endpoint" in msg and ENDPOINT_ENV in msg, msg
++
++
++# ======================================================================= A3
++def test_a3_plaintext_lan_refused_without_optin():
++    stub = _StubTransport()
++    with pytest.raises(RemoteVisionError) as exc:
++        RemoteVision("http://192.168.1.20:8080/detect", labels=["mat"], opener=stub)
++    msg = str(exc.value)
++    assert "allow_plaintext_lan" in msg
++    assert "semantics.model.endpoint" in msg and ENDPOINT_ENV in msg
++    assert stub.calls == [], "no transport may be attempted for a refused endpoint"
++
++
++def test_a3_plaintext_lan_allowed_with_optin(monkeypatch):
++    monkeypatch.setenv(TOKEN_ENV, SENTINEL)
++    stub = _StubTransport()
++    rv = RemoteVision("http://192.168.1.20:8080/detect", labels=["mat"],
++                      allow_plaintext_lan=True, opener=stub)
++    assert len(rv.infer(FRAME)) == 2
++    req = stub.calls[0]
++    assert req.full_url == "http://192.168.1.20:8080/detect"
++    assert req.get_header("Authorization") == f"Bearer {SENTINEL}"
++    assert SENTINEL not in req.full_url
++
++
++def test_a3_loopback_plaintext_is_allowed_by_default(mock, monkeypatch):
++    monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++    monkeypatch.setenv(TOKEN_ENV, SENTINEL)
++    vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++    assert len(vision.infer(FRAME)) == 2
++    assert mock.requests[-1]["authorization"] == f"Bearer {SENTINEL}"
++    # the localhost spelling is accepted without any request being made
++    assert remotevision.validate_endpoint("http://localhost:9/detect").hostname == "localhost"
++
++
++def test_a3_https_token_attachment_via_injected_transport(monkeypatch):
++    """TLS itself is untested (loopback pack); validation + header policy are."""
++    monkeypatch.setenv(TOKEN_ENV, SENTINEL)
++    stub = _StubTransport()
++    rv = RemoteVision("https://vision.example.invalid/detect", labels=["mat"], opener=stub)
++    assert len(rv.infer(FRAME)) == 2
++    assert stub.calls[0].get_header("Authorization") == f"Bearer {SENTINEL}"
++    assert stub.calls[0].full_url.startswith("https://")
++
++
++def test_a3_redirect_is_not_followed(mock, monkeypatch):
++    other = MockVisionServer().start()
++    try:
++        mock.mode = "redirect"
++        mock.redirect_to = other.url
++        monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++        vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++        with pytest.raises(RemoteVisionError) as exc:
++            vision.infer(FRAME)
++        assert "HTTP 302" in str(exc.value)
++        assert other.requests == [], "a redirect must not resend the body/token"
++    finally:
++        other.stop()
++
++
++def test_environment_proxies_are_ignored(mock, monkeypatch):
++    """threat #10: urllib honours http_proxy by default; our opener must not."""
++    evil = MockVisionServer().start()
++    try:
++        monkeypatch.setenv("http_proxy", evil.url)
++        monkeypatch.setenv("HTTP_PROXY", evil.url)
++        monkeypatch.delenv("no_proxy", raising=False)
++        monkeypatch.delenv("NO_PROXY", raising=False)
++        monkeypatch.setattr(urllib.request, "proxy_bypass", lambda host: False)
++        monkeypatch.setenv(ENDPOINT_ENV, mock.url)
++        vision = RemoteVision(timeout_s=2.0, labels=["mat"])
++        assert len(vision.infer(FRAME)) == 2
++        assert mock.requests and evil.requests == []
++    finally:
++        evil.stop()
++
++
++def test_token_scanner_sanity():
++    """The hygiene tests above are only meaningful if the sentinel is findable."""
++    assert len(SENTINEL) >= 16 and SENTINEL.encode() not in b"no sentinel here"
++    assert hashlib.sha256(SENTINEL.encode()).hexdigest()[:8] == \
++        hashlib.sha256(SENTINEL.encode()).hexdigest()[:8]
+-- 
+2.47.3
+

@@ -1,0 +1,4 @@
+7bbd21a docs: errata for approach standoff vs planner inflation (w4b/I7 audit)
+a1d0ed2 semantics: project approach goals to free space; never splice a blocked goal (w4b F1/F2)
+8458359 fix(semantics): mover carry hysteresis, sub-threshold decay, resurrection event
+cca5987 semantics: Jev payload ships a compact state digest

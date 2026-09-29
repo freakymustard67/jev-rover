@@ -1,0 +1,21 @@
+fix(semantics): mover carry hysteresis, sub-threshold decay, resurrection event
+
+I6 fix pack for SemanticStore.merge (w4a-churn.md §7), computed on top of the
+review/m1-semantics-audit tip (bec1d91):
+
+- SemanticsConfig: new keys carry_factor=2.0, carry_cap_m=1.0,
+  sub_threshold_decay=0.7.
+- merge(): per-object carry radius min(max(R, carry_factor*last raw step),
+  R + carry_cap_m) for matching; the raw step is recorded on every confirmed
+  match, new objects bootstrap carry = R (first hand-off <= 2R), and the
+  per-object step is dropped on eviction.
+- merge(): sub-threshold hits decay stored confidence by sub_threshold_decay
+  BEFORE any last_seen_s/_misses refresh; once the decayed confidence falls
+  below min_confidence the sighting stops counting as seen, so a phantom that
+  only ever fires weak hits cannot pin an object alive forever.
+- merge(): a re-match of an id that had vanished (misses >= vanish_passes)
+  is announced in diff.appeared again (S3 event-log gap: the return used to
+  be silent).
+- tests: 2 existing tests updated for the new semantics; 5 regression tests
+  added (carry hand-off, mover identity at 0.5 m/pass, phantom vanish,
+  stationary no-churn, resurrection announced). Suite: 85 passed.

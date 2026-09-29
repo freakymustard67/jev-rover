@@ -1,0 +1,12 @@
+Applying: semantics: distance-ordered best-first merge assignment
+Applying: semantics: gate position/flags updates on min_confidence
+Applying: semantics: 2-of-3 hysteresis on height_suspect
+Applying: semantics: cap resurrection with max_misses eviction
+Applying: semantics: canonicalise labels for matching and adapter filters
+Applying: semantics: restore the centres < 0.15 m dedupe clause
+Applying: semantics: probe a 7x3 median patch, not a single pixel
+Applying: semantics: guard the frame resolution against the configured camera
+Applying: semantics: count cooldown refusals in skipped stats
+Applying: run: tri-state --semantics, wire --semantics-once, idle default for --find
+Applying: semantics: approach_point never overshoots the destination
+Applying: tests: scope pytest to tests/ and fix stale README counts

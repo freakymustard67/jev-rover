@@ -1,0 +1,171 @@
+From 10345c50419bbf988c4b7886676489667ba32995 Mon Sep 17 00:00:00 2001
+From: Hermes Fix Package <hermes@local>
+Date: Tue, 29 Sep 2026 00:52:01 +0530
+Subject: [PATCH 05/12] semantics: canonicalise labels for matching and adapter
+ filters
+
+Labels were compared case-sensitively in merge and dedupe while the fake
+adapter filtered case-insensitively, so real adapters returning 'Blue Mat'
+created a duplicate object every pass, and plural forms never matched.
+Add canonical_label() (casefold + -s/-es/-ies fold) and use it in merge
+matching, dedupe, and both adapter filters; display labels keep their
+original spelling.
+
+Tests: tests/test_semantics_merge.py::test_label_matching_folds_case_and_plurals
+       tests/test_semantics_projection.py::test_canonical_label_folds_case_and_plurals
+       tests/test_semantics_projection.py::test_dedupe_and_adapter_filter_are_label_case_insensitive
+---
+ semantics.py                       | 36 +++++++++++++++++++++++-------
+ tests/test_semantics_merge.py      |  9 ++++++++
+ tests/test_semantics_projection.py | 22 +++++++++++++++++-
+ 3 files changed, 58 insertions(+), 9 deletions(-)
+
+diff --git a/semantics.py b/semantics.py
+index ff43d84..ede5564 100644
+--- a/semantics.py
++++ b/semantics.py
+@@ -90,8 +90,8 @@ class FakeVision:
+             raise ValueError("FakeVision expects a BGR frame")
+         if not labels:
+             return list(self.fixtures)
+-        want = {lbl.strip().lower() for lbl in labels}
+-        return [d for d in self.fixtures if d.label.strip().lower() in want]
++        want = {canonical_label(lbl) for lbl in labels}
++        return [d for d in self.fixtures if canonical_label(d.label) in want]
+ 
+     @classmethod
+     def from_world(cls, entries, homography: Homography,
+@@ -117,8 +117,8 @@ def build_vision(cfg: SemanticsConfig, homography: Homography) -> VisionModel:
+     if kind == "fake":
+         entries = list(cfg.model.fixtures)
+         if cfg.model.labels:
+-            want = {lbl.strip().lower() for lbl in cfg.model.labels}
+-            entries = [e for e in entries if e.label.strip().lower() in want]
++            want = {canonical_label(lbl) for lbl in cfg.model.labels}
++            entries = [e for e in entries if canonical_label(e.label) in want]
+         return FakeVision.from_world(entries, homography)
+     raise NotImplementedError(
+         f"vision model kind {kind!r} is planned for M2; only 'fake' ships in M1")
+@@ -155,12 +155,16 @@ def _iou(a: tuple[float, float, float, float], b: tuple[float, float, float, flo
+ def dedupe_detections(dets: list[Detection], iou_thr: float) -> list[Detection]:
+     """Same-label overlapping detections collapse to the highest score."""
+     kept: list[Detection] = []
++    kept_canon: list[str] = []
+     for d in sorted(dets, key=lambda d: -d.score):
+         if d.bbox_px[2] <= d.bbox_px[0] or d.bbox_px[3] <= d.bbox_px[1]:
+             continue
+-        if any(k.label == d.label and _iou(k.bbox_px, d.bbox_px) > iou_thr for k in kept):
++        canon = canonical_label(d.label)
++        if any(canon == kc and _iou(k.bbox_px, d.bbox_px) > iou_thr
++               for kc, k in zip(kept_canon, kept)):
+             continue
+         kept.append(d)
++        kept_canon.append(canon)
+     return kept[:MAX_DETECTIONS]
+ 
+ 
+@@ -273,9 +277,11 @@ class SemanticStore:
+         # nearest pair first, so two same-label objects cannot swap identities
+         # because of dict insertion order.
+         pairs: list[tuple[float, str, int]] = []
++        det_labels = [canonical_label(d.label) for d in unmatched]
+         for oid, prev in self.objs.items():
++            prev_label = canonical_label(prev.label)
+             for i, d in enumerate(unmatched):
+-                if d.label != prev.label:
++                if det_labels[i] != prev_label:
+                     continue
+                 dd = math.hypot(d.x - prev.x, d.y - prev.y)
+                 if dd <= self.cfg.match_radius_m:
+@@ -617,12 +623,26 @@ _STOP_WORDS = {
+ 
+ 
+ def _fold(word: str) -> str:
+-    """Tiny plural fold; enough for 'mats' -> 'mat' without a stemmer."""
++    """Tiny plural fold; enough for 'mats'/'boxes'/'berries' without a stemmer."""
++    if len(word) > 4 and word.endswith("ies") and word[-4] not in "aeiou":
++        return word[:-3] + "y"                    # berries -> berry
++    if len(word) > 4 and word.endswith("es") and (
++            word[-3] in "sxz" or word.endswith(("ches", "shes"))):
++        return word[:-2]                          # boxes -> box, dishes -> dish
+     if len(word) > 3 and word.endswith("s") and not word.endswith("ss"):
+-        return word[:-1]
++        return word[:-1]                          # mats -> mat
+     return word
+ 
+ 
++def canonical_label(label: str) -> str:
++    """Casefold + plural fold, used for label comparisons only.
++
++    'Blue Mats' -> 'blue mat'; the display label stored in the map keeps its
++    original spelling. A real stemmer is out of scope (M2 concern).
++    """
++    return " ".join(_fold(w) for w in re.findall(r"[a-z0-9]+", label.casefold()))
++
++
+ def _tokens(text: str) -> set[str]:
+     return {_fold(w) for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in _STOP_WORDS}
+ 
+diff --git a/tests/test_semantics_merge.py b/tests/test_semantics_merge.py
+index 39771a5..5a22b88 100644
+--- a/tests/test_semantics_merge.py
++++ b/tests/test_semantics_merge.py
+@@ -68,6 +68,15 @@ def test_ids_stable_with_two_same_label_objects(tmp_path):
+     assert xs[0] < 1.5 and xs[1] > 3.5, xs
+ 
+ 
++def test_label_matching_folds_case_and_plurals(tmp_path):
++    st = _store(tmp_path)
++    st.merge([_obj("Blue Mat", 3.0, 1.2)], 0, "fake", 0.0)
++    m = st.merge([_obj("blue mats", 3.02, 1.19)], 0, "fake", 1.0)
++    assert not m.diff.appeared and not m.diff.vanished, "one object, not two"
++    assert len(m.objects) == 1 and m.objects[0].label == "Blue Mat", \
++        "the display label keeps its original spelling"
++
++
+ def test_contested_detection_goes_to_the_nearest_object(tmp_path):
+     """Distance-ordered assignment: insertion order must not decide a match."""
+     st = _store(tmp_path)
+diff --git a/tests/test_semantics_projection.py b/tests/test_semantics_projection.py
+index d60188c..8968e21 100644
+--- a/tests/test_semantics_projection.py
++++ b/tests/test_semantics_projection.py
+@@ -8,7 +8,8 @@ import pytest
+ from config import SemanticsConfig
+ from perception import Perception
+ from semantics import (Detection, FakeVision, WorldFixture, anchor_point,
+-                       height_suspect, project_detections, resolve_anchor_kind)
++                       dedupe_detections, height_suspect, project_detections,
++                       resolve_anchor_kind)
+ from synthetic import SyntheticRoom
+ 
+ WARM = 6
+@@ -100,6 +101,25 @@ def test_dedupe_collapses_overlapping_same_label():
+     assert max(k.score for k in kept if k.label == "mat") == 0.9
+ 
+ 
++def test_canonical_label_folds_case_and_plurals():
++    from semantics import canonical_label
++    assert canonical_label("Blue Mats") == "blue mat"
++    assert canonical_label("boxes") == "box"
++    assert canonical_label("dishes") == "dish"
++    assert canonical_label("berries") == "berry"
++
++
++def test_dedupe_and_adapter_filter_are_label_case_insensitive():
++    d1 = Detection("Blue Mat", (100, 100, 200, 200), 0.7)
++    d2 = Detection("blue mats", (102, 101, 201, 199), 0.9)
++    kept = dedupe_detections([d1, d2], 0.5)
++    assert len(kept) == 1 and kept[0].score == 0.9
++
++    vision = FakeVision([Detection("Blue Mat", (0, 0, 10, 10))])
++    got = vision.infer(np.zeros((20, 20, 3), np.uint8), labels=["blue mats"])
++    assert [d.label for d in got] == ["Blue Mat"], "adapter filter folds case + plurals"
++
++
+ def test_anchor_helpers():
+     assert anchor_point((0, 0, 10, 20), "bbox_bottom_center") == (5.0, 20.0)
+     assert anchor_point((0, 0, 10, 20), "bbox_center") == (5.0, 10.0)
+-- 
+2.47.3
+

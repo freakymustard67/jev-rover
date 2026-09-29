@@ -1,0 +1,27 @@
+CLAIM 1: insertion-order greedy merge -> same-label objects can swap identities
+config: match_radius_m=0.5 ema_alpha=0.4
+
+[main scenario] older A at 0.00 (obj_0001), newer B at 0.30 (obj_0002), label 'blue mat'
+    pass1: obj_0001 x=0.000 conf=0.90 motion=static
+    pass1: obj_0002 x=0.300 conf=0.90 motion=static
+pass2 detections: B moved to 0.28 (score tag 0.11), A moved to 0.45 (score tag 0.99)
+    dist(B's detection 0.28 -> older A 0.00) = 0.28 m
+    dist(A's detection 0.45 -> older A 0.00) = 0.45 m   <- B's detection is closer
+    pass2: obj_0001 x=0.112 conf=0.11 motion=moved
+    pass2: obj_0002 x=0.360 conf=0.99 motion=static
+    obj_0001 consumed B's detection; obj_0002 consumed A's detection -> SWAPPED
+
+[continuation] pass3 detections: B at 0.30 (0.11), A at 0.60 (0.99)
+    pass3: obj_0001 x=0.187 conf=0.11 motion=static
+    pass3: obj_0002 x=0.456 conf=0.99 motion=static
+    truth: A at 0.60, B at 0.30. obj_0001 tracks B(0.30), obj_0002 tracks A(0.60) -> id/object association stays swapped across passes
+
+[insertion order is decisive] same detections, but B created first (B=obj_0001, A=obj_0002)
+    pass2: obj_0001 x=0.292 conf=0.11 motion=static
+    pass2: obj_0002 x=0.180 conf=0.99 motion=moved
+    obj_0001 (B, created first) consumed B's detection; obj_0002 consumed A's detection -> no swap
+
+[note] nearest-to-estimate cost: own pairing=0.47 m, swapped pairing=0.43 m; in this scenario the swapped pairing is also the min-cost one, so greediness alone is not the only factor -- the association metric (detection vs lagging smoothed estimate) is.
+
+VERDICT claim 1: CONFIRMED
+incident code: semantics.py L270-280 (insertion-order loop, nearest unmatched pick, no per-pass cost check)

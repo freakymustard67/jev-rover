@@ -1,0 +1,49 @@
+{
+  "room": "w3b4b",
+  "saved_at": 1790624438.1199355,
+  "map": {
+    "age_s": 0.0,
+    "passes": 2,
+    "model": "fake-vision-v0",
+    "objects": [
+      {
+        "id": "obj_0001",
+        "label": "blue mat",
+        "x": 3.0,
+        "y": 1.2,
+        "confidence": 0.92,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 1.0,
+        "last_seen_s": 1.0,
+        "motion": "static"
+      },
+      {
+        "id": "obj_0002",
+        "label": "blue mat",
+        "x": 2.973,
+        "y": 1.805,
+        "confidence": 0.92,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": true,
+        "first_seen_s": 5.0,
+        "last_seen_s": 5.0,
+        "motion": "static"
+      }
+    ],
+    "destination": null,
+    "diff": {
+      "appeared": [
+        "obj_0002"
+      ],
+      "moved": [],
+      "vanished": []
+    }
+  }
+}

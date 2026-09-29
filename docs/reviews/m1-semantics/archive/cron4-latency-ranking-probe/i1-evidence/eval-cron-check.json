@@ -1,0 +1,1717 @@
+{
+ "baseline": [
+  {
+   "id": "S1-01",
+   "query": "go to the blue mat",
+   "category": "exact",
+   "expected": [
+    "blue mat"
+   ],
+   "expect_none": false,
+   "top1": "blue mat",
+   "labels": [
+    "blue mat"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-02",
+   "query": "find the llama",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-03",
+   "query": "the blue box",
+   "category": "exact",
+   "expected": [
+    "blue box"
+   ],
+   "expect_none": false,
+   "top1": "blue box",
+   "labels": [
+    "blue box"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-04",
+   "query": "where is the charger",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-05",
+   "query": "mat",
+   "category": "ambiguity",
+   "expected": [
+    "blue mat",
+    "red mat"
+   ],
+   "expect_none": false,
+   "top1": "blue mat",
+   "labels": [
+    "blue mat",
+    "red mat"
+   ],
+   "scores": [
+    0.5,
+    0.5
+   ],
+   "margin": 0.0,
+   "ok": true
+  },
+  {
+   "id": "S1-06",
+   "query": "tidy the garage",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-07",
+   "query": "grab the bottle",
+   "category": "verbose-label-knife-edge",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S1-08",
+   "query": "bring me the bottle",
+   "category": "verbose-label-knife-edge",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S1-09",
+   "query": "fetch the water bottle",
+   "category": "verbose-label",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-10",
+   "query": "chargr",
+   "category": "typo",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S1-11",
+   "query": "yoga mat",
+   "category": "verbose-label",
+   "expected": [
+    "yoga mat extra large"
+   ],
+   "expect_none": false,
+   "top1": "yoga mat extra large",
+   "labels": [
+    "yoga mat extra large"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-12",
+   "query": "the red mat",
+   "category": "exact",
+   "expected": [
+    "red mat"
+   ],
+   "expect_none": false,
+   "top1": "red mat",
+   "labels": [
+    "red mat"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-13",
+   "query": "find the blue box",
+   "category": "exact",
+   "expected": [
+    "blue box"
+   ],
+   "expect_none": false,
+   "top1": "blue box",
+   "labels": [
+    "blue box"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-14",
+   "query": "find the bottle",
+   "category": "verbose-label-knife-edge",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S1-15",
+   "query": "bring the umbrella",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-16",
+   "query": "where is the water bottle",
+   "category": "verbose-label",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    0.6667
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-17",
+   "query": "head to the charger",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-01",
+   "query": "go to the mug",
+   "category": "verbose-label",
+   "expected": [
+    "coffee mug"
+   ],
+   "expect_none": false,
+   "top1": "coffee mug",
+   "labels": [
+    "coffee mug"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-02",
+   "query": "where is the kettle",
+   "category": "exact",
+   "expected": [
+    "kettle"
+   ],
+   "expect_none": false,
+   "top1": "kettle",
+   "labels": [
+    "kettle"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-03",
+   "query": "the trash bin",
+   "category": "exact",
+   "expected": [
+    "trash bin"
+   ],
+   "expect_none": false,
+   "top1": "trash bin",
+   "labels": [
+    "trash bin"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-04",
+   "query": "go to the dining table",
+   "category": "exact",
+   "expected": [
+    "dining table"
+   ],
+   "expect_none": false,
+   "top1": "dining table",
+   "labels": [
+    "dining table"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-05",
+   "query": "glasses",
+   "category": "morphology-es",
+   "expected": [
+    "wine glass"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S2-06",
+   "query": "the sink",
+   "category": "verbose-label",
+   "expected": [
+    "kitchen sink"
+   ],
+   "expect_none": false,
+   "top1": "kitchen sink",
+   "labels": [
+    "kitchen sink"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-07",
+   "query": "find the sink",
+   "category": "verbose-label",
+   "expected": [
+    "kitchen sink"
+   ],
+   "expect_none": false,
+   "top1": "kitchen sink",
+   "labels": [
+    "kitchen sink"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-08",
+   "query": "where is the swimming pool",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-09",
+   "query": "turn on the faucet",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-10",
+   "query": "bring me the coffee",
+   "category": "verbose-label",
+   "expected": [
+    "coffee mug"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S2-11",
+   "query": "wash the dishes",
+   "category": "negative-morphology",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-01",
+   "query": "where are the batteries",
+   "category": "morphology-ies",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S3-02",
+   "query": "go to the boxes",
+   "category": "morphology-es",
+   "expected": [
+    "cardboard box"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S3-03",
+   "query": "grab the charger",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-04",
+   "query": "head to the workbench",
+   "category": "exact",
+   "expected": [
+    "workbench"
+   ],
+   "expect_none": false,
+   "top1": "workbench",
+   "labels": [
+    "workbench"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-05",
+   "query": "find the red toolbox",
+   "category": "exact",
+   "expected": [
+    "red toolbox"
+   ],
+   "expect_none": false,
+   "top1": "red toolbox",
+   "labels": [
+    "red toolbox"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-06",
+   "query": "the bikes",
+   "category": "morphology-s",
+   "expected": [
+    "bike"
+   ],
+   "expect_none": false,
+   "top1": "bike",
+   "labels": [
+    "bike"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-07",
+   "query": "find the battery",
+   "category": "exact",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": "battery",
+   "labels": [
+    "battery"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-08",
+   "query": "bring me the charger please",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-09",
+   "query": "go to the helicopter",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-10",
+   "query": "the box",
+   "category": "morphology-singular",
+   "expected": [
+    "cardboard box"
+   ],
+   "expect_none": false,
+   "top1": "cardboard box",
+   "labels": [
+    "cardboard box"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-11",
+   "query": "the motorcycle",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-12",
+   "query": "battries",
+   "category": "typo-morphology",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S4-01",
+   "query": "chargrer",
+   "category": "typo",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S4-02",
+   "query": "batery",
+   "category": "typo",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S4-03",
+   "query": "bateries",
+   "category": "typo-morphology",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S4-04",
+   "query": "watter bottle",
+   "category": "typo-verbose",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S4-05",
+   "query": "chager",
+   "category": "typo",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S4-06",
+   "query": "plasic water bottle",
+   "category": "typo-verbose",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-07",
+   "query": "battry",
+   "category": "typo",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S4-08",
+   "query": "the matt",
+   "category": "typo",
+   "expected": [
+    "blue mat"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S4-09",
+   "query": "chargre",
+   "category": "typo",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": false
+  },
+  {
+   "id": "S4-10",
+   "query": "find the lamma",
+   "category": "negative-typo",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-11",
+   "query": "where is the charger",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  }
+ ],
+ "proposed": [
+  {
+   "id": "S1-01",
+   "query": "go to the blue mat",
+   "category": "exact",
+   "expected": [
+    "blue mat"
+   ],
+   "expect_none": false,
+   "top1": "blue mat",
+   "labels": [
+    "blue mat",
+    "red mat",
+    "blue box",
+    "yoga mat extra large"
+   ],
+   "scores": [
+    1.0,
+    0.5,
+    0.5,
+    0.425
+   ],
+   "margin": 0.5,
+   "ok": true
+  },
+  {
+   "id": "S1-02",
+   "query": "find the llama",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-03",
+   "query": "the blue box",
+   "category": "exact",
+   "expected": [
+    "blue box"
+   ],
+   "expect_none": false,
+   "top1": "blue box",
+   "labels": [
+    "blue box",
+    "blue mat"
+   ],
+   "scores": [
+    1.0,
+    0.5
+   ],
+   "margin": 0.5,
+   "ok": true
+  },
+  {
+   "id": "S1-04",
+   "query": "where is the charger",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-05",
+   "query": "mat",
+   "category": "ambiguity",
+   "expected": [
+    "blue mat",
+    "red mat"
+   ],
+   "expect_none": false,
+   "top1": "blue mat",
+   "labels": [
+    "blue mat",
+    "red mat",
+    "yoga mat extra large"
+   ],
+   "scores": [
+    0.85,
+    0.85,
+    0.775
+   ],
+   "margin": 0.0,
+   "ok": true
+  },
+  {
+   "id": "S1-06",
+   "query": "tidy the garage",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-07",
+   "query": "grab the bottle",
+   "category": "verbose-label-knife-edge",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    0.45
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-08",
+   "query": "bring me the bottle",
+   "category": "verbose-label-knife-edge",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    0.45
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-09",
+   "query": "fetch the water bottle",
+   "category": "verbose-label",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    0.6667
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-10",
+   "query": "chargr",
+   "category": "typo",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-11",
+   "query": "yoga mat",
+   "category": "verbose-label",
+   "expected": [
+    "yoga mat extra large"
+   ],
+   "expect_none": false,
+   "top1": "yoga mat extra large",
+   "labels": [
+    "yoga mat extra large",
+    "blue mat",
+    "red mat"
+   ],
+   "scores": [
+    0.85,
+    0.5,
+    0.5
+   ],
+   "margin": 0.35,
+   "ok": true
+  },
+  {
+   "id": "S1-12",
+   "query": "the red mat",
+   "category": "exact",
+   "expected": [
+    "red mat"
+   ],
+   "expect_none": false,
+   "top1": "red mat",
+   "labels": [
+    "red mat",
+    "blue mat",
+    "yoga mat extra large"
+   ],
+   "scores": [
+    1.0,
+    0.5,
+    0.425
+   ],
+   "margin": 0.5,
+   "ok": true
+  },
+  {
+   "id": "S1-13",
+   "query": "find the blue box",
+   "category": "exact",
+   "expected": [
+    "blue box"
+   ],
+   "expect_none": false,
+   "top1": "blue box",
+   "labels": [
+    "blue box",
+    "blue mat"
+   ],
+   "scores": [
+    1.0,
+    0.5
+   ],
+   "margin": 0.5,
+   "ok": true
+  },
+  {
+   "id": "S1-14",
+   "query": "find the bottle",
+   "category": "verbose-label-knife-edge",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    0.8
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-15",
+   "query": "bring the umbrella",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-16",
+   "query": "where is the water bottle",
+   "category": "verbose-label",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    0.9
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S1-17",
+   "query": "head to the charger",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-01",
+   "query": "go to the mug",
+   "category": "verbose-label",
+   "expected": [
+    "coffee mug"
+   ],
+   "expect_none": false,
+   "top1": "coffee mug",
+   "labels": [
+    "coffee mug"
+   ],
+   "scores": [
+    0.85
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-02",
+   "query": "where is the kettle",
+   "category": "exact",
+   "expected": [
+    "kettle"
+   ],
+   "expect_none": false,
+   "top1": "kettle",
+   "labels": [
+    "kettle"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-03",
+   "query": "the trash bin",
+   "category": "exact",
+   "expected": [
+    "trash bin"
+   ],
+   "expect_none": false,
+   "top1": "trash bin",
+   "labels": [
+    "trash bin"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-04",
+   "query": "go to the dining table",
+   "category": "exact",
+   "expected": [
+    "dining table"
+   ],
+   "expect_none": false,
+   "top1": "dining table",
+   "labels": [
+    "dining table"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-05",
+   "query": "glasses",
+   "category": "morphology-es",
+   "expected": [
+    "wine glass"
+   ],
+   "expect_none": false,
+   "top1": "wine glass",
+   "labels": [
+    "wine glass"
+   ],
+   "scores": [
+    0.85
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-06",
+   "query": "the sink",
+   "category": "verbose-label",
+   "expected": [
+    "kitchen sink"
+   ],
+   "expect_none": false,
+   "top1": "kitchen sink",
+   "labels": [
+    "kitchen sink"
+   ],
+   "scores": [
+    0.85
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-07",
+   "query": "find the sink",
+   "category": "verbose-label",
+   "expected": [
+    "kitchen sink"
+   ],
+   "expect_none": false,
+   "top1": "kitchen sink",
+   "labels": [
+    "kitchen sink"
+   ],
+   "scores": [
+    0.85
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-08",
+   "query": "where is the swimming pool",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-09",
+   "query": "turn on the faucet",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-10",
+   "query": "bring me the coffee",
+   "category": "verbose-label",
+   "expected": [
+    "coffee mug"
+   ],
+   "expect_none": false,
+   "top1": "coffee mug",
+   "labels": [
+    "coffee mug"
+   ],
+   "scores": [
+    0.5
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S2-11",
+   "query": "wash the dishes",
+   "category": "negative-morphology",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-01",
+   "query": "where are the batteries",
+   "category": "morphology-ies",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": "battery",
+   "labels": [
+    "battery"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-02",
+   "query": "go to the boxes",
+   "category": "morphology-es",
+   "expected": [
+    "cardboard box"
+   ],
+   "expect_none": false,
+   "top1": "cardboard box",
+   "labels": [
+    "cardboard box"
+   ],
+   "scores": [
+    0.85
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-03",
+   "query": "grab the charger",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    0.65
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-04",
+   "query": "head to the workbench",
+   "category": "exact",
+   "expected": [
+    "workbench"
+   ],
+   "expect_none": false,
+   "top1": "workbench",
+   "labels": [
+    "workbench"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-05",
+   "query": "find the red toolbox",
+   "category": "exact",
+   "expected": [
+    "red toolbox"
+   ],
+   "expect_none": false,
+   "top1": "red toolbox",
+   "labels": [
+    "red toolbox"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-06",
+   "query": "the bikes",
+   "category": "morphology-s",
+   "expected": [
+    "bike"
+   ],
+   "expect_none": false,
+   "top1": "bike",
+   "labels": [
+    "bike"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-07",
+   "query": "find the battery",
+   "category": "exact",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": "battery",
+   "labels": [
+    "battery"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-08",
+   "query": "bring me the charger please",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    0.65
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-09",
+   "query": "go to the helicopter",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-10",
+   "query": "the box",
+   "category": "morphology-singular",
+   "expected": [
+    "cardboard box"
+   ],
+   "expect_none": false,
+   "top1": "cardboard box",
+   "labels": [
+    "cardboard box"
+   ],
+   "scores": [
+    0.85
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-11",
+   "query": "the motorcycle",
+   "category": "negative",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S3-12",
+   "query": "battries",
+   "category": "typo-morphology",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": "battery",
+   "labels": [
+    "battery"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-01",
+   "query": "chargrer",
+   "category": "typo",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-02",
+   "query": "batery",
+   "category": "typo",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": "battery",
+   "labels": [
+    "battery"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-03",
+   "query": "bateries",
+   "category": "typo-morphology",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": "battery",
+   "labels": [
+    "battery"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-04",
+   "query": "watter bottle",
+   "category": "typo-verbose",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    0.9
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-05",
+   "query": "chager",
+   "category": "typo",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-06",
+   "query": "plasic water bottle",
+   "category": "typo-verbose",
+   "expected": [
+    "plastic water bottle"
+   ],
+   "expect_none": false,
+   "top1": "plastic water bottle",
+   "labels": [
+    "plastic water bottle"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-07",
+   "query": "battry",
+   "category": "typo",
+   "expected": [
+    "battery"
+   ],
+   "expect_none": false,
+   "top1": "battery",
+   "labels": [
+    "battery"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-08",
+   "query": "the matt",
+   "category": "typo",
+   "expected": [
+    "blue mat"
+   ],
+   "expect_none": false,
+   "top1": "blue mat",
+   "labels": [
+    "blue mat"
+   ],
+   "scores": [
+    0.85
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-09",
+   "query": "chargre",
+   "category": "typo",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-10",
+   "query": "find the lamma",
+   "category": "negative-typo",
+   "expected": null,
+   "expect_none": true,
+   "top1": null,
+   "labels": [],
+   "scores": [],
+   "margin": null,
+   "ok": true
+  },
+  {
+   "id": "S4-11",
+   "query": "where is the charger",
+   "category": "exact",
+   "expected": [
+    "charger"
+   ],
+   "expect_none": false,
+   "top1": "charger",
+   "labels": [
+    "charger"
+   ],
+   "scores": [
+    1.0
+   ],
+   "margin": null,
+   "ok": true
+  }
+ ],
+ "summary": {
+  "n": 51,
+  "baseline_accuracy": 0.6666666666666666,
+  "proposed_accuracy": 1.0,
+  "improvements": [
+   "S1-07",
+   "S1-08",
+   "S1-10",
+   "S1-14",
+   "S2-05",
+   "S2-10",
+   "S3-01",
+   "S3-02",
+   "S3-12",
+   "S4-01",
+   "S4-02",
+   "S4-03",
+   "S4-04",
+   "S4-05",
+   "S4-07",
+   "S4-08",
+   "S4-09"
+  ],
+  "regressions": []
+ }
+}

@@ -1,0 +1,142 @@
+From 58a45a377b8b10de79bd3a0530bb0deb9373ff67 Mon Sep 17 00:00:00 2001
+From: Hermes Fix Package <hermes@local>
+Date: Tue, 29 Sep 2026 00:53:09 +0530
+Subject: [PATCH 06/12] semantics: restore the centres < 0.15 m dedupe clause
+
+The plan's dedupe rule is 'same label + (IoU > 0.5 or centres < 0.15 m)';
+only the IoU half shipped, so near-coincident duplicate boxes with no
+overlap survived as two objects. dedupe_detections() now also collapses
+same-label detections whose world-space bbox centres are within
+dedupe_center_m (config, default 0.15 m), via the context homography.
+
+Tests: tests/test_semantics_projection.py::test_dedupe_collapses_close_world_centres_without_overlap
+       tests/test_semantics_projection.py::test_projection_dedupes_near_coincident_same_label
+---
+ config.py                          |  2 ++
+ semantics.py                       | 31 ++++++++++++++++++++++++++----
+ tests/test_semantics_projection.py | 27 +++++++++++++++++++++++++-
+ 3 files changed, 55 insertions(+), 5 deletions(-)
+
+diff --git a/config.py b/config.py
+index 1f9b92f..b962dad 100644
+--- a/config.py
++++ b/config.py
+@@ -148,6 +148,7 @@ class SemanticsConfig:
+     vanish_passes: int = 2
+     max_misses: int = 10               # evict (cap resurrection) after this many missed passes
+     dedupe_iou: float = 0.5
++    dedupe_center_m: float = 0.15      # ...or same-label bbox centres closer than this (metres)
+     min_interval_s: float = 2.0
+     failure_cooldown_s: float = 10.0
+     min_label_score: float = 0.34
+@@ -321,6 +322,7 @@ class RoomConfig:
+                                     ("failure_cooldown_s", s.failure_cooldown_s, 0.0, None),
+                                     ("ema_alpha", s.ema_alpha, 1e-9, 1.0),
+                                     ("dedupe_iou", s.dedupe_iou, 0.0, 1.0),
++                                    ("dedupe_center_m", s.dedupe_center_m, 0.0, None),
+                                     ("min_confidence", s.min_confidence, 0.0, 1.0),
+                                     ("roi_min_confidence", s.roi_min_confidence, 0.0, 1.0),
+                                     ("match_radius_m", s.match_radius_m, 1e-9, None),
+diff --git a/semantics.py b/semantics.py
+index ede5564..3aa9032 100644
+--- a/semantics.py
++++ b/semantics.py
+@@ -152,15 +152,37 @@ def _iou(a: tuple[float, float, float, float], b: tuple[float, float, float, flo
+     return inter / max(1e-9, area_a + area_b - inter)
+ 
+ 
+-def dedupe_detections(dets: list[Detection], iou_thr: float) -> list[Detection]:
+-    """Same-label overlapping detections collapse to the highest score."""
++def _centres_within_m(a: Detection, b: Detection, homography: Homography,
++                      thr_m: float) -> bool:
++    """World-space bbox-centre distance (the plan's 'centres < 0.15 m' clause)."""
++    if thr_m <= 0.0:
++        return False
++    ca = np.array([[(a.bbox_px[0] + a.bbox_px[2]) / 2.0, (a.bbox_px[1] + a.bbox_px[3]) / 2.0]])
++    cb = np.array([[(b.bbox_px[0] + b.bbox_px[2]) / 2.0, (b.bbox_px[1] + b.bbox_px[3]) / 2.0]])
++    wa = homography.img_to_world(ca)[0]
++    wb = homography.img_to_world(cb)[0]
++    return float(math.hypot(wa[0] - wb[0], wa[1] - wb[1])) <= thr_m
++
++
++def dedupe_detections(dets: list[Detection], iou_thr: float, *,
++                      homography: Homography | None = None,
++                      center_dist_m: float = 0.0) -> list[Detection]:
++    """Same-label duplicates collapse to the highest score.
++
++    Duplicates overlap (IoU > ``iou_thr``) or have projected centres within
++    ``center_dist_m`` metres (near-coincident detector boxes that do not
++    overlap); the world clause needs ``homography``.
++    """
+     kept: list[Detection] = []
+     kept_canon: list[str] = []
+     for d in sorted(dets, key=lambda d: -d.score):
+         if d.bbox_px[2] <= d.bbox_px[0] or d.bbox_px[3] <= d.bbox_px[1]:
+             continue
+         canon = canonical_label(d.label)
+-        if any(canon == kc and _iou(k.bbox_px, d.bbox_px) > iou_thr
++        if any(canon == kc and (
++                   _iou(k.bbox_px, d.bbox_px) > iou_thr
++                   or (homography is not None
++                       and _centres_within_m(k, d, homography, center_dist_m)))
+                for kc, k in zip(kept_canon, kept)):
+             continue
+         kept.append(d)
+@@ -213,7 +235,8 @@ def project_detections(dets: list[Detection], frame: np.ndarray, ctx: SemanticCo
+     h, w = frame.shape[:2]
+     objects: list[SemanticObject] = []
+     rejected = 0
+-    for d in dedupe_detections(dets, cfg.dedupe_iou):
++    for d in dedupe_detections(dets, cfg.dedupe_iou, homography=ctx.homography,
++                               center_dist_m=cfg.dedupe_center_m):
+         x0 = max(0, min(w - 1, d.bbox_px[0]))
+         y0 = max(0, min(h - 1, d.bbox_px[1]))
+         x1 = max(0, min(w - 1, d.bbox_px[2]))
+diff --git a/tests/test_semantics_projection.py b/tests/test_semantics_projection.py
+index 8968e21..cb3c7ed 100644
+--- a/tests/test_semantics_projection.py
++++ b/tests/test_semantics_projection.py
+@@ -6,7 +6,7 @@ import numpy as np
+ import pytest
+ 
+ from config import SemanticsConfig
+-from perception import Perception
++from perception import Homography, Perception
+ from semantics import (Detection, FakeVision, WorldFixture, anchor_point,
+                        dedupe_detections, height_suspect, project_detections,
+                        resolve_anchor_kind)
+@@ -101,6 +101,31 @@ def test_dedupe_collapses_overlapping_same_label():
+     assert max(k.score for k in kept if k.label == "mat") == 0.9
+ 
+ 
++def test_dedupe_collapses_close_world_centres_without_overlap():
++    """The plan's 'centres < 0.15 m' clause, alongside IoU."""
++    H = Homography([[0, 0], [100, 0], [100, 100], [0, 100]],
++                   [[0, 0], [1, 0], [1, 1], [0, 1]])            # 100 px = 1 m
++    a = Detection("mat", (10, 10, 20, 20), 0.7)                  # centre at (0.15, 0.15) m
++    b = Detection("mat", (22, 10, 32, 20), 0.9)                  # 0.12 m away, no IoU
++    kept = dedupe_detections([a, b], 0.5, homography=H, center_dist_m=0.15)
++    assert len(kept) == 1 and kept[0].score == 0.9
++    far = Detection("mat", (40, 10, 50, 20), 0.8)                # 0.30 m away
++    assert len(dedupe_detections([a, far], 0.5, homography=H, center_dist_m=0.15)) == 2
++    assert len(dedupe_detections([a, b], 0.5)) == 2, "no homography -> IoU only"
++
++
++def test_projection_dedupes_near_coincident_same_label(synth_cfg):
++    perc, syn, frame = _perception(synth_cfg)
++    ctx = perc.semantic_context(1.0)
++    vision = FakeVision.from_world([
++        WorldFixture("mat", 3.00, 1.20, 0.10, 0.10, 0.7),
++        WorldFixture("mat", 3.12, 1.20, 0.10, 0.10, 0.9),        # 12 cm away, no overlap
++    ], perc.homography)
++    objects, rejected = project_detections(vision.fixtures, frame, ctx, synth_cfg.semantics, 1.0)
++    assert rejected == 0 and len(objects) == 1
++    assert objects[0].confidence == 0.9
++
++
+ def test_canonical_label_folds_case_and_plurals():
+     from semantics import canonical_label
+     assert canonical_label("Blue Mats") == "blue mat"
+-- 
+2.47.3
+

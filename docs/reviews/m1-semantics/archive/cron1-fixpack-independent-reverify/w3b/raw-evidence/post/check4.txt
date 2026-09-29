@@ -1,0 +1,14 @@
+OBS configured_camera=1280x720
+OBS real_frame_shape=(720, 1280, 3) ctx_camera_w=1280 ctx_camera_h=720
+OBS mismatched_frame_shape=(360, 640, 3)
+OBS A_world(3.0,1.2) full_img=(600.0,480.0) half_img=(300.0,240.0) full_H_projection=(1.500,2.400) silent_error_m=1.921
+OBS A_world(4.4,1.0) full_img=(880.0,520.0) half_img=(440.0,260.0) full_H_projection=(2.200,2.300) silent_error_m=2.555
+OBS A_world(1.5,0.8) full_img=(300.0,560.0) half_img=(150.0,280.0) full_H_projection=(0.750,2.200) silent_error_m=1.588
+OBS B_halfspace_bbox=(275, 210, 325, 270) B_projected=[('blue mat', 1.5, 2.4)] rejected=0
+OBS C_accept1=False C_accept2=False C_skipped={'interval': 0, 'budget': 0, 'inflight': 0, 'no_context': 0, 'resolution': 2, 'cooldown': 0}
+OBS C_warning_lines=1 C_warning=[semantics] frame 640x360 does not match the configured camera 1280x720; refusing semantic passes (calibrate at the capture resolution)
+OBS C_store_objects=[] C_passes=0
+OBS D_accept_matched=True D_skipped={'interval': 0, 'budget': 0, 'inflight': 0, 'no_context': 0, 'resolution': 0, 'cooldown': 0} D_store_objects=[('blue mat', 3.0, 1.2)]
+OBS E_accept_unknown_camera=True E_skipped={'interval': 0, 'budget': 0, 'inflight': 0, 'no_context': 0, 'resolution': 0, 'cooldown': 0}
+EXPECT_AFTER_FIX: C_accept1=False C_accept2=False, 1 warning line, C_skipped['resolution']=2, C_passes=0; D accepts (skipped resolution=0) and stores ~(3.0,1.2); E accepts (0 = unknown)
+PRE_PATCH_SYMPTOM: C_accept1/2 accept (no 'resolution' key), passes=1, store object at the misprojected half-scale coordinates

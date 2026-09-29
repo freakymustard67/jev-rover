@@ -1,0 +1,19 @@
+{
+ "root": "/home/freakymustard/.hermes/cache/scratch/i5/repo",
+ "map_objects": 20,
+ "digest_objects": 19,
+ "digest_bytes": 5115,
+ "digest_under_6000": true,
+ "disk_bytes": 7590,
+ "disk_under_10000": true,
+ "digest_diff": {
+  "appeared": 19,
+  "moved": 0,
+  "vanished": 0,
+  "appeared_ids": [
+   "obj_0001",
+   "obj_0002",
+   "obj_0003"
+  ]
+ }
+}

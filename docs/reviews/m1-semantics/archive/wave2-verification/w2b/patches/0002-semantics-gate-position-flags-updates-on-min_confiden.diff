@@ -1,0 +1,76 @@
+From 18360318756c7c8e9a33ca78fab83e927226d3d5 Mon Sep 17 00:00:00 2001
+From: Hermes Fix Package <hermes@local>
+Date: Tue, 29 Sep 2026 00:48:32 +0530
+Subject: [PATCH 02/12] semantics: gate position/flags updates on
+ min_confidence
+
+Sub-threshold detections used to EMA the position toward the detection,
+overwrite confidence and height_suspect, and count as movement. They now
+count only as a freshness hit (last_seen_s refreshed, misses reset) so a
+0.05-score spurious detection cannot drag a tracked object.
+
+Tests: tests/test_semantics_merge.py::test_sub_threshold_hits_only_refresh_freshness
+---
+ semantics.py                  | 10 +++++++---
+ tests/test_semantics_merge.py | 13 +++++++++++++
+ 2 files changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/semantics.py b/semantics.py
+index 49e80ea..eb3bd11 100644
+--- a/semantics.py
++++ b/semantics.py
+@@ -288,20 +288,24 @@ class SemanticStore:
+             d = unmatched[i]
+             taken.add(i)
+             prev = self.objs[oid]
++            prev.last_seen_s = round(t_pass, 2)
++            self._misses[oid] = 0
++            seen.add(oid)
++            if d.confidence < self.cfg.min_confidence:
++                # Freshness only: a sub-threshold hit keeps the object alive but
++                # must not move it or overwrite its flags.
++                continue
+             prev_x, prev_y = prev.x, prev.y
+             prev.x = (1.0 - ema) * prev.x + ema * d.x
+             prev.y = (1.0 - ema) * prev.y + ema * d.y
+             prev.confidence = d.confidence
+             prev.height_suspect = d.height_suspect
+-            prev.last_seen_s = round(t_pass, 2)
+-            self._misses[oid] = 0
+             # RAW displacement this pass, before any smoothing: the EMA step is
+             # only alpha * raw and hides moves just above the threshold.
+             raw = math.hypot(d.x - prev_x, d.y - prev_y)
+             prev.motion = "moved" if raw > self.cfg.move_threshold_m else "static"
+             if prev.motion == "moved":
+                 diff.moved.append(oid)
+-            seen.add(oid)
+ 
+         unmatched = [d for i, d in enumerate(unmatched) if i not in taken]
+ 
+diff --git a/tests/test_semantics_merge.py b/tests/test_semantics_merge.py
+index 80e972e..42822d5 100644
+--- a/tests/test_semantics_merge.py
++++ b/tests/test_semantics_merge.py
+@@ -94,6 +94,19 @@ def test_appeared_respects_min_confidence(tmp_path):
+     assert m.diff.appeared == [], "...but they are not announced as appeared"
+ 
+ 
++def test_sub_threshold_hits_only_refresh_freshness(tmp_path):
++    """A low-score detection must not move the object or overwrite its flags."""
++    st = _store(tmp_path)
++    st.merge([_obj("mat", 3.0, 1.2, 0.9, hs=True)], 0, "fake", 0.0)
++    m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 1.0)
++    o = m.objects[0]
++    assert o.x == 3.0 and o.confidence == 0.9 and o.height_suspect is True
++    assert o.last_seen_s == 1.0, "sub-threshold hits still count as seen"
++    m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 2.0)
++    assert not m.diff.vanished, "freshness from low-confidence hits keeps it alive"
++    assert m.diff.moved == [], "no motion is reported from a rejected detection"
++
++
+ def test_height_suspect_and_rejected_propagate(tmp_path):
+     st = _store(tmp_path)
+     m = st.merge([_obj("box", 3.0, 1.0, hs=True)], rejected=2, model="fake", t_pass=0.0)
+-- 
+2.47.3
+

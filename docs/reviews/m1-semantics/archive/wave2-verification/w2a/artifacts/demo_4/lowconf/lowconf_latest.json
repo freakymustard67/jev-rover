@@ -1,0 +1,34 @@
+{
+  "room": "lowconf",
+  "saved_at": 1790623321.5063996,
+  "map": {
+    "age_s": 0.0,
+    "passes": 2,
+    "model": "demo",
+    "objects": [
+      {
+        "id": "obj_0001",
+        "label": "red box",
+        "x": 3.12,
+        "y": 1.0,
+        "confidence": 0.05,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": true,
+        "first_seen_s": 0.0,
+        "last_seen_s": 1.0,
+        "motion": "moved"
+      }
+    ],
+    "destination": null,
+    "diff": {
+      "appeared": [],
+      "moved": [
+        "obj_0001"
+      ],
+      "vanished": []
+    }
+  }
+}

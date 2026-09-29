@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/freakymustard/.hermes/cache/scratch/wave3/w3a/clone/run.py", line 420, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/freakymustard/.hermes/cache/scratch/wave3/w3a/clone/run.py", line 255, in main
+    tact = Tactician(hz=args.jev_hz, budget=args.budget)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/freakymustard/.hermes/cache/scratch/wave3/w3a/clone/tactics.py", line 231, in __init__
+    raise RuntimeError("set TYPESAFE_API_KEY (see .env.example)")
+RuntimeError: set TYPESAFE_API_KEY (see .env.example)

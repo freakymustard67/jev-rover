@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/freakymustard/jev-rover-research/runs/20260929-0248/i9-scan-link-evidence/crash_repro.py", line 38, in <module>
+    hw = link.telemetry(1.0)
+         ^^^^^^^^^^^^^^^^^^^
+  File "/home/freakymustard/.hermes/cache/scratch/c6/i9-repo/link.py", line 108, in telemetry
+    pkt = json.loads(data)
+          ^^^^^^^^^^^^^^^^
+  File "/home/freakymustard/.local/share/uv/python/cpython-3.11.16-linux-x86_64-gnu/lib/python3.11/json/__init__.py", line 341, in loads
+    s = s.decode(detect_encoding(s), 'surrogatepass')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xd3 in position 8: invalid continuation byte
+EXCEPTION ESCAPED telemetry():
+follow-up JSON parsed: dist_front_m=0.5 batt_v=7.4 watchdog_ok=True
+stats: {'link': 'udp', 'commands': 0, 'telemetry_rx': 1, 'send_errors': 0}
+VERDICT: crash escaped (RED)

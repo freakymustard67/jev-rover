@@ -1,0 +1,7490 @@
+[
+ {
+  "alive_end_mean": 5.0,
+  "appeared_mean": 5.0,
+  "first_vanish_pass_hist": {},
+  "label": "S1 stationary sigma=0.03",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S1-stationary-s0.03",
+  "new_ids_max": 5,
+  "new_ids_mean": 5.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    5.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.03,
+  "appeared_mean": 5.03,
+  "first_vanish_pass_hist": {
+   "2": 1,
+   "3": 2
+  },
+  "label": "S1 stationary sigma=0.10",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.956262425447315,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.03,
+  "moved_max": 10,
+  "moved_mean": 5.17,
+  "mover_ids_mean": 0.0,
+  "name": "S1-stationary-s0.10",
+  "new_ids_max": 6,
+  "new_ids_mean": 5.03,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    5.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.03,
+    0.0,
+    1.04
+   ],
+   [
+    0.0,
+    0.01,
+    0.74
+   ],
+   [
+    0.0,
+    0.02,
+    0.57
+   ],
+   [
+    0.0,
+    0.0,
+    0.41
+   ],
+   [
+    0.0,
+    0.0,
+    0.35
+   ],
+   [
+    0.0,
+    0.0,
+    0.53
+   ],
+   [
+    0.0,
+    0.0,
+    0.65
+   ],
+   [
+    0.0,
+    0.0,
+    0.47
+   ],
+   [
+    0.0,
+    0.0,
+    0.41
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.03,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.94,
+  "appeared_mean": 3.94,
+  "first_vanish_pass_hist": {
+   "5": 3,
+   "6": 16,
+   "7": 21,
+   "8": 19,
+   "9": 18
+  },
+  "label": "S2 mover 0.2 m/pass sigma=0.03",
+  "lifetime_max": 9,
+  "lifetime_mean": 7.048223350253807,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.94,
+  "moved_max": 9,
+  "moved_mean": 6.4,
+  "mover_ids_mean": 1.94,
+  "name": "S2-mover-d0.2-s0.03",
+  "new_ids_max": 5,
+  "new_ids_mean": 3.94,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.16
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.03,
+    0.0,
+    0.97
+   ],
+   [
+    0.16,
+    0.03,
+    0.81
+   ],
+   [
+    0.21,
+    0.16,
+    0.62
+   ],
+   [
+    0.19,
+    0.21,
+    0.59
+   ],
+   [
+    0.18,
+    0.19,
+    0.61
+   ],
+   [
+    0.17,
+    0.18,
+    0.64
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.77,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 4.5,
+  "appeared_mean": 4.5,
+  "first_vanish_pass_hist": {
+   "2": 1,
+   "3": 14,
+   "4": 16,
+   "5": 29,
+   "6": 7,
+   "7": 24,
+   "8": 4,
+   "9": 4
+  },
+  "label": "S2 mover 0.2 m/pass sigma=0.10",
+  "lifetime_max": 9,
+  "lifetime_mean": 6.295555555555556,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 4.5,
+  "moved_max": 12,
+  "moved_mean": 6.77,
+  "mover_ids_mean": 2.49,
+  "name": "S2-mover-d0.2-s0.10",
+  "new_ids_max": 6,
+  "new_ids_mean": 4.5,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.02,
+    0.0,
+    0.81
+   ],
+   [
+    0.13,
+    0.01,
+    0.86
+   ],
+   [
+    0.16,
+    0.14,
+    0.81
+   ],
+   [
+    0.29,
+    0.16,
+    0.66
+   ],
+   [
+    0.09,
+    0.29,
+    0.75
+   ],
+   [
+    0.31,
+    0.09,
+    0.68
+   ],
+   [
+    0.12,
+    0.31,
+    0.68
+   ],
+   [
+    0.2,
+    0.12,
+    0.77
+   ],
+   [
+    0.18,
+    0.19,
+    0.75
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 1.31,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 8.58,
+  "appeared_mean": 8.58,
+  "first_vanish_pass_hist": {
+   "2": 55,
+   "3": 45
+  },
+  "label": "S2 mover 0.5 m/pass sigma=0.03",
+  "lifetime_max": 9,
+  "lifetime_mean": 3.7214452214452214,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 8.58,
+  "moved_max": 5,
+  "moved_mean": 3.42,
+  "mover_ids_mean": 6.58,
+  "name": "S2-mover-d0.5-s0.03",
+  "new_ids_max": 10,
+  "new_ids_mean": 8.58,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.55,
+    0.0,
+    0.45
+   ],
+   [
+    0.64,
+    0.55,
+    0.36
+   ],
+   [
+    0.64,
+    0.64,
+    0.36
+   ],
+   [
+    0.56,
+    0.64,
+    0.44
+   ],
+   [
+    0.66,
+    0.56,
+    0.34
+   ],
+   [
+    0.59,
+    0.66,
+    0.41
+   ],
+   [
+    0.7,
+    0.59,
+    0.3
+   ],
+   [
+    0.59,
+    0.7,
+    0.41
+   ],
+   [
+    0.65,
+    0.59,
+    0.35
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 4.93,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 8.67,
+  "appeared_mean": 8.67,
+  "first_vanish_pass_hist": {
+   "2": 50,
+   "3": 50
+  },
+  "label": "S2 mover 0.5 m/pass sigma=0.10",
+  "lifetime_max": 9,
+  "lifetime_mean": 3.6897347174163784,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 8.67,
+  "moved_max": 9,
+  "moved_mean": 5.06,
+  "mover_ids_mean": 6.67,
+  "name": "S2-mover-d0.5-s0.10",
+  "new_ids_max": 10,
+  "new_ids_mean": 8.67,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.5,
+    0.0,
+    0.92
+   ],
+   [
+    0.73,
+    0.5,
+    0.54
+   ],
+   [
+    0.64,
+    0.73,
+    0.58
+   ],
+   [
+    0.69,
+    0.64,
+    0.42
+   ],
+   [
+    0.61,
+    0.69,
+    0.54
+   ],
+   [
+    0.6,
+    0.61,
+    0.47
+   ],
+   [
+    0.61,
+    0.6,
+    0.58
+   ],
+   [
+    0.61,
+    0.61,
+    0.59
+   ],
+   [
+    0.68,
+    0.61,
+    0.42
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 4.99,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 mover 0.8 m/pass sigma=0.03",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d0.8-s0.03",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 11.91,
+  "appeared_mean": 11.91,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 mover 0.8 m/pass sigma=0.10",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9328295549958017,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 11.91,
+  "moved_max": 6,
+  "moved_mean": 2.02,
+  "mover_ids_mean": 9.9,
+  "name": "S2-mover-d0.8-s0.10",
+  "new_ids_max": 13,
+  "new_ids_mean": 11.91,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.37
+   ],
+   [
+    0.99,
+    1.0,
+    0.28
+   ],
+   [
+    0.99,
+    0.99,
+    0.2
+   ],
+   [
+    0.97,
+    0.99,
+    0.28
+   ],
+   [
+    1.01,
+    0.97,
+    0.16
+   ],
+   [
+    0.98,
+    1.0,
+    0.24
+   ],
+   [
+    0.99,
+    0.99,
+    0.19
+   ],
+   [
+    0.99,
+    0.99,
+    0.11
+   ],
+   [
+    0.99,
+    0.99,
+    0.19
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 7.92,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 mover 1.2 m/pass sigma=0.03",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.03",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 mover 1.2 m/pass sigma=0.10",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 6,
+  "moved_mean": 2.04,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.10",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.44
+   ],
+   [
+    1.0,
+    1.0,
+    0.27
+   ],
+   [
+    1.0,
+    1.0,
+    0.22
+   ],
+   [
+    1.0,
+    1.0,
+    0.21
+   ],
+   [
+    1.0,
+    1.0,
+    0.23
+   ],
+   [
+    1.0,
+    1.0,
+    0.21
+   ],
+   [
+    1.0,
+    1.0,
+    0.16
+   ],
+   [
+    1.0,
+    1.0,
+    0.13
+   ],
+   [
+    1.0,
+    1.0,
+    0.17
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {},
+  "label": "S3a one-pass miss @pass 3",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S3a-onepass-miss",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "4": 100
+  },
+  "label": "S3b two-pass miss @pass 3-4",
+  "lifetime_max": 4,
+  "lifetime_mean": 4.0,
+  "lifetime_min": 4,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S3b-twopass-miss",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 1.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {},
+  "label": "S4a phantom-alive (ghost 0.30)",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S4a-phantom-alive",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.1,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "2": 1,
+   "3": 2,
+   "4": 2,
+   "5": 2,
+   "7": 1
+  },
+  "label": "S4b phantom-alive, sigma=0.10",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.436363636363636,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.1,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S4b-phantom-alive-s0.10",
+  "new_ids_max": 2,
+  "new_ids_mean": 1.1,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.01,
+    0.0
+   ],
+   [
+    0.0,
+    0.02,
+    0.0
+   ],
+   [
+    0.0,
+    0.02,
+    0.0
+   ],
+   [
+    0.0,
+    0.02,
+    0.0
+   ],
+   [
+    0.0,
+    0.01,
+    0.0
+   ],
+   [
+    0.0,
+    0.01,
+    0.0
+   ],
+   [
+    0.0,
+    0.03,
+    0.0
+   ],
+   [
+    0.0,
+    0.01,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.06,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.13,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "1": 18,
+   "2": 16,
+   "3": 10,
+   "4": 16,
+   "5": 7,
+   "6": 8,
+   "7": 7,
+   "8": 6,
+   "9": 5
+  },
+  "label": "S5 detector dropout p=.25, vp=1",
+  "lifetime_max": 9,
+  "lifetime_mean": 6.47,
+  "lifetime_min": 1,
+  "max_last_seen_end_mean": 511.8,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S5-dropout-vp1",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    0.81,
+    0.0,
+    0.0
+   ],
+   [
+    0.16,
+    0.18,
+    0.0
+   ],
+   [
+    0.02,
+    0.16,
+    0.0
+   ],
+   [
+    0.0,
+    0.12,
+    0.0
+   ],
+   [
+    0.01,
+    0.18,
+    0.0
+   ],
+   [
+    0.0,
+    0.16,
+    0.0
+   ],
+   [
+    0.0,
+    0.15,
+    0.0
+   ],
+   [
+    0.0,
+    0.25,
+    0.0
+   ],
+   [
+    0.0,
+    0.12,
+    0.0
+   ],
+   [
+    0.0,
+    0.24,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.86,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.56,
+  "vp": 1
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "2": 1,
+   "3": 6,
+   "4": 4,
+   "5": 4,
+   "6": 6,
+   "7": 2,
+   "8": 4,
+   "9": 5
+  },
+  "label": "S5 detector dropout p=.25, vp=2",
+  "lifetime_max": 9,
+  "lifetime_mean": 7.81,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 513.6,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S5-dropout-vp2",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    0.71,
+    0.0,
+    0.0
+   ],
+   [
+    0.25,
+    0.0,
+    0.0
+   ],
+   [
+    0.04,
+    0.01,
+    0.0
+   ],
+   [
+    0.0,
+    0.06,
+    0.0
+   ],
+   [
+    0.0,
+    0.04,
+    0.0
+   ],
+   [
+    0.0,
+    0.04,
+    0.0
+   ],
+   [
+    0.0,
+    0.06,
+    0.0
+   ],
+   [
+    0.0,
+    0.02,
+    0.0
+   ],
+   [
+    0.0,
+    0.06,
+    0.0
+   ],
+   [
+    0.0,
+    0.07,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.25,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.36,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "5": 2,
+   "6": 3,
+   "7": 2,
+   "8": 1,
+   "9": 2
+  },
+  "label": "S5 detector dropout p=.25, vp=3",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.47,
+  "lifetime_min": 4,
+  "max_last_seen_end_mean": 517.2,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S5-dropout-vp3",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    0.75,
+    0.0,
+    0.0
+   ],
+   [
+    0.2,
+    0.0,
+    0.0
+   ],
+   [
+    0.04,
+    0.0,
+    0.0
+   ],
+   [
+    0.01,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.02,
+    0.0
+   ],
+   [
+    0.0,
+    0.03,
+    0.0
+   ],
+   [
+    0.0,
+    0.02,
+    0.0
+   ],
+   [
+    0.0,
+    0.01,
+    0.0
+   ],
+   [
+    0.0,
+    0.02,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.08,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.1,
+  "vp": 3
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 0.0,
+  "first_vanish_pass_hist": {},
+  "label": "S6 weak-but-real conf 0.40",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S6-weak-real",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 6.57,
+  "appeared_mean": 6.57,
+  "first_vanish_pass_hist": {
+   "2": 25,
+   "3": 17,
+   "4": 16,
+   "5": 6,
+   "6": 5,
+   "7": 8,
+   "8": 2,
+   "9": 1
+  },
+  "label": "S1 sigma=0.10 R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 7.3622526636225265,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 6.57,
+  "moved_max": 7,
+  "moved_mean": 2.45,
+  "mover_ids_mean": 0.0,
+  "name": "S1-stationary-s0.10-R0.3",
+  "new_ids_max": 9,
+  "new_ids_mean": 6.57,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    5.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.53,
+    0.0,
+    0.43
+   ],
+   [
+    0.18,
+    0.27,
+    0.35
+   ],
+   [
+    0.21,
+    0.2,
+    0.28
+   ],
+   [
+    0.18,
+    0.29,
+    0.29
+   ],
+   [
+    0.14,
+    0.22,
+    0.22
+   ],
+   [
+    0.1,
+    0.3,
+    0.23
+   ],
+   [
+    0.09,
+    0.33,
+    0.24
+   ],
+   [
+    0.09,
+    0.25,
+    0.16
+   ],
+   [
+    0.05,
+    0.25,
+    0.25
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.98,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 2.11,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 6.59,
+  "appeared_mean": 6.59,
+  "first_vanish_pass_hist": {
+   "2": 2,
+   "3": 72,
+   "4": 26
+  },
+  "label": "S2 d=0.2 sigma=0.03 R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 4.579666160849772,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 6.59,
+  "moved_max": 3,
+  "moved_mean": 1.54,
+  "mover_ids_mean": 4.59,
+  "name": "S2-mover-d0.2-s0.03-R0.3",
+  "new_ids_max": 7,
+  "new_ids_mean": 6.59,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.02,
+    0.0,
+    0.14
+   ],
+   [
+    0.72,
+    0.02,
+    0.26
+   ],
+   [
+    0.27,
+    0.72,
+    0.09
+   ],
+   [
+    0.48,
+    0.27,
+    0.21
+   ],
+   [
+    0.46,
+    0.48,
+    0.07
+   ],
+   [
+    0.36,
+    0.46,
+    0.22
+   ],
+   [
+    0.51,
+    0.36,
+    0.14
+   ],
+   [
+    0.36,
+    0.51,
+    0.17
+   ],
+   [
+    0.41,
+    0.36,
+    0.24
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 3.18,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 7.8,
+  "appeared_mean": 7.8,
+  "first_vanish_pass_hist": {
+   "2": 49,
+   "3": 32,
+   "4": 14,
+   "5": 5
+  },
+  "label": "S2 d=0.2 sigma=0.10 R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 4.107692307692307,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 7.8,
+  "moved_max": 8,
+  "moved_mean": 2.15,
+  "mover_ids_mean": 5.14,
+  "name": "S2-mover-d0.2-s0.10-R0.3",
+  "new_ids_max": 11,
+  "new_ids_mean": 7.8,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.61,
+    0.0,
+    0.24
+   ],
+   [
+    0.61,
+    0.51,
+    0.31
+   ],
+   [
+    0.47,
+    0.61,
+    0.3
+   ],
+   [
+    0.62,
+    0.48,
+    0.21
+   ],
+   [
+    0.53,
+    0.69,
+    0.21
+   ],
+   [
+    0.37,
+    0.61,
+    0.32
+   ],
+   [
+    0.61,
+    0.4,
+    0.17
+   ],
+   [
+    0.48,
+    0.66,
+    0.15
+   ],
+   [
+    0.5,
+    0.6,
+    0.24
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.41,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 4.56,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=0.5 sigma=0.03 R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d0.5-s0.03-R0.3",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.38,
+  "appeared_mean": 12.38,
+  "first_vanish_pass_hist": {
+   "2": 93,
+   "3": 7
+  },
+  "label": "S2 d=0.5 sigma=0.10 R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9216478190630046,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.38,
+  "moved_max": 6,
+  "moved_mean": 1.15,
+  "mover_ids_mean": 9.61,
+  "name": "S2-mover-d0.5-s0.10-R0.3",
+  "new_ids_max": 14,
+  "new_ids_mean": 12.38,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.19,
+    0.0,
+    0.22
+   ],
+   [
+    1.06,
+    1.04,
+    0.07
+   ],
+   [
+    1.03,
+    1.06,
+    0.13
+   ],
+   [
+    1.06,
+    1.13,
+    0.06
+   ],
+   [
+    0.99,
+    1.09,
+    0.17
+   ],
+   [
+    1.06,
+    1.08,
+    0.07
+   ],
+   [
+    0.99,
+    1.12,
+    0.16
+   ],
+   [
+    0.99,
+    1.02,
+    0.1
+   ],
+   [
+    1.01,
+    1.09,
+    0.17
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.43,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 8.63,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=0.8 sigma=0.03 R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d0.8-s0.03-R0.3",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.64,
+  "appeared_mean": 12.64,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=0.8 sigma=0.10 R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.8955696202531644,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.64,
+  "moved_max": 4,
+  "moved_mean": 1.01,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d0.8-s0.10-R0.3",
+  "new_ids_max": 16,
+  "new_ids_mean": 12.64,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.24,
+    0.0,
+    0.24
+   ],
+   [
+    1.05,
+    1.1,
+    0.13
+   ],
+   [
+    1.09,
+    1.11,
+    0.15
+   ],
+   [
+    1.04,
+    1.09,
+    0.1
+   ],
+   [
+    1.05,
+    1.11,
+    0.12
+   ],
+   [
+    1.04,
+    1.12,
+    0.07
+   ],
+   [
+    1.07,
+    1.1,
+    0.06
+   ],
+   [
+    1.03,
+    1.07,
+    0.07
+   ],
+   [
+    1.03,
+    1.14,
+    0.07
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.36,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 8.84,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.03 R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.03-R0.3",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.75,
+  "appeared_mean": 12.75,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.10 R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.8737254901960783,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.75,
+  "moved_max": 4,
+  "moved_mean": 1.15,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.10-R0.3",
+  "new_ids_max": 15,
+  "new_ids_mean": 12.75,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.24,
+    0.0,
+    0.23
+   ],
+   [
+    1.08,
+    1.08,
+    0.18
+   ],
+   [
+    1.07,
+    1.11,
+    0.14
+   ],
+   [
+    1.07,
+    1.1,
+    0.11
+   ],
+   [
+    1.05,
+    1.13,
+    0.11
+   ],
+   [
+    1.04,
+    1.1,
+    0.07
+   ],
+   [
+    1.03,
+    1.15,
+    0.1
+   ],
+   [
+    1.08,
+    1.12,
+    0.11
+   ],
+   [
+    1.09,
+    1.14,
+    0.1
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.42,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 8.93,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.02,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "3": 2
+  },
+  "label": "S4a phantom R=0.3",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.843137254901961,
+  "lifetime_min": 3,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.02,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S4a-phantom-R0.3",
+  "new_ids_max": 2,
+  "new_ids_mean": 1.02,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.02,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.3,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.02,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.0,
+  "appeared_mean": 5.0,
+  "first_vanish_pass_hist": {},
+  "label": "S1 sigma=0.10 R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.0,
+  "moved_max": 10,
+  "moved_mean": 4.87,
+  "mover_ids_mean": 0.0,
+  "name": "S1-stationary-s0.10-R0.75",
+  "new_ids_max": 5,
+  "new_ids_mean": 5.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    5.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.12
+   ],
+   [
+    0.0,
+    0.0,
+    0.56
+   ],
+   [
+    0.0,
+    0.0,
+    0.56
+   ],
+   [
+    0.0,
+    0.0,
+    0.48
+   ],
+   [
+    0.0,
+    0.0,
+    0.46
+   ],
+   [
+    0.0,
+    0.0,
+    0.38
+   ],
+   [
+    0.0,
+    0.0,
+    0.45
+   ],
+   [
+    0.0,
+    0.0,
+    0.46
+   ],
+   [
+    0.0,
+    0.0,
+    0.4
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.0,
+  "appeared_mean": 3.0,
+  "first_vanish_pass_hist": {},
+  "label": "S2 d=0.2 sigma=0.03 R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.0,
+  "moved_max": 9,
+  "moved_mean": 8.14,
+  "mover_ids_mean": 1.0,
+  "name": "S2-mover-d0.2-s0.03-R0.75",
+  "new_ids_max": 3,
+  "new_ids_mean": 3.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.15
+   ],
+   [
+    0.0,
+    0.0,
+    0.99
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.04,
+  "appeared_mean": 3.04,
+  "first_vanish_pass_hist": {
+   "5": 1,
+   "7": 1,
+   "8": 1,
+   "9": 1
+  },
+  "label": "S2 d=0.2 sigma=0.10 R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.894736842105264,
+  "lifetime_min": 1,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.04,
+  "moved_max": 16,
+  "moved_mean": 9.94,
+  "mover_ids_mean": 1.04,
+  "name": "S2-mover-d0.2-s0.10-R0.75",
+  "new_ids_max": 4,
+  "new_ids_mean": 3.04,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.98
+   ],
+   [
+    0.0,
+    0.0,
+    1.11
+   ],
+   [
+    0.0,
+    0.0,
+    1.05
+   ],
+   [
+    0.01,
+    0.0,
+    1.14
+   ],
+   [
+    0.0,
+    0.01,
+    1.21
+   ],
+   [
+    0.01,
+    0.0,
+    1.13
+   ],
+   [
+    0.01,
+    0.01,
+    1.06
+   ],
+   [
+    0.01,
+    0.01,
+    1.12
+   ],
+   [
+    0.0,
+    0.01,
+    1.14
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.04,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 6.93,
+  "appeared_mean": 6.93,
+  "first_vanish_pass_hist": {
+   "3": 92,
+   "4": 8
+  },
+  "label": "S2 d=0.5 sigma=0.03 R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 4.424242424242424,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 6.93,
+  "moved_max": 6,
+  "moved_mean": 5.07,
+  "mover_ids_mean": 4.93,
+  "name": "S2-mover-d0.5-s0.03-R0.75",
+  "new_ids_max": 7,
+  "new_ids_mean": 6.93,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.92,
+    0.0,
+    0.08
+   ],
+   [
+    0.08,
+    0.92,
+    0.92
+   ],
+   [
+    0.85,
+    0.08,
+    0.15
+   ],
+   [
+    0.15,
+    0.85,
+    0.85
+   ],
+   [
+    0.72,
+    0.15,
+    0.28
+   ],
+   [
+    0.26,
+    0.72,
+    0.74
+   ],
+   [
+    0.68,
+    0.26,
+    0.32
+   ],
+   [
+    0.27,
+    0.68,
+    0.73
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 3.66,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 6.63,
+  "appeared_mean": 6.63,
+  "first_vanish_pass_hist": {
+   "2": 5,
+   "3": 58,
+   "4": 36,
+   "5": 1
+  },
+  "label": "S2 d=0.5 sigma=0.10 R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 4.553544494720965,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 6.63,
+  "moved_max": 11,
+  "moved_mean": 7.12,
+  "mover_ids_mean": 4.63,
+  "name": "S2-mover-d0.5-s0.10-R0.75",
+  "new_ids_max": 8,
+  "new_ids_mean": 6.63,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.05,
+    0.0,
+    1.39
+   ],
+   [
+    0.58,
+    0.05,
+    0.66
+   ],
+   [
+    0.41,
+    0.58,
+    0.78
+   ],
+   [
+    0.36,
+    0.41,
+    0.81
+   ],
+   [
+    0.53,
+    0.36,
+    0.71
+   ],
+   [
+    0.34,
+    0.53,
+    0.76
+   ],
+   [
+    0.49,
+    0.34,
+    0.64
+   ],
+   [
+    0.43,
+    0.49,
+    0.72
+   ],
+   [
+    0.44,
+    0.43,
+    0.65
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 3.19,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 10.98,
+  "appeared_mean": 10.98,
+  "first_vanish_pass_hist": {
+   "2": 89,
+   "3": 11
+  },
+  "label": "S2 d=0.8 sigma=0.03 R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 3.104735883424408,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 10.98,
+  "moved_max": 3,
+  "moved_mean": 1.02,
+  "mover_ids_mean": 8.98,
+  "name": "S2-mover-d0.8-s0.03-R0.75",
+  "new_ids_max": 12,
+  "new_ids_mean": 10.98,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.89,
+    0.0,
+    0.11
+   ],
+   [
+    0.89,
+    0.89,
+    0.11
+   ],
+   [
+    0.87,
+    0.89,
+    0.13
+   ],
+   [
+    0.88,
+    0.87,
+    0.12
+   ],
+   [
+    0.89,
+    0.88,
+    0.11
+   ],
+   [
+    0.86,
+    0.89,
+    0.14
+   ],
+   [
+    0.89,
+    0.86,
+    0.11
+   ],
+   [
+    0.92,
+    0.89,
+    0.08
+   ],
+   [
+    0.89,
+    0.92,
+    0.11
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 7.09,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 9.45,
+  "appeared_mean": 9.45,
+  "first_vanish_pass_hist": {
+   "2": 71,
+   "3": 29
+  },
+  "label": "S2 d=0.8 sigma=0.10 R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 3.461375661375661,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 9.45,
+  "moved_max": 9,
+  "moved_mean": 4.45,
+  "mover_ids_mean": 7.45,
+  "name": "S2-mover-d0.8-s0.10-R0.75",
+  "new_ids_max": 12,
+  "new_ids_mean": 9.45,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.71,
+    0.0,
+    0.72
+   ],
+   [
+    0.69,
+    0.71,
+    0.54
+   ],
+   [
+    0.7,
+    0.69,
+    0.58
+   ],
+   [
+    0.76,
+    0.7,
+    0.37
+   ],
+   [
+    0.64,
+    0.76,
+    0.46
+   ],
+   [
+    0.76,
+    0.64,
+    0.47
+   ],
+   [
+    0.71,
+    0.76,
+    0.42
+   ],
+   [
+    0.74,
+    0.71,
+    0.48
+   ],
+   [
+    0.74,
+    0.74,
+    0.41
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 5.71,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.03 R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.03-R0.75",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 11.98,
+  "appeared_mean": 11.98,
+  "first_vanish_pass_hist": {
+   "2": 99,
+   "3": 1
+  },
+  "label": "S2 d=1.2 sigma=0.10 R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9198664440734556,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 11.98,
+  "moved_max": 6,
+  "moved_mean": 1.76,
+  "mover_ids_mean": 9.98,
+  "name": "S2-mover-d1.2-s0.10-R0.75",
+  "new_ids_max": 12,
+  "new_ids_mean": 11.98,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.99,
+    0.0,
+    0.38
+   ],
+   [
+    1.0,
+    0.99,
+    0.2
+   ],
+   [
+    1.0,
+    1.0,
+    0.21
+   ],
+   [
+    0.99,
+    1.0,
+    0.19
+   ],
+   [
+    1.0,
+    0.99,
+    0.15
+   ],
+   [
+    1.0,
+    1.0,
+    0.18
+   ],
+   [
+    1.0,
+    1.0,
+    0.16
+   ],
+   [
+    1.0,
+    1.0,
+    0.16
+   ],
+   [
+    1.0,
+    1.0,
+    0.13
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 7.98,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {},
+  "label": "S4a phantom R=0.75",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S4a-phantom-R0.75",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.75,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.0,
+  "appeared_mean": 5.0,
+  "first_vanish_pass_hist": {},
+  "label": "S1 sigma=0.10 R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.0,
+  "moved_max": 9,
+  "moved_mean": 4.6,
+  "mover_ids_mean": 0.0,
+  "name": "S1-stationary-s0.10-R1.0",
+  "new_ids_max": 5,
+  "new_ids_mean": 5.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    5.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.19
+   ],
+   [
+    0.0,
+    0.0,
+    0.54
+   ],
+   [
+    0.0,
+    0.0,
+    0.48
+   ],
+   [
+    0.0,
+    0.0,
+    0.5
+   ],
+   [
+    0.0,
+    0.0,
+    0.4
+   ],
+   [
+    0.0,
+    0.0,
+    0.36
+   ],
+   [
+    0.0,
+    0.0,
+    0.34
+   ],
+   [
+    0.0,
+    0.0,
+    0.46
+   ],
+   [
+    0.0,
+    0.0,
+    0.33
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.0,
+  "appeared_mean": 3.0,
+  "first_vanish_pass_hist": {},
+  "label": "S2 d=0.2 sigma=0.03 R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.0,
+  "moved_max": 9,
+  "moved_mean": 8.12,
+  "mover_ids_mean": 1.0,
+  "name": "S2-mover-d0.2-s0.03-R1.0",
+  "new_ids_max": 3,
+  "new_ids_mean": 3.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.13
+   ],
+   [
+    0.0,
+    0.0,
+    0.99
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.0,
+  "appeared_mean": 3.0,
+  "first_vanish_pass_hist": {},
+  "label": "S2 d=0.2 sigma=0.10 R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.0,
+  "moved_max": 12,
+  "moved_mean": 9.72,
+  "mover_ids_mean": 1.0,
+  "name": "S2-mover-d0.2-s0.10-R1.0",
+  "new_ids_max": 3,
+  "new_ids_mean": 3.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.89
+   ],
+   [
+    0.0,
+    0.0,
+    0.94
+   ],
+   [
+    0.0,
+    0.0,
+    1.09
+   ],
+   [
+    0.0,
+    0.0,
+    1.06
+   ],
+   [
+    0.0,
+    0.0,
+    1.16
+   ],
+   [
+    0.0,
+    0.0,
+    1.19
+   ],
+   [
+    0.0,
+    0.0,
+    1.14
+   ],
+   [
+    0.0,
+    0.0,
+    1.12
+   ],
+   [
+    0.0,
+    0.0,
+    1.13
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.0,
+  "appeared_mean": 5.0,
+  "first_vanish_pass_hist": {
+   "4": 29,
+   "5": 69,
+   "6": 2
+  },
+  "label": "S2 d=0.5 sigma=0.03 R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 5.798,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.0,
+  "moved_max": 7,
+  "moved_mean": 7.0,
+  "mover_ids_mean": 3.0,
+  "name": "S2-mover-d0.5-s0.03-R1.0",
+  "new_ids_max": 5,
+  "new_ids_mean": 5.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.29,
+    0.0,
+    0.71
+   ],
+   [
+    0.69,
+    0.29,
+    0.31
+   ],
+   [
+    0.02,
+    0.69,
+    0.98
+   ],
+   [
+    0.08,
+    0.02,
+    0.92
+   ],
+   [
+    0.45,
+    0.08,
+    0.55
+   ],
+   [
+    0.46,
+    0.45,
+    0.54
+   ],
+   [
+    0.01,
+    0.46,
+    0.99
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.99,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.04,
+  "appeared_mean": 5.04,
+  "first_vanish_pass_hist": {
+   "3": 5,
+   "4": 45,
+   "5": 40,
+   "6": 10
+  },
+  "label": "S2 d=0.5 sigma=0.10 R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 5.734126984126984,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.04,
+  "moved_max": 13,
+  "moved_mean": 8.8,
+  "mover_ids_mean": 3.04,
+  "name": "S2-mover-d0.5-s0.10-R1.0",
+  "new_ids_max": 6,
+  "new_ids_mean": 5.04,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.4
+   ],
+   [
+    0.05,
+    0.0,
+    1.16
+   ],
+   [
+    0.45,
+    0.05,
+    0.68
+   ],
+   [
+    0.4,
+    0.45,
+    0.73
+   ],
+   [
+    0.11,
+    0.4,
+    1.15
+   ],
+   [
+    0.16,
+    0.11,
+    1.04
+   ],
+   [
+    0.46,
+    0.16,
+    0.71
+   ],
+   [
+    0.27,
+    0.46,
+    0.92
+   ],
+   [
+    0.14,
+    0.27,
+    1.01
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 1.9,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 7.0,
+  "appeared_mean": 7.0,
+  "first_vanish_pass_hist": {
+   "3": 100
+  },
+  "label": "S2 d=0.8 sigma=0.03 R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 4.428571428571429,
+  "lifetime_min": 1,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 7.0,
+  "moved_max": 5,
+  "moved_mean": 5.0,
+  "mover_ids_mean": 5.0,
+  "name": "S2-mover-d0.8-s0.03-R1.0",
+  "new_ids_max": 7,
+  "new_ids_mean": 7.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    1.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    1.0
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 4.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 7.39,
+  "appeared_mean": 7.39,
+  "first_vanish_pass_hist": {
+   "2": 14,
+   "3": 84,
+   "4": 2
+  },
+  "label": "S2 d=0.8 sigma=0.10 R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 4.194857916102841,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 7.39,
+  "moved_max": 11,
+  "moved_mean": 6.58,
+  "mover_ids_mean": 5.39,
+  "name": "S2-mover-d0.8-s0.10-R1.0",
+  "new_ids_max": 8,
+  "new_ids_mean": 7.39,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.14,
+    0.0,
+    1.31
+   ],
+   [
+    0.84,
+    0.14,
+    0.36
+   ],
+   [
+    0.25,
+    0.84,
+    0.94
+   ],
+   [
+    0.75,
+    0.25,
+    0.47
+   ],
+   [
+    0.28,
+    0.75,
+    0.96
+   ],
+   [
+    0.72,
+    0.28,
+    0.4
+   ],
+   [
+    0.33,
+    0.72,
+    0.85
+   ],
+   [
+    0.69,
+    0.33,
+    0.52
+   ],
+   [
+    0.39,
+    0.69,
+    0.77
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 4.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.03 R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.03-R1.0",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 11.4,
+  "appeared_mean": 11.4,
+  "first_vanish_pass_hist": {
+   "2": 92,
+   "3": 8
+  },
+  "label": "S2 d=1.2 sigma=0.10 R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 3.0236842105263158,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 11.4,
+  "moved_max": 7,
+  "moved_mean": 2.31,
+  "mover_ids_mean": 9.4,
+  "name": "S2-mover-d1.2-s0.10-R1.0",
+  "new_ids_max": 12,
+  "new_ids_mean": 11.4,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.92,
+    0.0,
+    0.43
+   ],
+   [
+    0.92,
+    0.92,
+    0.3
+   ],
+   [
+    0.94,
+    0.92,
+    0.26
+   ],
+   [
+    0.97,
+    0.94,
+    0.21
+   ],
+   [
+    0.94,
+    0.97,
+    0.18
+   ],
+   [
+    0.89,
+    0.94,
+    0.28
+   ],
+   [
+    0.94,
+    0.89,
+    0.19
+   ],
+   [
+    0.95,
+    0.94,
+    0.2
+   ],
+   [
+    0.93,
+    0.95,
+    0.26
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 7.47,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {},
+  "label": "S4a phantom R=1.0",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S4a-phantom-R1.0",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 1.0,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "3": 100
+  },
+  "label": "S3a one-pass miss vp=1",
+  "lifetime_max": 3,
+  "lifetime_mean": 3.0,
+  "lifetime_min": 3,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S3a-onepass-miss-vp1",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 1.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.0,
+  "vp": 1
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "3": 100
+  },
+  "label": "S3b two-pass miss vp=1",
+  "lifetime_max": 3,
+  "lifetime_mean": 3.0,
+  "lifetime_min": 3,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S3b-twopass-miss-vp1",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 1.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.0,
+  "vp": 1
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {},
+  "label": "S3a one-pass miss vp=3",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S3a-onepass-miss-vp3",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 3
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {},
+  "label": "S3b two-pass miss vp=3",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S3b-twopass-miss-vp3",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "none",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 3
+ },
+ {
+  "alive_end_mean": 5.01,
+  "appeared_mean": 5.01,
+  "first_vanish_pass_hist": {
+   "2": 1
+  },
+  "label": "S1 sigma=0.10 F1",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.986027944111777,
+  "lifetime_min": 4,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.01,
+  "moved_max": 11,
+  "moved_mean": 4.37,
+  "mover_ids_mean": 0.0,
+  "name": "S1-s0.10-F1",
+  "new_ids_max": 6,
+  "new_ids_mean": 5.01,
+  "patch": "F1",
+  "per_pass_mean": [
+   [
+    5.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.01,
+    0.0,
+    1.07
+   ],
+   [
+    0.0,
+    0.01,
+    0.53
+   ],
+   [
+    0.0,
+    0.0,
+    0.43
+   ],
+   [
+    0.0,
+    0.0,
+    0.41
+   ],
+   [
+    0.0,
+    0.01,
+    0.5
+   ],
+   [
+    0.0,
+    0.0,
+    0.38
+   ],
+   [
+    0.0,
+    0.01,
+    0.34
+   ],
+   [
+    0.0,
+    0.0,
+    0.3
+   ],
+   [
+    0.0,
+    0.0,
+    0.41
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.02,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.03,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.99,
+  "appeared_mean": 3.99,
+  "first_vanish_pass_hist": {
+   "5": 4,
+   "6": 16,
+   "7": 22,
+   "8": 21,
+   "9": 19
+  },
+  "label": "S2 d=0.2 sigma=0.03 F1",
+  "lifetime_max": 9,
+  "lifetime_mean": 6.972431077694235,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.99,
+  "moved_max": 8,
+  "moved_mean": 6.26,
+  "mover_ids_mean": 1.99,
+  "name": "S2-mover-d0.2-s0.03-F1",
+  "new_ids_max": 5,
+  "new_ids_mean": 3.99,
+  "patch": "F1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.15
+   ],
+   [
+    0.0,
+    0.0,
+    0.96
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.04,
+    0.0,
+    0.96
+   ],
+   [
+    0.16,
+    0.04,
+    0.8
+   ],
+   [
+    0.22,
+    0.16,
+    0.61
+   ],
+   [
+    0.21,
+    0.22,
+    0.57
+   ],
+   [
+    0.19,
+    0.21,
+    0.57
+   ],
+   [
+    0.17,
+    0.19,
+    0.64
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.82,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 8.63,
+  "appeared_mean": 8.63,
+  "first_vanish_pass_hist": {
+   "2": 56,
+   "3": 44
+  },
+  "label": "S2 d=0.5 sigma=0.03 F1",
+  "lifetime_max": 9,
+  "lifetime_mean": 3.709154113557358,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 8.63,
+  "moved_max": 5,
+  "moved_mean": 3.37,
+  "mover_ids_mean": 6.63,
+  "name": "S2-mover-d0.5-s0.03-F1",
+  "new_ids_max": 10,
+  "new_ids_mean": 8.63,
+  "patch": "F1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.56,
+    0.0,
+    0.44
+   ],
+   [
+    0.58,
+    0.56,
+    0.42
+   ],
+   [
+    0.7,
+    0.58,
+    0.3
+   ],
+   [
+    0.61,
+    0.7,
+    0.39
+   ],
+   [
+    0.71,
+    0.61,
+    0.29
+   ],
+   [
+    0.53,
+    0.71,
+    0.47
+   ],
+   [
+    0.72,
+    0.53,
+    0.28
+   ],
+   [
+    0.6,
+    0.72,
+    0.4
+   ],
+   [
+    0.62,
+    0.6,
+    0.38
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 5.01,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=0.8 sigma=0.03 F1",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d0.8-s0.03-F1",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "F1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.03 F1",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.03-F1",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "F1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S4a sigma=0.03 F1",
+  "lifetime_max": 2,
+  "lifetime_mean": 2.0,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 0.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S4a-s0.03-F1",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "F1",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.93,
+  "appeared_mean": 3.93,
+  "first_vanish_pass_hist": {
+   "5": 3,
+   "6": 8,
+   "7": 25,
+   "8": 22,
+   "9": 27
+  },
+  "label": "S2 d=0.2 sigma=0.03 F2",
+  "lifetime_max": 9,
+  "lifetime_mean": 7.086513994910941,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.93,
+  "moved_max": 9,
+  "moved_mean": 6.29,
+  "mover_ids_mean": 1.93,
+  "name": "S2-mover-d0.2-s0.03-F2",
+  "new_ids_max": 4,
+  "new_ids_mean": 3.93,
+  "patch": "F2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.13
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.03,
+    0.0,
+    0.97
+   ],
+   [
+    0.08,
+    0.03,
+    0.89
+   ],
+   [
+    0.25,
+    0.08,
+    0.66
+   ],
+   [
+    0.22,
+    0.25,
+    0.52
+   ],
+   [
+    0.27,
+    0.22,
+    0.48
+   ],
+   [
+    0.08,
+    0.27,
+    0.64
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.85,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 8.63,
+  "appeared_mean": 8.63,
+  "first_vanish_pass_hist": {
+   "2": 52,
+   "3": 48
+  },
+  "label": "S2 d=0.5 sigma=0.03 F2",
+  "lifetime_max": 9,
+  "lifetime_mean": 3.7068366164542295,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 8.63,
+  "moved_max": 5,
+  "moved_mean": 3.37,
+  "mover_ids_mean": 6.63,
+  "name": "S2-mover-d0.5-s0.03-F2",
+  "new_ids_max": 10,
+  "new_ids_mean": 8.63,
+  "patch": "F2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.52,
+    0.0,
+    0.48
+   ],
+   [
+    0.69,
+    0.52,
+    0.31
+   ],
+   [
+    0.67,
+    0.69,
+    0.33
+   ],
+   [
+    0.62,
+    0.67,
+    0.38
+   ],
+   [
+    0.64,
+    0.62,
+    0.36
+   ],
+   [
+    0.58,
+    0.64,
+    0.42
+   ],
+   [
+    0.61,
+    0.58,
+    0.39
+   ],
+   [
+    0.66,
+    0.61,
+    0.34
+   ],
+   [
+    0.64,
+    0.66,
+    0.36
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 4.99,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=0.8 sigma=0.03 F2",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d0.8-s0.03-F2",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "F2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.03 F2",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.03-F2",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "F2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "3": 100
+  },
+  "label": "S4a sigma=0.03 F2",
+  "lifetime_max": 3,
+  "lifetime_mean": 3.0,
+  "lifetime_min": 3,
+  "max_last_seen_end_mean": 60.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S4a-s0.03-F2",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "F2",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 0.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S6 sigma=0.03 F2",
+  "lifetime_max": 2,
+  "lifetime_mean": 2.0,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 0.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S6-s0.03-F2",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "F2",
+  "per_pass_mean": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.01,
+  "appeared_mean": 5.01,
+  "first_vanish_pass_hist": {
+   "3": 1
+  },
+  "label": "S1 sigma=0.10 H1",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.978043912175648,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.01,
+  "moved_max": 11,
+  "moved_mean": 4.51,
+  "mover_ids_mean": 0.0,
+  "name": "S1-s0.10-H1",
+  "new_ids_max": 6,
+  "new_ids_mean": 5.01,
+  "patch": "H1",
+  "per_pass_mean": [
+   [
+    5.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.01,
+    0.0,
+    0.9
+   ],
+   [
+    0.0,
+    0.0,
+    0.61
+   ],
+   [
+    0.0,
+    0.01,
+    0.52
+   ],
+   [
+    0.0,
+    0.0,
+    0.53
+   ],
+   [
+    0.0,
+    0.01,
+    0.45
+   ],
+   [
+    0.0,
+    0.0,
+    0.42
+   ],
+   [
+    0.0,
+    0.0,
+    0.45
+   ],
+   [
+    0.0,
+    0.0,
+    0.32
+   ],
+   [
+    0.0,
+    0.0,
+    0.31
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.01,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.02,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.0,
+  "appeared_mean": 3.0,
+  "first_vanish_pass_hist": {},
+  "label": "S2 d=0.2 sigma=0.03 H1",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.0,
+  "moved_max": 9,
+  "moved_mean": 8.12,
+  "mover_ids_mean": 1.0,
+  "name": "S2-mover-d0.2-s0.03-H1",
+  "new_ids_max": 3,
+  "new_ids_mean": 3.0,
+  "patch": "H1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.14
+   ],
+   [
+    0.0,
+    0.0,
+    0.98
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.48,
+  "appeared_mean": 3.48,
+  "first_vanish_pass_hist": {
+   "2": 3,
+   "3": 5,
+   "4": 10,
+   "5": 7,
+   "6": 3,
+   "7": 6,
+   "8": 1,
+   "9": 5
+  },
+  "label": "S2 d=0.2 sigma=0.10 H1",
+  "lifetime_max": 9,
+  "lifetime_mean": 7.910919540229885,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.48,
+  "moved_max": 14,
+  "moved_mean": 9.07,
+  "mover_ids_mean": 1.47,
+  "name": "S2-mover-d0.2-s0.10-H1",
+  "new_ids_max": 6,
+  "new_ids_mean": 3.48,
+  "patch": "H1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.04,
+    0.0,
+    0.91
+   ],
+   [
+    0.06,
+    0.03,
+    0.93
+   ],
+   [
+    0.09,
+    0.05,
+    0.97
+   ],
+   [
+    0.06,
+    0.1,
+    0.99
+   ],
+   [
+    0.04,
+    0.07,
+    1.06
+   ],
+   [
+    0.07,
+    0.04,
+    1.0
+   ],
+   [
+    0.02,
+    0.07,
+    1.01
+   ],
+   [
+    0.07,
+    0.03,
+    1.11
+   ],
+   [
+    0.03,
+    0.07,
+    1.09
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.01,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.46,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.85,
+  "appeared_mean": 3.85,
+  "first_vanish_pass_hist": {
+   "2": 60
+  },
+  "label": "S2 d=0.5 sigma=0.03 H1",
+  "lifetime_max": 9,
+  "lifetime_mean": 7.233766233766234,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.85,
+  "moved_max": 9,
+  "moved_mean": 8.15,
+  "mover_ids_mean": 1.85,
+  "name": "S2-mover-d0.5-s0.03-H1",
+  "new_ids_max": 7,
+  "new_ids_mean": 3.85,
+  "patch": "H1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.6,
+    0.0,
+    0.4
+   ],
+   [
+    0.16,
+    0.6,
+    0.84
+   ],
+   [
+    0.06,
+    0.16,
+    0.94
+   ],
+   [
+    0.03,
+    0.06,
+    0.97
+   ],
+   [
+    0.0,
+    0.03,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.85,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.59,
+  "appeared_mean": 5.59,
+  "first_vanish_pass_hist": {
+   "2": 62,
+   "3": 19,
+   "4": 1,
+   "8": 1
+  },
+  "label": "S2 d=0.5 sigma=0.10 H1",
+  "lifetime_max": 9,
+  "lifetime_mean": 5.273703041144902,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.59,
+  "moved_max": 13,
+  "moved_mean": 8.07,
+  "mover_ids_mean": 3.59,
+  "name": "S2-mover-d0.5-s0.10-H1",
+  "new_ids_max": 10,
+  "new_ids_mean": 5.59,
+  "patch": "H1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.62,
+    0.0,
+    0.72
+   ],
+   [
+    0.48,
+    0.62,
+    0.73
+   ],
+   [
+    0.38,
+    0.48,
+    0.79
+   ],
+   [
+    0.25,
+    0.38,
+    0.92
+   ],
+   [
+    0.27,
+    0.25,
+    0.85
+   ],
+   [
+    0.21,
+    0.27,
+    0.99
+   ],
+   [
+    0.16,
+    0.21,
+    1.01
+   ],
+   [
+    0.11,
+    0.16,
+    1.01
+   ],
+   [
+    0.11,
+    0.11,
+    1.05
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 2.48,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=0.8 sigma=0.03 H1",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d0.8-s0.03-H1",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "H1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 11.89,
+  "appeared_mean": 11.89,
+  "first_vanish_pass_hist": {
+   "2": 99,
+   "3": 1
+  },
+  "label": "S2 d=0.8 sigma=0.10 H1",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9377628259041213,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 11.89,
+  "moved_max": 5,
+  "moved_mean": 1.76,
+  "mover_ids_mean": 9.89,
+  "name": "S2-mover-d0.8-s0.10-H1",
+  "new_ids_max": 12,
+  "new_ids_mean": 11.89,
+  "patch": "H1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.99,
+    0.0,
+    0.42
+   ],
+   [
+    1.0,
+    0.99,
+    0.21
+   ],
+   [
+    0.98,
+    1.0,
+    0.22
+   ],
+   [
+    0.99,
+    0.98,
+    0.09
+   ],
+   [
+    1.0,
+    0.99,
+    0.14
+   ],
+   [
+    0.99,
+    1.0,
+    0.15
+   ],
+   [
+    0.99,
+    0.99,
+    0.15
+   ],
+   [
+    0.99,
+    0.99,
+    0.24
+   ],
+   [
+    0.96,
+    0.99,
+    0.14
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 7.93,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.03 H1",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.03-H1",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "H1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.01,
+  "appeared_mean": 12.01,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.10 H1",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.920066611157369,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.01,
+  "moved_max": 5,
+  "moved_mean": 1.98,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.10-H1",
+  "new_ids_max": 13,
+  "new_ids_mean": 12.01,
+  "patch": "H1",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.58
+   ],
+   [
+    1.01,
+    1.0,
+    0.24
+   ],
+   [
+    1.0,
+    1.01,
+    0.21
+   ],
+   [
+    1.0,
+    1.0,
+    0.18
+   ],
+   [
+    1.0,
+    1.0,
+    0.17
+   ],
+   [
+    1.0,
+    1.0,
+    0.12
+   ],
+   [
+    1.0,
+    1.0,
+    0.2
+   ],
+   [
+    1.0,
+    1.0,
+    0.16
+   ],
+   [
+    1.0,
+    1.01,
+    0.12
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.01,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 8.02,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.0,
+  "appeared_mean": 3.0,
+  "first_vanish_pass_hist": {},
+  "label": "S2 d=0.2 sigma=0.03 H2",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.0,
+  "moved_max": 9,
+  "moved_mean": 8.17,
+  "mover_ids_mean": 1.0,
+  "name": "S2-mover-d0.2-s0.03-H2",
+  "new_ids_max": 3,
+  "new_ids_mean": 3.0,
+  "patch": "H2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.18
+   ],
+   [
+    0.0,
+    0.0,
+    0.99
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.39,
+  "appeared_mean": 3.39,
+  "first_vanish_pass_hist": {
+   "3": 6,
+   "4": 8,
+   "5": 5,
+   "6": 8,
+   "7": 4,
+   "8": 3,
+   "9": 1
+  },
+  "label": "S2 d=0.2 sigma=0.10 H2",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.076696165191741,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.39,
+  "moved_max": 15,
+  "moved_mean": 9.19,
+  "mover_ids_mean": 1.39,
+  "name": "S2-mover-d0.2-s0.10-H2",
+  "new_ids_max": 5,
+  "new_ids_mean": 3.39,
+  "patch": "H2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.03
+   ],
+   [
+    0.06,
+    0.0,
+    1.01
+   ],
+   [
+    0.08,
+    0.06,
+    0.97
+   ],
+   [
+    0.05,
+    0.08,
+    0.95
+   ],
+   [
+    0.09,
+    0.05,
+    0.98
+   ],
+   [
+    0.05,
+    0.09,
+    0.99
+   ],
+   [
+    0.04,
+    0.05,
+    1.08
+   ],
+   [
+    0.01,
+    0.04,
+    1.09
+   ],
+   [
+    0.01,
+    0.01,
+    1.09
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.38,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.0,
+  "appeared_mean": 3.0,
+  "first_vanish_pass_hist": {},
+  "label": "S2 d=0.5 sigma=0.03 H2",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.0,
+  "moved_max": 9,
+  "moved_mean": 9.0,
+  "mover_ids_mean": 1.0,
+  "name": "S2-mover-d0.5-s0.03-H2",
+  "new_ids_max": 3,
+  "new_ids_mean": 3.0,
+  "patch": "H2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.4,
+  "appeared_mean": 3.4,
+  "first_vanish_pass_hist": {
+   "3": 29,
+   "7": 1
+  },
+  "label": "S2 d=0.5 sigma=0.10 H2",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.058823529411764,
+  "lifetime_min": 1,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.4,
+  "moved_max": 14,
+  "moved_mean": 10.41,
+  "mover_ids_mean": 1.4,
+  "name": "S2-mover-d0.5-s0.10-H2",
+  "new_ids_max": 6,
+  "new_ids_mean": 3.4,
+  "patch": "H2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.47
+   ],
+   [
+    0.29,
+    0.0,
+    0.94
+   ],
+   [
+    0.0,
+    0.29,
+    1.14
+   ],
+   [
+    0.07,
+    0.0,
+    1.08
+   ],
+   [
+    0.0,
+    0.07,
+    1.11
+   ],
+   [
+    0.02,
+    0.0,
+    1.19
+   ],
+   [
+    0.0,
+    0.02,
+    1.2
+   ],
+   [
+    0.02,
+    0.0,
+    1.1
+   ],
+   [
+    0.0,
+    0.02,
+    1.18
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.4,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.9,
+  "appeared_mean": 5.9,
+  "first_vanish_pass_hist": {
+   "4": 96,
+   "5": 4
+  },
+  "label": "S2 d=0.8 sigma=0.03 H2",
+  "lifetime_max": 9,
+  "lifetime_mean": 4.915254237288136,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.9,
+  "moved_max": 7,
+  "moved_mean": 6.1,
+  "mover_ids_mean": 3.9,
+  "name": "S2-mover-d0.8-s0.03-H2",
+  "new_ids_max": 6,
+  "new_ids_mean": 5.9,
+  "patch": "H2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.96,
+    0.0,
+    0.04
+   ],
+   [
+    0.04,
+    0.96,
+    0.96
+   ],
+   [
+    0.0,
+    0.04,
+    1.0
+   ],
+   [
+    0.93,
+    0.0,
+    0.07
+   ],
+   [
+    0.07,
+    0.93,
+    0.93
+   ],
+   [
+    0.0,
+    0.07,
+    1.0
+   ],
+   [
+    0.9,
+    0.0,
+    0.1
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 2.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.81,
+  "appeared_mean": 5.81,
+  "first_vanish_pass_hist": {
+   "2": 11,
+   "3": 18,
+   "4": 50,
+   "5": 21
+  },
+  "label": "S2 d=0.8 sigma=0.10 H2",
+  "lifetime_max": 9,
+  "lifetime_mean": 5.075731497418245,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.81,
+  "moved_max": 13,
+  "moved_mean": 8.06,
+  "mover_ids_mean": 3.8,
+  "name": "S2-mover-d0.8-s0.10-H2",
+  "new_ids_max": 7,
+  "new_ids_mean": 5.81,
+  "patch": "H2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.11,
+    0.0,
+    1.33
+   ],
+   [
+    0.18,
+    0.11,
+    1.03
+   ],
+   [
+    0.52,
+    0.18,
+    0.74
+   ],
+   [
+    0.42,
+    0.51,
+    0.69
+   ],
+   [
+    0.21,
+    0.43,
+    0.99
+   ],
+   [
+    0.39,
+    0.21,
+    0.73
+   ],
+   [
+    0.42,
+    0.39,
+    0.76
+   ],
+   [
+    0.23,
+    0.42,
+    0.96
+   ],
+   [
+    0.33,
+    0.23,
+    0.83
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 2.48,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.03 H2",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.03-H2",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "H2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 11.16,
+  "appeared_mean": 11.16,
+  "first_vanish_pass_hist": {
+   "2": 87,
+   "3": 12,
+   "4": 1
+  },
+  "label": "S2 d=1.2 sigma=0.10 H2",
+  "lifetime_max": 9,
+  "lifetime_mean": 3.074372759856631,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 11.16,
+  "moved_max": 7,
+  "moved_mean": 2.72,
+  "mover_ids_mean": 9.16,
+  "name": "S2-mover-d1.2-s0.10-H2",
+  "new_ids_max": 12,
+  "new_ids_mean": 11.16,
+  "patch": "H2",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.87,
+    0.0,
+    0.54
+   ],
+   [
+    0.94,
+    0.87,
+    0.33
+   ],
+   [
+    0.93,
+    0.94,
+    0.34
+   ],
+   [
+    0.93,
+    0.93,
+    0.27
+   ],
+   [
+    0.87,
+    0.93,
+    0.26
+   ],
+   [
+    0.93,
+    0.87,
+    0.21
+   ],
+   [
+    0.91,
+    0.93,
+    0.22
+   ],
+   [
+    0.93,
+    0.91,
+    0.22
+   ],
+   [
+    0.85,
+    0.93,
+    0.33
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 7.31,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.0,
+  "appeared_mean": 5.0,
+  "first_vanish_pass_hist": {},
+  "label": "S1 sigma=0.03 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S1-s0.03-HF",
+  "new_ids_max": 5,
+  "new_ids_mean": 5.0,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    5.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.02,
+  "appeared_mean": 5.02,
+  "first_vanish_pass_hist": {
+   "3": 1,
+   "4": 1
+  },
+  "label": "S1 sigma=0.10 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.97211155378486,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.02,
+  "moved_max": 11,
+  "moved_mean": 4.74,
+  "mover_ids_mean": 0.0,
+  "name": "S1-s0.10-HF",
+  "new_ids_max": 6,
+  "new_ids_mean": 5.02,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    5.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.05
+   ],
+   [
+    0.02,
+    0.0,
+    0.72
+   ],
+   [
+    0.0,
+    0.01,
+    0.48
+   ],
+   [
+    0.0,
+    0.01,
+    0.47
+   ],
+   [
+    0.0,
+    0.01,
+    0.47
+   ],
+   [
+    0.0,
+    0.0,
+    0.37
+   ],
+   [
+    0.0,
+    0.0,
+    0.43
+   ],
+   [
+    0.0,
+    0.01,
+    0.33
+   ],
+   [
+    0.0,
+    0.0,
+    0.42
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.02,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.04,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.0,
+  "appeared_mean": 3.0,
+  "first_vanish_pass_hist": {},
+  "label": "S2 d=0.2 sigma=0.03 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.0,
+  "moved_max": 9,
+  "moved_mean": 8.09,
+  "mover_ids_mean": 1.0,
+  "name": "S2-mover-d0.2-s0.03-HF",
+  "new_ids_max": 3,
+  "new_ids_mean": 3.0,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.12
+   ],
+   [
+    0.0,
+    0.0,
+    0.97
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.39,
+  "appeared_mean": 3.39,
+  "first_vanish_pass_hist": {
+   "3": 3,
+   "4": 6,
+   "5": 7,
+   "6": 4,
+   "7": 6,
+   "8": 1,
+   "9": 2
+  },
+  "label": "S2 d=0.2 sigma=0.10 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.064896755162241,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.39,
+  "moved_max": 13,
+  "moved_mean": 9.15,
+  "mover_ids_mean": 1.39,
+  "name": "S2-mover-d0.2-s0.10-HF",
+  "new_ids_max": 5,
+  "new_ids_mean": 3.39,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.95
+   ],
+   [
+    0.03,
+    0.0,
+    0.95
+   ],
+   [
+    0.06,
+    0.03,
+    1.05
+   ],
+   [
+    0.07,
+    0.06,
+    1.11
+   ],
+   [
+    0.04,
+    0.07,
+    1.03
+   ],
+   [
+    0.07,
+    0.04,
+    1.07
+   ],
+   [
+    0.02,
+    0.07,
+    0.94
+   ],
+   [
+    0.05,
+    0.02,
+    0.92
+   ],
+   [
+    0.05,
+    0.05,
+    1.13
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.34,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.01,
+  "appeared_mean": 3.01,
+  "first_vanish_pass_hist": {
+   "3": 1
+  },
+  "label": "S2 d=0.5 sigma=0.03 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 8.9734219269103,
+  "lifetime_min": 3,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.01,
+  "moved_max": 9,
+  "moved_mean": 8.99,
+  "mover_ids_mean": 1.01,
+  "name": "S2-mover-d0.5-s0.03-HF",
+  "new_ids_max": 4,
+  "new_ids_mean": 3.01,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.01,
+    0.0,
+    0.99
+   ],
+   [
+    0.0,
+    0.01,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.01,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 3.45,
+  "appeared_mean": 3.45,
+  "first_vanish_pass_hist": {
+   "3": 26,
+   "4": 2,
+   "7": 1
+  },
+  "label": "S2 d=0.5 sigma=0.10 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 7.953623188405797,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 3.45,
+  "moved_max": 15,
+  "moved_mean": 10.62,
+  "mover_ids_mean": 1.45,
+  "name": "S2-mover-d0.5-s0.10-HF",
+  "new_ids_max": 6,
+  "new_ids_mean": 3.45,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.41
+   ],
+   [
+    0.26,
+    0.0,
+    1.01
+   ],
+   [
+    0.02,
+    0.26,
+    1.17
+   ],
+   [
+    0.1,
+    0.02,
+    1.07
+   ],
+   [
+    0.01,
+    0.1,
+    1.17
+   ],
+   [
+    0.03,
+    0.01,
+    1.15
+   ],
+   [
+    0.01,
+    0.03,
+    1.17
+   ],
+   [
+    0.01,
+    0.01,
+    1.23
+   ],
+   [
+    0.01,
+    0.01,
+    1.24
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 0.44,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.94,
+  "appeared_mean": 5.94,
+  "first_vanish_pass_hist": {
+   "4": 99,
+   "5": 1
+  },
+  "label": "S2 d=0.8 sigma=0.03 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 4.882154882154882,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.94,
+  "moved_max": 7,
+  "moved_mean": 6.06,
+  "mover_ids_mean": 3.94,
+  "name": "S2-mover-d0.8-s0.03-HF",
+  "new_ids_max": 6,
+  "new_ids_mean": 5.94,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.99,
+    0.0,
+    0.01
+   ],
+   [
+    0.01,
+    0.99,
+    0.99
+   ],
+   [
+    0.0,
+    0.01,
+    1.0
+   ],
+   [
+    0.95,
+    0.0,
+    0.05
+   ],
+   [
+    0.05,
+    0.95,
+    0.95
+   ],
+   [
+    0.0,
+    0.05,
+    1.0
+   ],
+   [
+    0.94,
+    0.0,
+    0.06
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 2.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 5.82,
+  "appeared_mean": 5.82,
+  "first_vanish_pass_hist": {
+   "2": 12,
+   "3": 18,
+   "4": 51,
+   "5": 19
+  },
+  "label": "S2 d=0.8 sigma=0.10 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 5.06701030927835,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 5.82,
+  "moved_max": 12,
+  "moved_mean": 7.91,
+  "mover_ids_mean": 3.82,
+  "name": "S2-mover-d0.8-s0.10-HF",
+  "new_ids_max": 8,
+  "new_ids_mean": 5.82,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.12,
+    0.0,
+    1.24
+   ],
+   [
+    0.18,
+    0.12,
+    1.07
+   ],
+   [
+    0.56,
+    0.18,
+    0.67
+   ],
+   [
+    0.3,
+    0.56,
+    0.8
+   ],
+   [
+    0.25,
+    0.3,
+    0.98
+   ],
+   [
+    0.4,
+    0.25,
+    0.73
+   ],
+   [
+    0.37,
+    0.4,
+    0.85
+   ],
+   [
+    0.31,
+    0.37,
+    0.81
+   ],
+   [
+    0.33,
+    0.31,
+    0.76
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 2.49,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 12.0,
+  "appeared_mean": 12.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S2 d=1.2 sigma=0.03 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 2.9166666666666665,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 12.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 10.0,
+  "name": "S2-mover-d1.2-s0.03-HF",
+  "new_ids_max": 12,
+  "new_ids_mean": 12.0,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ],
+   [
+    1.0,
+    1.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 8.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 11.29,
+  "appeared_mean": 11.29,
+  "first_vanish_pass_hist": {
+   "2": 90,
+   "3": 10
+  },
+  "label": "S2 d=1.2 sigma=0.10 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 3.0442869796279894,
+  "lifetime_min": 0,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 11.29,
+  "moved_max": 7,
+  "moved_mean": 2.59,
+  "mover_ids_mean": 9.29,
+  "name": "S2-mover-d1.2-s0.10-HF",
+  "new_ids_max": 12,
+  "new_ids_mean": 11.29,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    3.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.9,
+    0.0,
+    0.51
+   ],
+   [
+    0.89,
+    0.9,
+    0.38
+   ],
+   [
+    0.96,
+    0.89,
+    0.21
+   ],
+   [
+    0.9,
+    0.96,
+    0.28
+   ],
+   [
+    0.95,
+    0.9,
+    0.25
+   ],
+   [
+    0.88,
+    0.95,
+    0.3
+   ],
+   [
+    0.96,
+    0.88,
+    0.18
+   ],
+   [
+    0.93,
+    0.96,
+    0.27
+   ],
+   [
+    0.92,
+    0.93,
+    0.21
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 7.37,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {},
+  "label": "S3a sigma=0.03 HF",
+  "lifetime_max": 9,
+  "lifetime_mean": 9.0,
+  "lifetime_min": 9,
+  "max_last_seen_end_mean": 540.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S3a-s0.03-HF",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 0.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S4a sigma=0.03 HF",
+  "lifetime_max": 2,
+  "lifetime_mean": 2.0,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 0.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S4a-s0.03-HF",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 1.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S4b sigma=0.10 HF",
+  "lifetime_max": 2,
+  "lifetime_mean": 2.0,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 0.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S4b-s0.10-HF",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.1,
+  "vanished_mean": 1.0,
+  "vp": 2
+ },
+ {
+  "alive_end_mean": 1.0,
+  "appeared_mean": 0.0,
+  "first_vanish_pass_hist": {
+   "2": 100
+  },
+  "label": "S6 sigma=0.03 HF",
+  "lifetime_max": 2,
+  "lifetime_mean": 2.0,
+  "lifetime_min": 2,
+  "max_last_seen_end_mean": 0.0,
+  "max_objs_mean": 1.0,
+  "moved_max": 0,
+  "moved_mean": 0.0,
+  "mover_ids_mean": 0.0,
+  "name": "S6-s0.03-HF",
+  "new_ids_max": 1,
+  "new_ids_mean": 1.0,
+  "patch": "HF",
+  "per_pass_mean": [
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ]
+  ],
+  "radius": 0.5,
+  "resurrections_mean": 0.0,
+  "seeds": 100,
+  "sigma": 0.03,
+  "vanished_mean": 1.0,
+  "vp": 2
+ }
+]

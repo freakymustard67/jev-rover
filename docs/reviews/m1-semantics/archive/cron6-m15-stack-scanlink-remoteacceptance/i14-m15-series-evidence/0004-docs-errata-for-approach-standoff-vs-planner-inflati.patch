@@ -1,0 +1,69 @@
+From 7bbd21af4e44784ab55789366915e9e3e7920e2e Mon Sep 17 00:00:00 2001
+From: freakymustard67 <freakymustard67@://github.com>
+Date: Tue, 29 Sep 2026 07:06:43 +0530
+Subject: [PATCH 4/4] docs: errata for approach standoff vs planner inflation
+ (w4b/I7 audit)
+
+- semantics-layer-proposal.md: items 4 and the M1 acceptance corrected: the
+  standoff must clear obj_radius + inflation, and the routed goal must be the
+  free-space projection of the ring point.
+- m1-plan.md: M1 acceptance note for the M2 routing wiring.
+- m2-design.md: routing decision addendum (project_to_free + required_standoff_m).
+---
+ docs/planning/m1-plan.md                  | 5 +++++
+ docs/planning/semantics-layer-proposal.md | 4 ++--
+ docs/reviews/m1-semantics/m2-design.md    | 5 ++++-
+ 3 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/docs/planning/m1-plan.md b/docs/planning/m1-plan.md
+index 1fea4d1..002aa5d 100644
+--- a/docs/planning/m1-plan.md
++++ b/docs/planning/m1-plan.md
+@@ -351,6 +351,11 @@ within 20% of the disabled baseline. State-size bound: 10 objects → `len(json.
+ 2. `--semantics off` (default): behavior byte-identical apart from two `null` keys.
+ 3. `--semantics fake --semantics-once --find "blue mat"` on `room.synthetic.json` resolves the
+    fixture and prints the standoff approach point (routing/driving intentionally not wired yet).
++   **Note (w4b/I7 audit, 2026-09-29):** when M2 wires routing, set `scene.goal` to
++   `executor.planner.project_to_free(approach_point(...))` — never the raw ring point — and derive the
++   standoff per object (`cfg.required_standoff_m(obj_radius)`; ≥ obj_r + 0.35). A raw ring point inside
++   the planner's inflated region stalls the rover ~0.3 m short (permanent standstill, 658 map_brake
++   trips). The fix is implemented in `control.py`/`run.py` (PR `review/m1-semantics-audit` + I7).
+ 4. Budget/cooldown/error counters visible in `runs/summary_*.json` under `"semantics"`.
+ 5. Loop-rate invariant test passes with a deliberately slow fake model.
+ 
+diff --git a/docs/planning/semantics-layer-proposal.md b/docs/planning/semantics-layer-proposal.md
+index 002e9ae..9aa5873 100644
+--- a/docs/planning/semantics-layer-proposal.md
++++ b/docs/planning/semantics-layer-proposal.md
+@@ -168,10 +168,10 @@ Pipeline:
+ 1. Extract the object reference from the mission string (rule-based; "go to the …", "patrol until …").
+ 2. Rank candidate objects from the semantic map by string similarity (embeddings if available; else normalized token overlap). If the top candidates are ambiguous (scores within epsilon), ask **Jev Choice over the candidate labels** (one budgeted call; code owns the option list, Jev picks the intended one).
+ 3. If no candidate or confidence too low → trigger a fresh semantic pass (optionally with a targeted prompt/labels) and retry once.
+-4. Destination = object `(x, y)` with a configured standoff (`destination.standoff_m`, e.g. 0.35 m before the point; obstacle inflation already exists in the planner).
++4. Destination = object `(x, y)` with a configured standoff (`destination.standoff_m`, e.g. 0.35 m before the point). **Errata (w4b/I7 audit, 2026-09-29):** "obstacle inflation already exists in the planner" is exactly what makes a 0.35 m ring unreachable for objects of radius ≥ ~0.12 m — the planner blocks a disc of radius ≈ obj_r + inflation + cell/2, and the executor's reflex stops at a ~0.30 m surface gap. The standoff must satisfy `standoff ≥ obj_radius + 0.35` (`RoomConfig.required_standoff_m`; 0.65/0.75 m for r = 0.30/0.40), and the goal handed to routing must be the free-space projection of the ring point (`Planner.project_to_free`), never the raw ring point: the raw point parks the rover ~0.3 m short (658 map_brake trips, permanent standstill) while `path_valid`/`path_bearing_deg` stay green.
+ 5. Feasibility check reuses the existing mission feasibility Noul. If unresolved after retry: abort with a clear message, never wander.
+ 
+-Acceptance for the first real feature: **`run.py --find "blue mat"` routes the rover to the mat and stops within standoff**, on synthetic fixtures first, then on the live camera.
++Acceptance for the first real feature: **`run.py --find "blue mat"` routes the rover to the mat and stops within standoff**, on synthetic fixtures first, then on the live camera. **Errata (w4b/I7 audit, 2026-09-29):** "within standoff" is only meaningful at the per-object standoff (`obj_radius + 0.35`); at a fixed 0.35 m ring and r ≥ ~0.12 m the rover reaches the projected free-space goal and the 0.30 m latch, but the reflex holds it at the inflated boundary (map_brake trips) rather than at the requested ring.
+ 
+ ---
+ 
+diff --git a/docs/reviews/m1-semantics/m2-design.md b/docs/reviews/m1-semantics/m2-design.md
+index 5baf928..5daf63a 100644
+--- a/docs/reviews/m1-semantics/m2-design.md
++++ b/docs/reviews/m1-semantics/m2-design.md
+@@ -538,7 +538,10 @@ resolution time; README's older capture shows `(3.12,1.53)`.)
+    adapter + manual trigger (per the commission). If routing is in scope, the minimal version is:
+    on resolve, set `scene.goal` to the approach point through the existing `GoalManager`/`Executor`
+    path, gated by a new `semantics.drive_to_destination: false` default — a separate workstream,
+-   not covered here. Also still open: `--find` currently latches on the first attempt even on a
++   not covered here. **I7 addendum (w4b audit, 2026-09-29):** aim at the free-space projection
++   (`executor.planner.project_to_free(approach)`), not the raw approach point, and use the per-object
++   standoff (`cfg.required_standoff_m`); the raw point can sit inside the planner's inflated region
++   and stalls the rover. Also still open: `--find` currently latches on the first attempt even on a
+    miss (`run.py:298-311`); proposal §7's "retry once with a fresh targeted pass" is the natural
+    M2 follow-up.
+ 
+-- 
+2.47.3
+

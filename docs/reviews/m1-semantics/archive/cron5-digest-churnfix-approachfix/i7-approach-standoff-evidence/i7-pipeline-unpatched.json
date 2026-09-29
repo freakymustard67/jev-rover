@@ -1,0 +1,439 @@
+{
+  "repo": "/home/freakymustard/.hermes/cache/scratch/i7/repo-base",
+  "project_to_free": false,
+  "approach": [
+    2.65,
+    1.2
+  ],
+  "projected": null,
+  "results": [
+    {
+      "case": "A raw (jev)",
+      "jev": true,
+      "goal": [
+        2.65,
+        1.2
+      ],
+      "min_goal_m": 0.27,
+      "latch_0.30": true,
+      "arrival_0.10": false,
+      "min_mat_gap_m": 0.258,
+      "still_last6s_s": 6.07,
+      "frozen_last6s": true,
+      "end_source": "reflex:map_brake",
+      "tail_sources": [
+        "reflex:map_brake"
+      ],
+      "reflexes": {
+        "map_brake": 573
+      },
+      "replans": 50,
+      "end_pose": [
+        2.392,
+        1.122
+      ],
+      "trace_5s": [
+        [
+          0.67,
+          1.436,
+          1.199,
+          0.54,
+          -29.0,
+          "jev:hold_course",
+          1.214,
+          1.214
+        ],
+        [
+          5.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          10.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          15.67,
+          2.392,
+          1.122,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          20.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          25.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          30.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          35.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ]
+      ]
+    },
+    {
+      "case": "A raw (base)",
+      "jev": false,
+      "goal": [
+        2.65,
+        1.2
+      ],
+      "min_goal_m": 0.345,
+      "latch_0.30": false,
+      "arrival_0.10": false,
+      "min_mat_gap_m": 0.333,
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "reflexes": {},
+      "replans": 50,
+      "end_pose": [
+        2.317,
+        1.11
+      ],
+      "trace_5s": [
+        [
+          0.67,
+          1.436,
+          1.199,
+          0.54,
+          -29.0,
+          "path",
+          1.214,
+          1.214
+        ],
+        [
+          5.67,
+          2.317,
+          1.11,
+          0.0,
+          84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          10.67,
+          2.317,
+          1.11,
+          0.0,
+          -84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          15.67,
+          2.317,
+          1.11,
+          0.0,
+          -84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          20.67,
+          2.317,
+          1.11,
+          0.0,
+          -84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          25.67,
+          2.317,
+          1.11,
+          0.0,
+          84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          30.67,
+          2.317,
+          1.11,
+          0.0,
+          -84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          35.67,
+          2.317,
+          1.11,
+          0.0,
+          84.0,
+          "baseline",
+          0.345,
+          0.333
+        ]
+      ]
+    },
+    {
+      "case": "B proj (jev)",
+      "jev": true,
+      "goal": [
+        2.65,
+        1.2
+      ],
+      "min_goal_m": 0.27,
+      "latch_0.30": true,
+      "arrival_0.10": false,
+      "min_mat_gap_m": 0.258,
+      "still_last6s_s": 6.07,
+      "frozen_last6s": true,
+      "end_source": "reflex:map_brake",
+      "tail_sources": [
+        "reflex:map_brake"
+      ],
+      "reflexes": {
+        "map_brake": 573
+      },
+      "replans": 50,
+      "end_pose": [
+        2.392,
+        1.122
+      ],
+      "trace_5s": [
+        [
+          0.67,
+          1.436,
+          1.199,
+          0.54,
+          -29.0,
+          "jev:hold_course",
+          1.214,
+          1.214
+        ],
+        [
+          5.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          10.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          15.67,
+          2.392,
+          1.122,
+          0.0,
+          -0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          20.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          25.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          30.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ],
+        [
+          35.67,
+          2.392,
+          1.122,
+          0.0,
+          0.0,
+          "reflex:map_brake",
+          0.27,
+          0.258
+        ]
+      ]
+    },
+    {
+      "case": "B proj (base)",
+      "jev": false,
+      "goal": [
+        2.65,
+        1.2
+      ],
+      "min_goal_m": 0.345,
+      "latch_0.30": false,
+      "arrival_0.10": false,
+      "min_mat_gap_m": 0.333,
+      "still_last6s_s": 0.0,
+      "frozen_last6s": true,
+      "end_source": "baseline",
+      "tail_sources": [
+        "baseline"
+      ],
+      "reflexes": {},
+      "replans": 50,
+      "end_pose": [
+        2.317,
+        1.11
+      ],
+      "trace_5s": [
+        [
+          0.67,
+          1.436,
+          1.199,
+          0.54,
+          -29.0,
+          "path",
+          1.214,
+          1.214
+        ],
+        [
+          5.67,
+          2.317,
+          1.11,
+          0.0,
+          84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          10.67,
+          2.317,
+          1.11,
+          0.0,
+          -84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          15.67,
+          2.317,
+          1.11,
+          0.0,
+          -84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          20.67,
+          2.317,
+          1.11,
+          0.0,
+          -84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          25.67,
+          2.317,
+          1.11,
+          0.0,
+          84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          30.67,
+          2.317,
+          1.11,
+          0.0,
+          -84.0,
+          "baseline",
+          0.345,
+          0.333
+        ],
+        [
+          35.67,
+          2.317,
+          1.11,
+          0.0,
+          84.0,
+          "baseline",
+          0.345,
+          0.333
+        ]
+      ]
+    }
+  ]
+}

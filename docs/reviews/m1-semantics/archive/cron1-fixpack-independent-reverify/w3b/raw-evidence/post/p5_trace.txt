@@ -1,0 +1,9 @@
+t=  0.00 pose=( 3.20, 1.80,  +0.0) src=tag near=1.01 clear=1.01 occ=0.0 jev=hold_course(none,0.0) risk=0.0 cmd=(+0.06,-120,path)
+Traceback (most recent call last):
+  File "/home/freakymustard/.hermes/cache/scratch/wave3/w3b/clone/run.py", line 420, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/freakymustard/.hermes/cache/scratch/wave3/w3b/clone/run.py", line 371, in main
+    print(trace_line)
+          ^^^^^^^^^^
+NameError: name 'trace_line' is not defined

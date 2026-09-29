@@ -1,0 +1,32 @@
+{
+  "room": "w3b1b",
+  "saved_at": 1790624302.305483,
+  "map": {
+    "age_s": 0.0,
+    "passes": 2,
+    "model": "fake-vision-v0",
+    "objects": [
+      {
+        "id": "obj_0001",
+        "label": "blue mat",
+        "x": 3.048,
+        "y": 1.2,
+        "confidence": 0.05,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 1.0,
+        "last_seen_s": 2.0,
+        "motion": "static"
+      }
+    ],
+    "destination": null,
+    "diff": {
+      "appeared": [],
+      "moved": [],
+      "vanished": []
+    }
+  }
+}

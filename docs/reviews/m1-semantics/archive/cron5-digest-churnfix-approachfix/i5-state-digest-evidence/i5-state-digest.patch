@@ -1,0 +1,258 @@
+From 3c30fcbeb3d6cd371da95aebb22776d08d94fa13 Mon Sep 17 00:00:00 2001
+From: freakymustard67 <freakymustard67@://github.com>
+Date: Tue, 29 Sep 2026 06:58:53 +0530
+Subject: [PATCH] semantics: Jev payload ships a compact state digest
+
+build_state() now swaps observed.semantics for SemanticMap.jev_digest():
+per object only {label, x, y} rounded to 2 dp and confidence; height_suspect
+and motion appear only when set; id/sources/plane_assumed/first_seen_s/
+last_seen_s are dropped from the Jev view; objects below min_confidence are
+dropped; the list is capped at 25 nearest-to-rover first with objects_more;
+the diff is counts-only plus the first 3 ids per bucket. age_s/passes/model
+and the destination stay. Scene.to_dict() and every disk/log artifact keep
+the full 11-field schema untouched.
+
+Measured through the real pipeline (SyntheticRoom -> Perception ->
+FakeVision -> merge -> snapshot -> build_state; 2 passes, jitter and one
+0.40 m move, destination set), len(json.dumps(build_state)) convention:
+  objects:     8     10    15    20    30
+  before:   5681  6134  7266  8398 10729   (bound crossed at ~9.4 objects)
+  after:    4433  4563  4918  5236  5658   (30 ships 25 + objects_more 4)
+The size bound now runs on the integration path (20 realistic fixtures, one
+pass: 5115 B digest, 7590 B scene.to_dict()); the schema test keeps
+serialization only, and jev_digest shape/drop/cap gains unit coverage.
+---
+ scene.py                            | 59 +++++++++++++++++++++++++++++
+ tactics.py                          |  4 ++
+ tests/test_semantics_integration.py | 53 ++++++++++++++++++++++++++
+ tests/test_semantics_schema.py      | 42 +++++++++++++++++---
+ 4 files changed, 152 insertions(+), 6 deletions(-)
+
+diff --git a/scene.py b/scene.py
+index 5864805..3701666 100644
+--- a/scene.py
++++ b/scene.py
+@@ -298,6 +298,14 @@ class SemanticDiff:
+     vanished: list[str] = field(default_factory=list)
+ 
+ 
++#: Jev payload compaction (M3 prototype; measured in the w3c state-cost audit).
++#: Everything written to disk or logs keeps the full schema through
++#: ``Scene.to_dict()``; only the Jev view ships the digest below.
++JEV_MAX_OBJECTS = 25           # cap on the shipped list, nearest-to-rover first
++JEV_MIN_CONFIDENCE = 0.5       # mirrors SemanticsConfig.min_confidence
++JEV_DIFF_IDS = 3               # first N ids kept per diff bucket
++
++
+ @dataclass
+ class SemanticMap:
+     age_s: float = 0.0
+@@ -307,6 +315,57 @@ class SemanticMap:
+     destination: Destination | None = None
+     diff: SemanticDiff = field(default_factory=SemanticDiff)
+ 
++    def jev_digest(self, pose: tuple[float, float] | None = None,
++                   max_objects: int = JEV_MAX_OBJECTS,
++                   min_confidence: float = JEV_MIN_CONFIDENCE) -> dict[str, Any]:
++        """Compact Jev-facing view: labels, 2-dp positions, confidence.
++
++        What a judgment can act on, and nothing else: per object only
++        ``label``/``x``/``y``/``confidence`` (``height_suspect``/``motion``
++        appear only when set); map ``age_s``/``passes``/``model``; the
++        destination; and a counts-only ``diff``. Objects below
++        ``min_confidence`` can never be destinations, so they are dropped;
++        the list is capped at ``max_objects`` nearest to ``pose``, with the
++        remainder counted in ``objects_more``.
++        """
++        shippable = [o for o in self.objects if o.confidence >= min_confidence]
++        if pose is not None:
++            shippable.sort(key=lambda o: ((o.x - pose[0]) ** 2 + (o.y - pose[1]) ** 2,
++                                          o.label, o.x, o.y))
++        objects: list[dict[str, Any]] = []
++        for o in shippable[:max_objects]:
++            entry: dict[str, Any] = {"label": o.label, "x": round(o.x, 2),
++                                     "y": round(o.y, 2), "confidence": o.confidence}
++            if o.height_suspect:
++                entry["height_suspect"] = True
++            if o.motion != "static":
++                entry["motion"] = o.motion
++            objects.append(entry)
++        diff: dict[str, Any] = {"appeared": len(self.diff.appeared),
++                                "moved": len(self.diff.moved),
++                                "vanished": len(self.diff.vanished)}
++        for bucket in ("appeared", "moved", "vanished"):
++            ids = getattr(self.diff, bucket)
++            if ids:
++                diff[f"{bucket}_ids"] = list(ids[:JEV_DIFF_IDS])
++        view: dict[str, Any] = {
++            "age_s": self.age_s,
++            "passes": self.passes,
++            "model": self.model,
++            "objects": objects,
++            "destination": ({"label": self.destination.label,
++                             "x": round(self.destination.x, 2),
++                             "y": round(self.destination.y, 2),
++                             "confidence": self.destination.confidence,
++                             "source": self.destination.source,
++                             "object_id": self.destination.object_id}
++                            if self.destination is not None else None),
++            "diff": diff,
++        }
++        if len(shippable) > max_objects:
++            view["objects_more"] = len(shippable) - max_objects
++        return view
++
+ 
+ @dataclass
+ class SweepConfirmation:
+diff --git a/tactics.py b/tactics.py
+index 38f3a93..4a4249e 100644
+--- a/tactics.py
++++ b/tactics.py
+@@ -207,6 +207,10 @@ def build_state(scene: Scene) -> dict:
+     """Everything the model is allowed to know, and nothing it cannot observe."""
+     observed = scene.to_dict()
+     mission = observed.pop("mission", {"mode": "goto"})
++    if scene.semantics is not None:
++        # The Jev view ships the compact map digest; disk/log artifacts keep
++        # the full schema via Scene.to_dict() (see SemanticMap.jev_digest).
++        observed["semantics"] = scene.semantics.jev_digest(pose=(scene.pose.x, scene.pose.y))
+     return {"robot": ROBOT, "mission": mission, "observed": observed}
+ 
+ 
+diff --git a/tests/test_semantics_integration.py b/tests/test_semantics_integration.py
+index 154dc61..d3a6344 100644
+--- a/tests/test_semantics_integration.py
++++ b/tests/test_semantics_integration.py
+@@ -1,4 +1,5 @@
+ """End-to-end on the synthetic room: frames -> FakeVision -> scene.semantics."""
++import json
+ import math
+ import time
+ from dataclasses import replace
+@@ -7,6 +8,7 @@ from perception import Perception
+ from scene import Scene
+ from semantics import (FakeVision, SemanticsRunner, WorldFixture, resolve_destination)
+ from synthetic import SyntheticRoom
++from tactics import build_state
+ 
+ 
+ def _warm(synth_cfg, tmp_path):
+@@ -107,3 +109,54 @@ def test_semantics_disabled_by_default(synth_cfg):
+     scene = Scene(t=0.0)
+     assert scene.semantics is None and scene.sweep is None
+     assert synth_cfg.semantics.enabled is False
++
++
++# The 20-object roster the state-cost audit measured with (labels, metres, metres,
++# w, h, score), spread over the 6.4 x 3.6 m synthetic room. One entry ("dog bowl",
++# 0.42) is below min_confidence on purpose: it enters the map but not the digest.
++ROOM_ROSTER_20 = [
++    ("blue mat", 2.0, 1.0, 1.0, 0.8, 0.88),
++    ("plastic water bottle", 1.2, 2.6, 0.08, 0.25, 0.90),
++    ("wooden box", 3.4, 2.2, 0.35, 0.35, 0.83),
++    ("charger", 4.0, 0.7, 0.06, 0.10, 0.72),
++    ("cardboard box", 5.2, 2.4, 0.45, 0.40, 0.86),
++    ("coffee mug", 0.8, 1.8, 0.10, 0.12, 0.77),
++    ("black backpack", 2.7, 3.0, 0.35, 0.45, 0.90),
++    ("white cable", 3.0, 0.6, 0.50, 0.05, 0.61),
++    ("red box", 4.4, 1.0, 0.30, 0.30, 0.85),
++    ("green ball", 1.5, 0.8, 0.15, 0.15, 0.80),
++    ("running shoe", 5.7, 1.4, 0.30, 0.12, 0.68),
++    ("paper stack", 2.4, 2.0, 0.25, 0.20, 0.71),
++    ("phone", 3.8, 3.1, 0.08, 0.16, 0.66),
++    ("tissue box", 5.0, 0.5, 0.25, 0.12, 0.74),
++    ("yoga mat", 0.6, 2.9, 0.70, 0.40, 0.89),
++    ("plastic crate", 4.8, 3.2, 0.40, 0.35, 0.81),
++    ("power strip", 1.0, 0.5, 0.30, 0.08, 0.70),
++    ("plant pot", 5.9, 2.9, 0.20, 0.20, 0.76),
++    ("dog bowl", 2.1, 3.2, 0.20, 0.09, 0.42),
++    ("wooden box", 3.4, 0.9, 0.30, 0.30, 0.79),
++]
++
++
++def test_state_size_bound_on_the_real_path(synth_cfg, tmp_path):
++    """m1-plan.md:345, on the path the bound is about: 20 realistic objects
++    through SyntheticRoom -> Perception -> FakeVision -> store -> snapshot ->
++    build_state. The Jev payload (digest) must stay under the 6 KB bound; the
++    full disk schema may be larger but stays bounded too."""
++    cfg, perc, frame = _warm(synth_cfg, tmp_path)
++    scene = perc.process(frame, 1.0)
++    vision = FakeVision.from_world([WorldFixture(*e) for e in ROOM_ROSTER_20],
++                                   perc.homography)
++    runner = SemanticsRunner(cfg, "synth", vision)
++    try:
++        merged = _pass(runner, perc, frame, 1.0)
++        assert merged is not None
++        assert len(merged.objects) == 20, f"expected 20 map objects, got {len(merged.objects)}"
++        scene.semantics = runner.snapshot(1.5)
++    finally:
++        runner.close()
++    state = build_state(scene)
++    digest_bytes = len(json.dumps(state))
++    assert digest_bytes < 6000, f"Jev digest payload: {digest_bytes} bytes"
++    disk_bytes = len(json.dumps(scene.to_dict()))
++    assert disk_bytes < 10_000, f"full scene.to_dict(): {disk_bytes} bytes"
+diff --git a/tests/test_semantics_schema.py b/tests/test_semantics_schema.py
+index 0ac388c..fd7e2e4 100644
+--- a/tests/test_semantics_schema.py
++++ b/tests/test_semantics_schema.py
+@@ -86,8 +86,7 @@ def test_semantics_validation(synth_cfg):
+             RoomConfig.from_dict(raw)
+ 
+ 
+-def test_build_state_carries_semantics_and_stays_bounded():
+-    base = len(json.dumps(build_state(Scene(t=5.0))))
++def test_build_state_ships_the_compacted_semantics_digest():
+     scene = Scene(t=5.0)
+     scene.semantics = SemanticMap(
+         age_s=0.4, passes=3, model="fake-vision-v0",
+@@ -95,10 +94,41 @@ def test_build_state_carries_semantics_and_stays_bounded():
+                                 x=1.0 + 0.1 * i, y=2.0, confidence=0.9)
+                  for i in range(10)])
+     state = build_state(scene)
+-    assert state["observed"]["semantics"]["objects"][0]["label"] == "thing 0"
+-    size = len(json.dumps(state))
+-    assert size < 6000, f"state grew too much with semantics: {size} bytes"
+-    assert size - base < 3000, f"semantics added {size - base} bytes over the bare state"
++    sem = state["observed"]["semantics"]
++    assert sem["objects"][0] == {"label": "thing 0", "x": 1.0, "y": 2.0, "confidence": 0.9}
++    assert (sem["age_s"], sem["passes"], sem["model"]) == (0.4, 3, "fake-vision-v0")
++    assert sem["destination"] is None
++    assert sem["diff"] == {"appeared": 0, "moved": 0, "vanished": 0}
++    json.dumps(state)                      # serializable by construction
++    # Disk/log schema untouched: the raw map keeps the full 11-field record.
++    raw = scene.to_dict()["semantics"]["objects"][0]
++    assert set(raw) == {"id", "label", "x", "y", "confidence", "sources", "plane_assumed",
++                        "height_suspect", "first_seen_s", "last_seen_s", "motion"}
++
++
++def test_jev_digest_omits_defaults_drops_low_confidence_and_caps():
++    objs = [SemanticObject(id=f"obj_{i:04d}", label=f"thing {i}", x=1.0 + 0.1 * i, y=2.0,
++                           confidence=0.9, height_suspect=(i == 1),
++                           motion="moved" if i == 2 else "static")
++            for i in range(30)]
++    objs[5].confidence = 0.42              # below min_confidence: never a destination
++    m = SemanticMap(
++        age_s=1.5, passes=4, model="fake-vision-v0", objects=objs,
++        destination=Destination(label="thing 9", x=1.9, y=2.0, confidence=0.9,
++                                source="vision", object_id="obj_0009"),
++        diff=SemanticDiff(appeared=["a", "b", "c", "d"], moved=["m"], vanished=[]))
++    view = m.jev_digest(pose=(0.0, 0.0))
++    assert view["objects_more"] == 29 - 25         # 29 shippable, 25 shipped
++    assert len(view["objects"]) == 25
++    assert all(o["confidence"] >= 0.5 for o in view["objects"])
++    assert view["objects"][0] == {"label": "thing 0", "x": 1.0, "y": 2.0, "confidence": 0.9}
++    assert view["objects"][1]["height_suspect"] is True
++    assert "motion" not in view["objects"][0]
++    assert view["objects"][2]["motion"] == "moved"
++    assert view["diff"] == {"appeared": 4, "moved": 1, "vanished": 0,
++                            "appeared_ids": ["a", "b", "c"], "moved_ids": ["m"]}
++    assert view["destination"]["x"] == 1.9 and view["destination"]["object_id"] == "obj_0009"
++    json.dumps(view)
+ 
+ 
+ def test_room_config_default_paths_still_load():
+-- 
+2.47.3
+

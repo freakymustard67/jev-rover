@@ -1,0 +1,133 @@
+================================================================================
+M1 semantics fix package - test-run transcript
+================================================================================
+date:        2026-09-28 19:30 UTC
+host:        debian  (Linux 6.12.107+deb13-amd64 x86_64)
+interpreter: /home/freakymustard/jev-rover/.venv/bin/python  (Python 3.11.16, pytest 9.1.1)
+env:         PYTHONDONTWRITEBYTECODE=1; pytest -p no:cacheprovider (no cache, no .pyc)
+real repo:   /home/freakymustard/jev-rover @ 9c33ec0 - read-only, untouched
+
+---- [0] BASELINE: unpatched clone @ 9c33ec0 --------------------------------
+$ cd clone && /home/freakymustard/jev-rover/.venv/bin/python -m pytest -q -p no:cacheprovider
+78 passed in 15.67s
+   (67 product tests + 11 stray tests collected from docs/planning/prototype/)
+
+---- [1] WORKING CLONE @ HEAD: all 12 fix commits applied -------------------
+$ git log --oneline 9c33ec0..HEAD   (12 commits, one per fix)
+46a2eb8 tests: scope pytest to tests/ and fix stale README counts
+40995d6 semantics: approach_point never overshoots the destination
+6723a00 run: tri-state --semantics, wire --semantics-once, idle default for --find
+c3c5c84 semantics: count cooldown refusals in skipped stats
+81889e5 semantics: guard the frame resolution against the configured camera
+38ef3a3 semantics: probe a 7x3 median patch, not a single pixel
+58a45a3 semantics: restore the centres < 0.15 m dedupe clause
+10345c5 semantics: canonicalise labels for matching and adapter filters
+fb1d452 semantics: cap resurrection with max_misses eviction
+79f9464 semantics: 2-of-3 hysteresis on height_suspect
+1836031 semantics: gate position/flags updates on min_confidence
+7b15318 semantics: distance-ordered best-first merge assignment
+
+$ /home/freakymustard/jev-rover/.venv/bin/python -m pytest -q -p no:cacheprovider
+........                                                                 [100%]
+80 passed in 14.74s
+
+$ /home/freakymustard/jev-rover/.venv/bin/python -m pytest -q -p no:cacheprovider --collect-only | tail -1
+80 tests collected in 0.61s
+
+per-file collected counts (testpaths = tests):
+     14 tests/test_semantics_merge.py
+     13 tests/test_semantics_projection.py
+      9 tests/test_semantics_worker.py
+      9 tests/test_semantics_schema.py
+      7 tests/test_control.py
+      6 tests/test_semantics_destination.py
+      6 tests/test_perception_synthetic.py
+      5 tests/test_tactics.py
+      5 tests/test_scene_geometry.py
+      4 tests/test_semantics_integration.py
+      2 tests/test_link.py
+
+$ /home/freakymustard/jev-rover/.venv/bin/python -m pytest -v -p no:cacheprovider   (test-by-test listing, tail)
+tests/test_semantics_worker.py::test_stats_shape PASSED                  [ 93%]
+tests/test_tactics.py::test_decision_gating PASSED                       [ 95%]
+tests/test_tactics.py::test_state_shape_and_serializability PASSED       [ 96%]
+tests/test_tactics.py::test_fingerprint_tracks_material_change PASSED    [ 97%]
+tests/test_tactics.py::test_worker_parses_judgment_without_network PASSED [ 98%]
+tests/test_tactics.py::test_worker_survives_api_errors PASSED            [100%]
+
+============================= 80 passed in 14.53s ==============================
+
+---- [2] FRESH CLONE + git am of patches/*.diff -----------------------------
+$ git clone /home/freakymustard/jev-rover verify && cd verify
+$ git am ../patches/*.diff
+Applying: semantics: distance-ordered best-first merge assignment
+Applying: semantics: gate position/flags updates on min_confidence
+Applying: semantics: 2-of-3 hysteresis on height_suspect
+Applying: semantics: cap resurrection with max_misses eviction
+Applying: semantics: canonicalise labels for matching and adapter filters
+Applying: semantics: restore the centres < 0.15 m dedupe clause
+Applying: semantics: probe a 7x3 median patch, not a single pixel
+Applying: semantics: guard the frame resolution against the configured camera
+Applying: semantics: count cooldown refusals in skipped stats
+Applying: run: tri-state --semantics, wire --semantics-once, idle default for --find
+Applying: semantics: approach_point never overshoots the destination
+Applying: tests: scope pytest to tests/ and fix stale README counts
+$ /home/freakymustard/jev-rover/.venv/bin/python -m pytest -q -p no:cacheprovider
+........................................................................ [ 90%]
+........                                                                 [100%]
+80 passed in 14.51s
+
+---- [2b] patches/0001..0012 git apply --check against a pristine clone -------
+OK  0001-semantics-distance-ordered-best-first-merge-assignmen.diff
+OK  0002-semantics-gate-position-flags-updates-on-min_confiden.diff
+OK  0003-semantics-2-of-3-hysteresis-on-height_suspect.diff
+OK  0004-semantics-cap-resurrection-with-max_misses-eviction.diff
+OK  0005-semantics-canonicalise-labels-for-matching-and-adapte.diff
+OK  0006-semantics-restore-the-centres-0.15-m-dedupe-clause.diff
+OK  0007-semantics-probe-a-7x3-median-patch-not-a-single-pixel.diff
+OK  0008-semantics-guard-the-frame-resolution-against-the-conf.diff
+OK  0009-semantics-count-cooldown-refusals-in-skipped-stats.diff
+OK  0010-run-tri-state-semantics-wire-semantics-once-idle-defa.diff
+OK  0011-semantics-approach_point-never-overshoots-the-destina.diff
+OK  0012-tests-scope-pytest-to-tests-and-fix-stale-README-coun.diff
+(all 12 also applied sequentially with git apply, no conflicts)
+
+---- [3] CLI evidence (fix 10), run from the working clone ------------------
+--- acceptance command: --semantics fake --semantics-once --find 'blue mat' --seconds 5 --no-jev
+[semantics] enabled: model=fake-vision-v0 fixtures=3 (one pass at mission start)
+[find] 'blue mat' -> blue mat at (3.00,1.20) m conf=0.92 object=obj_0001; approach (3.11,1.53) standoff=0.35 m
+  "mission": "none",
+--- tri-state A: config semantics.enabled=true + '--semantics off' (runner must be off)
+  "mission": "none",
+  "semantics": null,
+--- tri-state B: config semantics.enabled=true, flag unset (runner must follow config)
+[semantics] enabled: model=fake-vision-v0 fixtures=3 (mission-start pass + audit every 60s)
+  "semantics": {
+
+---- [4] per-fix targeted + full-suite evidence files ----------------------
+evidence/fix01-targeted.txt                10 passed in 0.18s
+evidence/fix02-targeted.txt                11 passed in 0.20s
+evidence/fix03-targeted.txt                12 passed in 0.21s
+evidence/fix04-targeted.txt                22 passed in 0.52s
+evidence/fix05-targeted.txt                24 passed in 3.14s
+evidence/fix06-targeted.txt                21 passed in 3.82s
+evidence/fix07-targeted.txt                13 passed in 3.85s
+evidence/fix08-targeted.txt                13 passed in 6.35s
+evidence/fix09-targeted.txt                9 passed in 3.90s
+evidence/fix11-targeted.txt                6 passed in 0.32s
+evidence/fix01-full.txt                    79 passed in 14.02s
+evidence/fix02-full.txt                    80 passed in 14.01s
+evidence/fix03-full.txt                    81 passed in 13.64s
+evidence/fix04-full.txt                    82 passed in 13.73s
+evidence/fix05-full.txt                    85 passed in 13.41s
+evidence/fix06-full.txt                    87 passed in 13.70s
+evidence/fix07-full.txt                    88 passed in 14.54s
+evidence/fix08-full.txt                    90 passed in 14.95s
+evidence/fix09-full.txt                    90 passed in 14.79s
+evidence/fix10-full.txt                    90 passed in 14.56s
+evidence/fix11-full.txt                    91 passed in 14.22s
+evidence/fix12-full.txt                    80 passed in 14.60s
+
+---- [5] prototype tests remain explicitly runnable ------------------------
+...........                                                              [100%]
+11 passed in 0.23s

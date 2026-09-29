@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0 -- /home/freakymustard/jev-rover/.venv/bin/python
+rootdir: /home/freakymustard/.hermes/cache/scratch/v9/clone
+plugins: anyio-4.15.1
+collecting ... collected 6 items
+
+tests/test_semantics_loop_rate.py::test_loop_cadence_insulated_from_busy_5s_detector PASSED [ 16%]
+tests/test_semantics_loop_rate.py::test_loop_cadence_absolute_target_with_busy_5s_detector PASSED [ 33%]
+tests/test_semantics_loop_rate.py::test_budgets_one_inflight_interval_and_per_minute PASSED [ 50%]
+tests/test_semantics_loop_rate.py::test_fail_cooldown_blocks_uncounted PASSED [ 66%]
+tests/test_semantics_loop_rate.py::test_pass_completes_and_merges PASSED [ 83%]
+tests/test_semantics_loop_rate.py::test_stale_result_beyond_max_age_is_dropped_without_a_map PASSED [100%]
+
+============================== 6 passed in 21.30s ==============================

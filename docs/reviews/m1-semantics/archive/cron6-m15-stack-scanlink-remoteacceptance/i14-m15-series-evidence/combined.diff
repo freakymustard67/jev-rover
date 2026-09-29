@@ -1,0 +1,830 @@
+diff --git a/config.py b/config.py
+index b962dad..d51c286 100644
+--- a/config.py
++++ b/config.py
+@@ -8,6 +8,7 @@ loudly, not mid-episode.
+ from __future__ import annotations
+ 
+ import json
++import math
+ from dataclasses import asdict, dataclass, field, fields, is_dataclass
+ from pathlib import Path
+ from typing import Any, get_type_hints
+@@ -147,6 +148,9 @@ class SemanticsConfig:
+     move_threshold_m: float = 0.25
+     vanish_passes: int = 2
+     max_misses: int = 10               # evict (cap resurrection) after this many missed passes
++    carry_factor: float = 2.0          # mover hysteresis: eff radius = max(R, factor*last raw step)
++    carry_cap_m: float = 1.0           # ... capped at match_radius_m + carry_cap_m
++    sub_threshold_decay: float = 0.7   # confidence decay per sub-threshold-only pass
+     dedupe_iou: float = 0.5
+     dedupe_center_m: float = 0.15      # ...or same-label bbox centres closer than this (metres)
+     min_interval_s: float = 2.0
+@@ -158,6 +162,12 @@ class SemanticsConfig:
+ 
+ @dataclass
+ class DestinationConfig:
++    # Standoff for a destination with no known size. It must clear the planner
++    # floor (grid.inflation_m + grid.cell_m + margin), else the goal cell is
++    # blocked and the planner has to substitute it. For objects with a known
++    # radius use RoomConfig.required_standoff_m(obj_radius_m) (w4b rule:
++    # obj_r + 0.35 with the shipped constants; a 0.35 ring is inside the
++    # planner's inflated region for any object of radius >= ~0.12 m).
+     standoff_m: float = 0.35
+ 
+ 
+@@ -297,8 +307,16 @@ class RoomConfig:
+ 
+     def _validate_semantics(self, where: str) -> None:
+         s = self.semantics
+-        if self.destination.standoff_m < 0:
+-            raise ConfigError(f"{where}.destination.standoff_m must be >= 0")
++        # Geometric floor (w4b audit): a goal closer to an obstacle than
++        # inflation + one cell is inside the planner's inflated region and gets
++        # silently substituted; keep a 0.05 m margin on top. Bigger objects
++        # need the per-object rule (see required_standoff_m).
++        floor = self.grid.inflation_m + self.grid.cell_m + 0.05
++        if self.destination.standoff_m < floor:
++            raise ConfigError(
++                f"{where}.destination.standoff_m must be >= {floor:.2f} "
++                f"(grid.inflation_m + cell_m + 0.05; got {self.destination.standoff_m})"
++            )
+         _check_choice(s.model.kind, ("fake", "local", "remote"), f"{where}.semantics.model.kind")
+         if s.model.timeout_s <= 0:
+             raise ConfigError(f"{where}.semantics.model.timeout_s must be > 0")
+@@ -356,6 +374,23 @@ class RoomConfig:
+         wp = self.waypoints[name]
+         return wp[0], wp[1], (wp[2] if len(wp) > 2 else None)
+ 
++    def required_standoff_m(self, obj_radius_m: float, margin_m: float = 0.05) -> float:
++        """Per-object safe standoff for routing to a destination (w4b rule).
++
++        Two envelopes act against the destination object once it is in the
++        occupancy grid: the planner block at ``obj_r + inflation + cell/2`` and
++        the executor stop envelopes (map_brake at a 0.30 m surface gap; the
++        no-Jev blocked-turn at ~0.35 m). Standoff must clear both plus margin;
++        rounded up to 5 cm. With the shipped constants this is ``obj_r + 0.35``
++        (e.g. 0.65 m for r = 0.30, 0.75 m for r = 0.40). A closer standoff is
++        reachable only via the free-space projection
++        (``control.Planner.project_to_free``).
++        """
++        reflex_floor = 0.30          # map_brake stop gap, control.py _reflex
++        floor = max(self.grid.inflation_m + self.grid.cell_m / 2.0, reflex_floor)
++        need = obj_radius_m + floor + margin_m
++        return math.ceil(need / 0.05 - 1e-9) * 0.05
++
+     def to_dict(self) -> dict:
+         out = asdict(self)
+         # Native JSON types for the config round-trip.
+diff --git a/control.py b/control.py
+index f9a2097..1a53cc0 100644
+--- a/control.py
++++ b/control.py
+@@ -36,6 +36,28 @@ MODE_MAX_S = {
+ }
+ 
+ 
++def _to_cell(p: tuple[float, float], grid: OccupancyGrid) -> tuple[int, int]:
++    cell = grid.cell_m
++    return (min(max(int(p[0] / cell), 0), grid.w - 1),
++            min(max(int(p[1] / cell), 0), grid.h - 1))
++
++
++def _free_near(blocked: np.ndarray, grid: OccupancyGrid, ix: int, iy: int,
++               max_r: int = 6) -> tuple[int, int] | None:
++    """Nearest free cell within ``max_r`` cells (Chebyshev), or None."""
++    if not blocked[iy, ix]:
++        return ix, iy
++    for r in range(1, max_r + 1):
++        for dy in range(-r, r + 1):
++            for dx in range(-r, r + 1):
++                if max(abs(dx), abs(dy)) != r:
++                    continue
++                nx, ny = ix + dx, iy + dy
++                if 0 <= nx < grid.w and 0 <= ny < grid.h and not blocked[ny, nx]:
++                    return nx, ny
++    return None
++
++
+ class Planner:
+     """A* over the occupancy grid; unknown cells are allowed but expensive."""
+ 
+@@ -63,25 +85,9 @@ class Planner:
+         blocked = self.blocked()
+         unknown = ~g.observed(t, self.cfg.grid.stale_s)
+ 
+-        def to_cell(p):
+-            return (min(max(int(p[0] / cell), 0), g.w - 1),
+-                    min(max(int(p[1] / cell), 0), g.h - 1))
+-
+-        def free_near(ix, iy, max_r=6):
+-            if not blocked[iy, ix]:
+-                return ix, iy
+-            for r in range(1, max_r + 1):
+-                for dy in range(-r, r + 1):
+-                    for dx in range(-r, r + 1):
+-                        if max(abs(dx), abs(dy)) != r:
+-                            continue
+-                        nx, ny = ix + dx, iy + dy
+-                        if 0 <= nx < g.w and 0 <= ny < g.h and not blocked[ny, nx]:
+-                            return nx, ny
+-            return None
+-
+-        s = free_near(*to_cell(start))
+-        e = free_near(*to_cell(goal))
++        goal_cell = _to_cell(goal, g)
++        s = _free_near(blocked, g, *_to_cell(start, g))
++        e = _free_near(blocked, g, *goal_cell)
+         if s is None or e is None:
+             return [], False
+         sx, sy = s
+@@ -125,9 +131,38 @@ class Planner:
+         cells.reverse()
+         through_unknown = any(unknown[iy, ix] for ix, iy in cells)
+         pts = [((ix + 0.5) * cell, (iy + 0.5) * cell) for ix, iy in cells]
+-        pts[-1] = (float(goal[0]), float(goal[1]))
++        if (ex, ey) == goal_cell:
++            # The goal cell itself is free: publish the exact requested point.
++            pts[-1] = (float(goal[0]), float(goal[1]))
++        # else: the goal cell was blocked and A* ran to the free substitute --
++        # keep the substitute as the final waypoint. Never splice the raw goal
++        # back on: path_valid / path_bearing_deg would advertise a point the
++        # planner itself blocks, and _follow would steer straight into it.
+         return self._smooth(pts, blocked), through_unknown
+ 
++    def project_to_free(self, point: tuple[float, float],
++                        max_r: int = 6) -> tuple[float, float] | None:
++        """Project a goal onto reachable free space (w4b audit, fix F1).
++
++        Returns ``point`` unchanged when the planner accepts its cell; when the
++        cell is blocked (e.g. an approach ring closer to a destination object
++        than ``obj_radius + inflation``), returns the centre of the nearest free
++        cell within ``max_r`` -- the same substitute ``plan()`` uses -- or None
++        if no free cell was found. Callers (run.py --find today, M2 routing
++        later) must aim the GoalManager/latch at this point, so the goal and the
++        executed path cannot disagree.
++        """
++        g = self.grid
++        blocked = self.blocked()
++        cell = g.cell_m
++        c = _to_cell(point, g)
++        fn = _free_near(blocked, g, *c, max_r=max_r)
++        if fn is None:
++            return None
++        if fn == c:
++            return (float(point[0]), float(point[1]))
++        return ((fn[0] + 0.5) * cell, (fn[1] + 0.5) * cell)
++
+     def _smooth(self, pts: list[tuple[float, float]], blocked: np.ndarray) -> list[tuple[float, float]]:
+         """Greedy line-of-sight shortcutting; never cuts a blocked cell."""
+         if len(pts) <= 2:
+diff --git a/docs/planning/m1-plan.md b/docs/planning/m1-plan.md
+index 1fea4d1..002aa5d 100644
+--- a/docs/planning/m1-plan.md
++++ b/docs/planning/m1-plan.md
+@@ -351,6 +351,11 @@ within 20% of the disabled baseline. State-size bound: 10 objects → `len(json.
+ 2. `--semantics off` (default): behavior byte-identical apart from two `null` keys.
+ 3. `--semantics fake --semantics-once --find "blue mat"` on `room.synthetic.json` resolves the
+    fixture and prints the standoff approach point (routing/driving intentionally not wired yet).
++   **Note (w4b/I7 audit, 2026-09-29):** when M2 wires routing, set `scene.goal` to
++   `executor.planner.project_to_free(approach_point(...))` — never the raw ring point — and derive the
++   standoff per object (`cfg.required_standoff_m(obj_radius)`; ≥ obj_r + 0.35). A raw ring point inside
++   the planner's inflated region stalls the rover ~0.3 m short (permanent standstill, 658 map_brake
++   trips). The fix is implemented in `control.py`/`run.py` (PR `review/m1-semantics-audit` + I7).
+ 4. Budget/cooldown/error counters visible in `runs/summary_*.json` under `"semantics"`.
+ 5. Loop-rate invariant test passes with a deliberately slow fake model.
+ 
+diff --git a/docs/planning/semantics-layer-proposal.md b/docs/planning/semantics-layer-proposal.md
+index 002e9ae..9aa5873 100644
+--- a/docs/planning/semantics-layer-proposal.md
++++ b/docs/planning/semantics-layer-proposal.md
+@@ -168,10 +168,10 @@ Pipeline:
+ 1. Extract the object reference from the mission string (rule-based; "go to the …", "patrol until …").
+ 2. Rank candidate objects from the semantic map by string similarity (embeddings if available; else normalized token overlap). If the top candidates are ambiguous (scores within epsilon), ask **Jev Choice over the candidate labels** (one budgeted call; code owns the option list, Jev picks the intended one).
+ 3. If no candidate or confidence too low → trigger a fresh semantic pass (optionally with a targeted prompt/labels) and retry once.
+-4. Destination = object `(x, y)` with a configured standoff (`destination.standoff_m`, e.g. 0.35 m before the point; obstacle inflation already exists in the planner).
++4. Destination = object `(x, y)` with a configured standoff (`destination.standoff_m`, e.g. 0.35 m before the point). **Errata (w4b/I7 audit, 2026-09-29):** "obstacle inflation already exists in the planner" is exactly what makes a 0.35 m ring unreachable for objects of radius ≥ ~0.12 m — the planner blocks a disc of radius ≈ obj_r + inflation + cell/2, and the executor's reflex stops at a ~0.30 m surface gap. The standoff must satisfy `standoff ≥ obj_radius + 0.35` (`RoomConfig.required_standoff_m`; 0.65/0.75 m for r = 0.30/0.40), and the goal handed to routing must be the free-space projection of the ring point (`Planner.project_to_free`), never the raw ring point: the raw point parks the rover ~0.3 m short (658 map_brake trips, permanent standstill) while `path_valid`/`path_bearing_deg` stay green.
+ 5. Feasibility check reuses the existing mission feasibility Noul. If unresolved after retry: abort with a clear message, never wander.
+ 
+-Acceptance for the first real feature: **`run.py --find "blue mat"` routes the rover to the mat and stops within standoff**, on synthetic fixtures first, then on the live camera.
++Acceptance for the first real feature: **`run.py --find "blue mat"` routes the rover to the mat and stops within standoff**, on synthetic fixtures first, then on the live camera. **Errata (w4b/I7 audit, 2026-09-29):** "within standoff" is only meaningful at the per-object standoff (`obj_radius + 0.35`); at a fixed 0.35 m ring and r ≥ ~0.12 m the rover reaches the projected free-space goal and the 0.30 m latch, but the reflex holds it at the inflated boundary (map_brake trips) rather than at the requested ring.
+ 
+ ---
+ 
+diff --git a/docs/reviews/m1-semantics/m2-design.md b/docs/reviews/m1-semantics/m2-design.md
+index 5baf928..5daf63a 100644
+--- a/docs/reviews/m1-semantics/m2-design.md
++++ b/docs/reviews/m1-semantics/m2-design.md
+@@ -538,7 +538,10 @@ resolution time; README's older capture shows `(3.12,1.53)`.)
+    adapter + manual trigger (per the commission). If routing is in scope, the minimal version is:
+    on resolve, set `scene.goal` to the approach point through the existing `GoalManager`/`Executor`
+    path, gated by a new `semantics.drive_to_destination: false` default — a separate workstream,
+-   not covered here. Also still open: `--find` currently latches on the first attempt even on a
++   not covered here. **I7 addendum (w4b audit, 2026-09-29):** aim at the free-space projection
++   (`executor.planner.project_to_free(approach)`), not the raw approach point, and use the per-object
++   standoff (`cfg.required_standoff_m`); the raw point can sit inside the planner's inflated region
++   and stalls the rover. Also still open: `--find` currently latches on the first attempt even on a
+    miss (`run.py:298-311`); proposal §7's "retry once with a fresh targeted pass" is the natural
+    M2 follow-up.
+ 
+diff --git a/run.py b/run.py
+index 954215e..d624437 100644
+--- a/run.py
++++ b/run.py
+@@ -332,11 +332,22 @@ def main(argv=None) -> int:
+                         if dest is not None:
+                             ax, ay = approach_point(dest, (scene.pose.x, scene.pose.y),
+                                                     cfg.destination.standoff_m)
++                            # F1 (w4b audit): when the destination object is in the
++                            # occupancy grid, its approach ring can sit inside the
++                            # planner's inflated region (obj_radius + inflation) and
++                            # the planner would silently substitute the goal. Project
++                            # the approach point to free space; M2 routing must set
++                            # scene.goal to THIS point (then the latch, metrics and
++                            # the executed path all agree).
++                            gx, gy = executor.planner.project_to_free((ax, ay)) or (ax, ay)
+                             runner.set_destination(dest)
+                             print(f"[find] '{find_label}' -> {dest.label} at "
+                                   f"({dest.x:.2f},{dest.y:.2f}) m conf={dest.confidence:.2f} "
+                                   f"object={dest.object_id}; approach ({ax:.2f},{ay:.2f}) "
+                                   f"standoff={cfg.destination.standoff_m} m")
++                            if (gx, gy) != (ax, ay):
++                                print(f"[find] approach inside planner inflation; "
++                                      f"goal projected to ({gx:.2f},{gy:.2f}) m")
+                         else:
+                             print(f"[find] '{find_label}': no destination resolved "
+                                   f"(passes={scene.semantics.passes})")
+diff --git a/scene.py b/scene.py
+index 5864805..3701666 100644
+--- a/scene.py
++++ b/scene.py
+@@ -298,6 +298,14 @@ class SemanticDiff:
+     vanished: list[str] = field(default_factory=list)
+ 
+ 
++#: Jev payload compaction (M3 prototype; measured in the w3c state-cost audit).
++#: Everything written to disk or logs keeps the full schema through
++#: ``Scene.to_dict()``; only the Jev view ships the digest below.
++JEV_MAX_OBJECTS = 25           # cap on the shipped list, nearest-to-rover first
++JEV_MIN_CONFIDENCE = 0.5       # mirrors SemanticsConfig.min_confidence
++JEV_DIFF_IDS = 3               # first N ids kept per diff bucket
++
++
+ @dataclass
+ class SemanticMap:
+     age_s: float = 0.0
+@@ -307,6 +315,57 @@ class SemanticMap:
+     destination: Destination | None = None
+     diff: SemanticDiff = field(default_factory=SemanticDiff)
+ 
++    def jev_digest(self, pose: tuple[float, float] | None = None,
++                   max_objects: int = JEV_MAX_OBJECTS,
++                   min_confidence: float = JEV_MIN_CONFIDENCE) -> dict[str, Any]:
++        """Compact Jev-facing view: labels, 2-dp positions, confidence.
++
++        What a judgment can act on, and nothing else: per object only
++        ``label``/``x``/``y``/``confidence`` (``height_suspect``/``motion``
++        appear only when set); map ``age_s``/``passes``/``model``; the
++        destination; and a counts-only ``diff``. Objects below
++        ``min_confidence`` can never be destinations, so they are dropped;
++        the list is capped at ``max_objects`` nearest to ``pose``, with the
++        remainder counted in ``objects_more``.
++        """
++        shippable = [o for o in self.objects if o.confidence >= min_confidence]
++        if pose is not None:
++            shippable.sort(key=lambda o: ((o.x - pose[0]) ** 2 + (o.y - pose[1]) ** 2,
++                                          o.label, o.x, o.y))
++        objects: list[dict[str, Any]] = []
++        for o in shippable[:max_objects]:
++            entry: dict[str, Any] = {"label": o.label, "x": round(o.x, 2),
++                                     "y": round(o.y, 2), "confidence": o.confidence}
++            if o.height_suspect:
++                entry["height_suspect"] = True
++            if o.motion != "static":
++                entry["motion"] = o.motion
++            objects.append(entry)
++        diff: dict[str, Any] = {"appeared": len(self.diff.appeared),
++                                "moved": len(self.diff.moved),
++                                "vanished": len(self.diff.vanished)}
++        for bucket in ("appeared", "moved", "vanished"):
++            ids = getattr(self.diff, bucket)
++            if ids:
++                diff[f"{bucket}_ids"] = list(ids[:JEV_DIFF_IDS])
++        view: dict[str, Any] = {
++            "age_s": self.age_s,
++            "passes": self.passes,
++            "model": self.model,
++            "objects": objects,
++            "destination": ({"label": self.destination.label,
++                             "x": round(self.destination.x, 2),
++                             "y": round(self.destination.y, 2),
++                             "confidence": self.destination.confidence,
++                             "source": self.destination.source,
++                             "object_id": self.destination.object_id}
++                            if self.destination is not None else None),
++            "diff": diff,
++        }
++        if len(shippable) > max_objects:
++            view["objects_more"] = len(shippable) - max_objects
++        return view
++
+ 
+ @dataclass
+ class SweepConfirmation:
+diff --git a/semantics.py b/semantics.py
+index 8c033d9..cd8e189 100644
+--- a/semantics.py
++++ b/semantics.py
+@@ -287,6 +287,7 @@ class SemanticStore:
+         self.diff = SemanticDiff()
+         self.destination: Destination | None = None
+         self._misses: dict[str, int] = {}
++        self._step: dict[str, float] = {}      # last raw displacement per object (mover carry)
+         self._hs_hist: dict[str, list[bool]] = {}
+         self._labels: dict[str, str] = {}
+         self.store_dir = Path(cfg.store_dir)
+@@ -311,11 +312,18 @@ class SemanticStore:
+         det_labels = [canonical_label(d.label) for d in unmatched]
+         for oid, prev in self.objs.items():
+             prev_label = canonical_label(prev.label)
++            # Mover carry hysteresis: an object that moved fast last pass gets
++            # a wider window now (bounded), so a steady mover keeps its id
++            # instead of churning a new one per pass. Fresh objects start at
++            # match_radius_m => first hand-off up to 2*match_radius_m.
++            carry = self._step.get(oid, self.cfg.match_radius_m)
++            radius = min(max(self.cfg.match_radius_m, self.cfg.carry_factor * carry),
++                         self.cfg.match_radius_m + self.cfg.carry_cap_m)
+             for i, d in enumerate(unmatched):
+                 if det_labels[i] != prev_label:
+                     continue
+                 dd = math.hypot(d.x - prev.x, d.y - prev.y)
+-                if dd <= self.cfg.match_radius_m:
++                if dd <= radius:
+                     pairs.append((dd, oid, i))
+         pairs.sort(key=lambda p: p[0])
+ 
+@@ -326,12 +334,29 @@ class SemanticStore:
+             d = unmatched[i]
+             taken.add(i)
+             prev = self.objs[oid]
++            was_gone = self._misses.get(oid, 0) >= self.cfg.vanish_passes
++            if d.confidence < self.cfg.min_confidence:
++                # Sub-threshold sighting: decay confidence first. While the
++                # object is still nominally confirmed this stays freshness-only;
++                # once the decayed confidence falls below min_confidence the
++                # hit stops counting as seen (falls through to miss
++                # accounting), so a phantom that only ever fires weak hits
++                # cannot pin an object alive forever.
++                prev.confidence = round(prev.confidence * self.cfg.sub_threshold_decay, 3)
++                if prev.confidence < self.cfg.min_confidence:
++                    continue
+             prev.last_seen_s = round(t_pass, 2)
+             self._misses[oid] = 0
+             seen.add(oid)
++            if was_gone:
++                # Resurrection is an event: an id that had vanished and is
++                # matched again is announced in diff.appeared, so consumers
++                # watching the event log see the return (it used to be silent
++                # unless the id had been evicted outright).
++                diff.appeared.append(oid)
+             if d.confidence < self.cfg.min_confidence:
+-                # Freshness only: a sub-threshold hit keeps the object alive but
+-                # must not move it or overwrite its flags.
++                # Freshness only: a surviving sub-threshold hit keeps the
++                # object alive but must not move it or overwrite its flags.
+                 continue
+             prev_x, prev_y = prev.x, prev.y
+             prev.x = (1.0 - ema) * prev.x + ema * d.x
+@@ -349,6 +374,7 @@ class SemanticStore:
+             # RAW displacement this pass, before any smoothing: the EMA step is
+             # only alpha * raw and hides moves just above the threshold.
+             raw = math.hypot(d.x - prev_x, d.y - prev_y)
++            self._step[oid] = raw          # arms the mover carry for the next pass
+             prev.motion = "moved" if raw > self.cfg.move_threshold_m else "static"
+             if prev.motion == "moved":
+                 diff.moved.append(oid)
+@@ -362,6 +388,7 @@ class SemanticStore:
+                           sources=list(d.sources))
+             self.objs[oid] = obj
+             self._misses[oid] = 0
++            self._step[oid] = self.cfg.match_radius_m   # bootstrap: first hand-off <= 2R
+             self._labels[oid] = obj.label
+             if obj.confidence >= self.cfg.min_confidence:
+                 diff.appeared.append(oid)
+@@ -383,6 +410,7 @@ class SemanticStore:
+             self._misses.pop(oid, None)
+             self._labels.pop(oid, None)
+             self._hs_hist.pop(oid, None)
++            self._step.pop(oid, None)
+ 
+         self.diff = diff
+         if diff.appeared or diff.moved or diff.vanished:
+diff --git a/tactics.py b/tactics.py
+index 38f3a93..4a4249e 100644
+--- a/tactics.py
++++ b/tactics.py
+@@ -207,6 +207,10 @@ def build_state(scene: Scene) -> dict:
+     """Everything the model is allowed to know, and nothing it cannot observe."""
+     observed = scene.to_dict()
+     mission = observed.pop("mission", {"mode": "goto"})
++    if scene.semantics is not None:
++        # The Jev view ships the compact map digest; disk/log artifacts keep
++        # the full schema via Scene.to_dict() (see SemanticMap.jev_digest).
++        observed["semantics"] = scene.semantics.jev_digest(pose=(scene.pose.x, scene.pose.y))
+     return {"robot": ROBOT, "mission": mission, "observed": observed}
+ 
+ 
+diff --git a/tests/test_approach_standoff.py b/tests/test_approach_standoff.py
+new file mode 100644
+index 0000000..424a232
+--- /dev/null
++++ b/tests/test_approach_standoff.py
+@@ -0,0 +1,124 @@
++"""Approach standoff vs the planner's inflated region (w4b audit; fixes F1/F2).
++
++A destination object stamped into the occupancy grid blocks an inflated disc of
++radius ~obj_r + inflation. An approach ring closer than that is silently
++substituted by the planner, so:
++
++* the executed path must end at the free substitute, never at the raw blocked
++  goal (F2 -- otherwise ``path_valid``/``path_bearing_deg`` lie);
++* callers project the goal to free space via ``Planner.project_to_free`` (F1);
++* the per-object standoff rule (``RoomConfig.required_standoff_m``) keeps the
++  ring outside both the planner block and the executor's stop envelopes.
++"""
++import numpy as np
++import pytest
++
++from config import ConfigError, RoomConfig
++from control import Executor, Planner
++from perception import OccupancyGrid
++from scene import Destination, GoalInfo, Scene
++from semantics import approach_point
++
++OBJ = (2.0, 2.0)
++START = (0.7, 2.0)
++
++
++def _grid_with_disc(obj_xy=OBJ, obj_r=0.30):
++    """Wall ring + a disc obstacle stamped the way perception stamps cells."""
++    grid = OccupancyGrid(4.0, 4.0, 0.05)
++    wall = np.zeros((grid.h, grid.w), bool)
++    wall[[0, -1], :] = True
++    wall[:, [0, -1]] = True
++    grid.set_occupied(wall, 0.0)
++    step = 0.01
++    xs = np.arange(obj_xy[0] - obj_r, obj_xy[0] + obj_r + 1e-9, step)
++    ys = np.arange(obj_xy[1] - obj_r, obj_xy[1] + obj_r + 1e-9, step)
++    xx, yy = np.meshgrid(xs, ys)
++    m = (xx - obj_xy[0]) ** 2 + (yy - obj_xy[1]) ** 2 <= obj_r ** 2
++    grid.update(np.zeros((0, 2)), np.column_stack([xx[m], yy[m]]), 0.0)
++    return grid
++
++
++def _cell(p, grid):
++    return min(int(p[0] / grid.cell_m), grid.w - 1), min(int(p[1] / grid.cell_m), grid.h - 1)
++
++
++def test_plan_never_ends_on_a_blocked_goal_cell():
++    cfg = RoomConfig()
++    grid = _grid_with_disc()
++    planner = Planner(grid, cfg.grid.inflation_m, cfg)
++    dest = Destination(label="mat", x=OBJ[0], y=OBJ[1], confidence=0.9)
++    ax, ay = approach_point(dest, START, cfg.destination.standoff_m)   # the 0.35 m ring
++
++    blocked = planner.blocked()
++    assert blocked[_cell((ax, ay), grid)[1], _cell((ax, ay), grid)[0]], \
++        "precondition: the 0.35 m approach cell lies inside the inflated region"
++
++    path, _ = planner.plan(START, (ax, ay), 0.0)
++    assert path, "planner found no path to the substitute"
++    end = path[-1]
++    assert end != (ax, ay), "blocked goal was spliced back onto the path (F2 regression)"
++    ix, iy = _cell(end, grid)
++    assert not blocked[iy, ix], "final waypoint is a blocked cell"
++    # and it is exactly the point project_to_free tells callers to aim at (F1)
++    assert planner.project_to_free((ax, ay)) == end
++
++
++def test_executor_replan_ends_at_the_substitute_not_the_raw_goal():
++    cfg = RoomConfig()
++    grid = _grid_with_disc()
++    ex = Executor(cfg, grid)
++    dest = Destination(label="mat", x=OBJ[0], y=OBJ[1], confidence=0.9)
++    ax, ay = approach_point(dest, START, cfg.destination.standoff_m)
++    scene = Scene()
++    scene.pose.x, scene.pose.y = START
++    scene.goal = GoalInfo(type="goto", name="dest", x=ax, y=ay)
++    ex._replan(scene, 0.0)
++    assert ex.path and ex.path[-1] != (ax, ay)
++    assert ex.path[-1] == ex.planner.project_to_free((ax, ay))
++
++
++def test_plan_keeps_the_exact_goal_when_its_cell_is_free():
++    cfg = RoomConfig()
++    grid = _grid_with_disc()
++    planner = Planner(grid, cfg.grid.inflation_m, cfg)
++    goal = (1.1, 1.4)
++    path, _ = planner.plan(START, goal, 0.0)
++    assert path and path[-1] == goal, "free goal must be published exactly"
++    assert planner.project_to_free(goal) == goal
++
++
++def test_required_standoff_clears_planner_and_reflex_envelopes():
++    cfg = RoomConfig()
++    for r in (0.15, 0.30, 0.40):
++        need = cfg.required_standoff_m(r)
++        assert need >= r + cfg.grid.inflation_m + cfg.grid.cell_m, \
++            "standoff must clear the planner block (inflation + cell)"
++        assert need >= r + 0.30 + 0.05, "standoff must clear the map_brake envelope"
++        assert need >= r + 0.35, "w4b rule with the shipped constants"
++        assert abs(need / 0.05 - round(need / 0.05)) < 1e-9, "rounded to 5 cm"
++    assert cfg.required_standoff_m(0.30) == 0.65
++    assert cfg.required_standoff_m(0.40) == 0.75
++
++
++def test_rule_standoff_ring_is_planner_free():
++    """At the per-object standoff the ring must not need projection (r=0.30)."""
++    cfg = RoomConfig()
++    grid = _grid_with_disc()
++    planner = Planner(grid, cfg.grid.inflation_m, cfg)
++    standoff = cfg.required_standoff_m(0.30)
++    ax, ay = approach_point(Destination("mat", OBJ[0], OBJ[1], 0.9), START, standoff)
++    assert planner.project_to_free((ax, ay)) == (ax, ay)
++
++
++def test_config_rejects_standoff_below_the_planner_floor(synth_cfg):
++    raw = synth_cfg.to_dict()
++    floor = synth_cfg.grid.inflation_m + synth_cfg.grid.cell_m
++    raw["destination"]["standoff_m"] = floor - 0.01        # 0.26 < 0.27 floor
++    with pytest.raises(ConfigError, match="standoff_m"):
++        RoomConfig.from_dict(raw)
++    raw["destination"]["standoff_m"] = 0.20                # far below: still rejected
++    with pytest.raises(ConfigError, match="standoff_m"):
++        RoomConfig.from_dict(raw)
++    raw["destination"]["standoff_m"] = floor + 0.05        # at the floor + margin: OK
++    RoomConfig.from_dict(raw)
+diff --git a/tests/test_semantics_integration.py b/tests/test_semantics_integration.py
+index 154dc61..d3a6344 100644
+--- a/tests/test_semantics_integration.py
++++ b/tests/test_semantics_integration.py
+@@ -1,4 +1,5 @@
+ """End-to-end on the synthetic room: frames -> FakeVision -> scene.semantics."""
++import json
+ import math
+ import time
+ from dataclasses import replace
+@@ -7,6 +8,7 @@ from perception import Perception
+ from scene import Scene
+ from semantics import (FakeVision, SemanticsRunner, WorldFixture, resolve_destination)
+ from synthetic import SyntheticRoom
++from tactics import build_state
+ 
+ 
+ def _warm(synth_cfg, tmp_path):
+@@ -107,3 +109,54 @@ def test_semantics_disabled_by_default(synth_cfg):
+     scene = Scene(t=0.0)
+     assert scene.semantics is None and scene.sweep is None
+     assert synth_cfg.semantics.enabled is False
++
++
++# The 20-object roster the state-cost audit measured with (labels, metres, metres,
++# w, h, score), spread over the 6.4 x 3.6 m synthetic room. One entry ("dog bowl",
++# 0.42) is below min_confidence on purpose: it enters the map but not the digest.
++ROOM_ROSTER_20 = [
++    ("blue mat", 2.0, 1.0, 1.0, 0.8, 0.88),
++    ("plastic water bottle", 1.2, 2.6, 0.08, 0.25, 0.90),
++    ("wooden box", 3.4, 2.2, 0.35, 0.35, 0.83),
++    ("charger", 4.0, 0.7, 0.06, 0.10, 0.72),
++    ("cardboard box", 5.2, 2.4, 0.45, 0.40, 0.86),
++    ("coffee mug", 0.8, 1.8, 0.10, 0.12, 0.77),
++    ("black backpack", 2.7, 3.0, 0.35, 0.45, 0.90),
++    ("white cable", 3.0, 0.6, 0.50, 0.05, 0.61),
++    ("red box", 4.4, 1.0, 0.30, 0.30, 0.85),
++    ("green ball", 1.5, 0.8, 0.15, 0.15, 0.80),
++    ("running shoe", 5.7, 1.4, 0.30, 0.12, 0.68),
++    ("paper stack", 2.4, 2.0, 0.25, 0.20, 0.71),
++    ("phone", 3.8, 3.1, 0.08, 0.16, 0.66),
++    ("tissue box", 5.0, 0.5, 0.25, 0.12, 0.74),
++    ("yoga mat", 0.6, 2.9, 0.70, 0.40, 0.89),
++    ("plastic crate", 4.8, 3.2, 0.40, 0.35, 0.81),
++    ("power strip", 1.0, 0.5, 0.30, 0.08, 0.70),
++    ("plant pot", 5.9, 2.9, 0.20, 0.20, 0.76),
++    ("dog bowl", 2.1, 3.2, 0.20, 0.09, 0.42),
++    ("wooden box", 3.4, 0.9, 0.30, 0.30, 0.79),
++]
++
++
++def test_state_size_bound_on_the_real_path(synth_cfg, tmp_path):
++    """m1-plan.md:345, on the path the bound is about: 20 realistic objects
++    through SyntheticRoom -> Perception -> FakeVision -> store -> snapshot ->
++    build_state. The Jev payload (digest) must stay under the 6 KB bound; the
++    full disk schema may be larger but stays bounded too."""
++    cfg, perc, frame = _warm(synth_cfg, tmp_path)
++    scene = perc.process(frame, 1.0)
++    vision = FakeVision.from_world([WorldFixture(*e) for e in ROOM_ROSTER_20],
++                                   perc.homography)
++    runner = SemanticsRunner(cfg, "synth", vision)
++    try:
++        merged = _pass(runner, perc, frame, 1.0)
++        assert merged is not None
++        assert len(merged.objects) == 20, f"expected 20 map objects, got {len(merged.objects)}"
++        scene.semantics = runner.snapshot(1.5)
++    finally:
++        runner.close()
++    state = build_state(scene)
++    digest_bytes = len(json.dumps(state))
++    assert digest_bytes < 6000, f"Jev digest payload: {digest_bytes} bytes"
++    disk_bytes = len(json.dumps(scene.to_dict()))
++    assert disk_bytes < 10_000, f"full scene.to_dict(): {disk_bytes} bytes"
+diff --git a/tests/test_semantics_merge.py b/tests/test_semantics_merge.py
+index 5a22b88..d8d7a84 100644
+--- a/tests/test_semantics_merge.py
++++ b/tests/test_semantics_merge.py
+@@ -55,10 +55,34 @@ def test_motion_uses_raw_displacement_not_the_ema_step(tmp_path):
+ def test_large_jump_is_a_new_object(tmp_path):
+     st = _store(tmp_path)
+     st.merge([_obj("mat", 1.0, 1.0)], 0, "fake", 0.0)
+-    m = st.merge([_obj("mat", 1.9, 1.0)], 0, "fake", 1.0)   # 0.9 m > match radius
++    m = st.merge([_obj("mat", 2.2, 1.0)], 0, "fake", 1.0)   # 1.2 m > bootstrap carry (2R)
+     assert m.diff.appeared and not m.diff.moved
+ 
+ 
++def test_first_handoff_within_carry_keeps_identity(tmp_path):
++    """Carry hysteresis: a fresh object's window is the bootstrap carry R, so
++    the first hand-off may cover up to 2*match_radius_m (0.9 m < 1.0 m here)."""
++    st = _store(tmp_path)
++    st.merge([_obj("mat", 1.0, 1.0)], 0, "fake", 0.0)
++    m = st.merge([_obj("mat", 1.9, 1.0)], 0, "fake", 1.0)   # 0.9 m, inside 2R
++    assert not m.diff.appeared and not m.diff.vanished
++    assert [o.id for o in m.objects] == ["obj_0001"]
++
++
++def test_mover_hysteresis_keeps_identity_at_half_metre_per_pass(tmp_path):
++    """S2 regression: at R=0.5 a 0.5 m/pass mover used to churn a new id every
++    ~2 passes (8.6 ids / 4.9 vanish events per 10 passes over 100 seeds).
++    Carry hysteresis (factor 2.0, cap 1.0 m) tracks it with one id and keeps
++    the `moved` signal."""
++    st = _store(tmp_path)
++    for k in range(10):
++        m = st.merge([_obj("teddy", 0.6 + 0.5 * k, 2.5)], 0, "fake", float(k))
++        assert [o.id for o in m.objects] == ["obj_0001"], f"churn at pass {k}"
++        if k:
++            assert not m.diff.appeared and not m.diff.vanished, f"churn at pass {k}"
++            assert m.diff.moved == ["obj_0001"], f"motion lost at pass {k}"
++
++
+ def test_ids_stable_with_two_same_label_objects(tmp_path):
+     st = _store(tmp_path)
+     st.merge([_obj("mat", 1.0, 1.0), _obj("mat", 4.0, 1.0)], 0, "fake", 0.0)
+@@ -103,19 +127,85 @@ def test_appeared_respects_min_confidence(tmp_path):
+     assert m.diff.appeared == [], "...but they are not announced as appeared"
+ 
+ 
+-def test_sub_threshold_hits_only_refresh_freshness(tmp_path):
+-    """A low-score detection must not move the object or overwrite its flags."""
++def test_sub_threshold_hits_refresh_only_until_confidence_fades(tmp_path):
++    """A low-score detection must not move the object or overwrite its flags;
++    it only refreshes freshness while the decayed confidence still holds.
++    (Updated for I6: sub-threshold hits decay confidence by 0.7 per pass, so a
++    hit whose decayed confidence drops below min_confidence stops counting as
++    seen — that is what stops a phantom pinning an object alive forever.)"""
+     st = _store(tmp_path)
+     st.merge([_obj("mat", 3.0, 1.2, 0.9, hs=True)], 0, "fake", 0.0)
+     m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 1.0)
+     o = m.objects[0]
+-    assert o.x == 3.0 and o.confidence == 0.9 and o.height_suspect is True
+-    assert o.last_seen_s == 1.0, "sub-threshold hits still count as seen"
++    assert o.x == 3.0 and o.confidence == round(0.9 * 0.7, 3) and o.height_suspect is True
++    assert o.last_seen_s == 1.0, "a holding sub-threshold hit still counts as seen"
+     m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 2.0)
+-    assert not m.diff.vanished, "freshness from low-confidence hits keeps it alive"
++    assert m.objects[0].last_seen_s == 1.0, "a faded hit must not refresh freshness"
++    assert not m.diff.vanished, "one faded pass is one miss; vanish needs two"
+     assert m.diff.moved == [], "no motion is reported from a rejected detection"
+ 
+ 
++def test_phantom_only_sub_threshold_hits_vanishes(tmp_path):
++    """S4 regression: a ghost that only ever fires sub-threshold hits must not
++    pin an object alive. The stored confidence decays 0.9 -> 0.63 (still seen)
++    -> 0.441 -> 0.309 (faded, i.e. two misses) -> vanished on the second faded
++    pass, and last_seen_s stops at the last confirmed sighting."""
++    st = _store(tmp_path)
++    st.merge([_obj("mat", 2.0, 2.0, 0.9)], 0, "fake", 0.0)
++    m = st.merge([_obj("mat", 2.15, 2.0, 0.3)], 0, "fake", 1.0)
++    assert m.objects[0].confidence == round(0.9 * 0.7, 3)   # 0.63 >= 0.5: seen
++    assert m.objects[0].last_seen_s == 1.0 and m.objects[0].x == 2.0
++    m = st.merge([_obj("mat", 2.15, 2.0, 0.3)], 0, "fake", 2.0)
++    assert m.objects[0].confidence == round(0.63 * 0.7, 3)  # 0.441 < 0.5
++    assert m.objects[0].last_seen_s == 1.0, "faded: no freshness refresh"
++    assert m.diff.vanished == [], "first faded pass is only miss #1"
++    m = st.merge([_obj("mat", 2.15, 2.0, 0.3)], 0, "fake", 3.0)
++    assert m.diff.vanished == ["obj_0001"], "phantom must vanish on miss #2"
++    m = st.merge([_obj("mat", 2.15, 2.0, 0.3)], 0, "fake", 4.0)
++    assert m.diff.vanished == [], "vanish fires once"
++    assert m.objects[0].last_seen_s == 1.0, "the phantom never pins freshness again"
++
++
++def test_stationary_scene_is_unchanged_under_noise(tmp_path):
++    """S1 regression: small per-pass jitter must not churn ids or events."""
++    st = _store(tmp_path)
++    base = [("mat", 1.0, 1.0), ("ball", 3.5, 1.0), ("box", 1.0, 3.0),
++            ("cup", 3.5, 3.0), ("charger", 2.25, 2.0)]
++    offs = [(0.01, -0.02), (-0.03, 0.01), (0.02, 0.03), (-0.01, -0.03), (0.03, -0.01)]
++    first_ids = None
++    for k in range(10):
++        ox, oy = offs[k % len(offs)]
++        dets = [_obj(lbl, x + ox, y + oy) for lbl, x, y in base]
++        m = st.merge(dets, 0, "fake", float(k))
++        if k == 0:
++            assert len(m.diff.appeared) == 5
++            first_ids = sorted(m.diff.appeared)
++        else:
++            assert not m.diff.appeared and not m.diff.vanished, m.diff
++            assert m.diff.moved == [], "jitter must not count as movement"
++        assert sorted(o.id for o in m.objects) == first_ids
++
++
++def test_resurrection_after_vanish_emits_appeared(tmp_path):
++    """S3 regression: an id that vanished and re-matches must be announced
++    again in diff.appeared; the return used to be silent."""
++    st = _store(tmp_path)
++    st.merge([_obj("mat", 2.0, 2.0)], 0, "fake", 0.0)
++    st.merge([], 0, "fake", 1.0)
++    m = st.merge([], 0, "fake", 2.0)
++    assert m.diff.vanished == ["obj_0001"]
++    m = st.merge([_obj("mat", 2.0, 2.0)], 0, "fake", 3.0)
++    assert m.diff.appeared == ["obj_0001"], "resurrection must be announced"
++    assert not m.diff.vanished and st.objs["obj_0001"].last_seen_s == 3.0
++
++    # a one-pass miss (never vanished) must NOT re-announce the object
++    st2 = _store(tmp_path)
++    st2.merge([_obj("mat", 2.0, 2.0)], 0, "fake", 0.0)
++    st2.merge([], 0, "fake", 1.0)
++    m = st2.merge([_obj("mat", 2.0, 2.0)], 0, "fake", 2.0)
++    assert m.diff.appeared == [] and not m.diff.vanished, "no flap without a vanish"
++
++
+ def test_height_suspect_flips_only_on_two_of_three(tmp_path):
+     """Hysteresis: one noisy probe must not flap the flag either way."""
+     st = _store(tmp_path)
+diff --git a/tests/test_semantics_schema.py b/tests/test_semantics_schema.py
+index 0ac388c..fd7e2e4 100644
+--- a/tests/test_semantics_schema.py
++++ b/tests/test_semantics_schema.py
+@@ -86,8 +86,7 @@ def test_semantics_validation(synth_cfg):
+             RoomConfig.from_dict(raw)
+ 
+ 
+-def test_build_state_carries_semantics_and_stays_bounded():
+-    base = len(json.dumps(build_state(Scene(t=5.0))))
++def test_build_state_ships_the_compacted_semantics_digest():
+     scene = Scene(t=5.0)
+     scene.semantics = SemanticMap(
+         age_s=0.4, passes=3, model="fake-vision-v0",
+@@ -95,10 +94,41 @@ def test_build_state_carries_semantics_and_stays_bounded():
+                                 x=1.0 + 0.1 * i, y=2.0, confidence=0.9)
+                  for i in range(10)])
+     state = build_state(scene)
+-    assert state["observed"]["semantics"]["objects"][0]["label"] == "thing 0"
+-    size = len(json.dumps(state))
+-    assert size < 6000, f"state grew too much with semantics: {size} bytes"
+-    assert size - base < 3000, f"semantics added {size - base} bytes over the bare state"
++    sem = state["observed"]["semantics"]
++    assert sem["objects"][0] == {"label": "thing 0", "x": 1.0, "y": 2.0, "confidence": 0.9}
++    assert (sem["age_s"], sem["passes"], sem["model"]) == (0.4, 3, "fake-vision-v0")
++    assert sem["destination"] is None
++    assert sem["diff"] == {"appeared": 0, "moved": 0, "vanished": 0}
++    json.dumps(state)                      # serializable by construction
++    # Disk/log schema untouched: the raw map keeps the full 11-field record.
++    raw = scene.to_dict()["semantics"]["objects"][0]
++    assert set(raw) == {"id", "label", "x", "y", "confidence", "sources", "plane_assumed",
++                        "height_suspect", "first_seen_s", "last_seen_s", "motion"}
++
++
++def test_jev_digest_omits_defaults_drops_low_confidence_and_caps():
++    objs = [SemanticObject(id=f"obj_{i:04d}", label=f"thing {i}", x=1.0 + 0.1 * i, y=2.0,
++                           confidence=0.9, height_suspect=(i == 1),
++                           motion="moved" if i == 2 else "static")
++            for i in range(30)]
++    objs[5].confidence = 0.42              # below min_confidence: never a destination
++    m = SemanticMap(
++        age_s=1.5, passes=4, model="fake-vision-v0", objects=objs,
++        destination=Destination(label="thing 9", x=1.9, y=2.0, confidence=0.9,
++                                source="vision", object_id="obj_0009"),
++        diff=SemanticDiff(appeared=["a", "b", "c", "d"], moved=["m"], vanished=[]))
++    view = m.jev_digest(pose=(0.0, 0.0))
++    assert view["objects_more"] == 29 - 25         # 29 shippable, 25 shipped
++    assert len(view["objects"]) == 25
++    assert all(o["confidence"] >= 0.5 for o in view["objects"])
++    assert view["objects"][0] == {"label": "thing 0", "x": 1.0, "y": 2.0, "confidence": 0.9}
++    assert view["objects"][1]["height_suspect"] is True
++    assert "motion" not in view["objects"][0]
++    assert view["objects"][2]["motion"] == "moved"
++    assert view["diff"] == {"appeared": 4, "moved": 1, "vanished": 0,
++                            "appeared_ids": ["a", "b", "c"], "moved_ids": ["m"]}
++    assert view["destination"]["x"] == 1.9 and view["destination"]["object_id"] == "obj_0009"
++    json.dumps(view)
+ 
+ 
+ def test_room_config_default_paths_still_load():

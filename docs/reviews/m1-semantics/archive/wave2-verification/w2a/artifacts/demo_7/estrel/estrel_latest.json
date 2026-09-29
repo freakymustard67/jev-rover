@@ -1,0 +1,32 @@
+{
+  "room": "estrel",
+  "saved_at": 1790623322.9643893,
+  "map": {
+    "age_s": 0.0,
+    "passes": 3,
+    "model": "demo",
+    "objects": [
+      {
+        "id": "obj_0001",
+        "label": "red box",
+        "x": 0.16000000000000003,
+        "y": 1.0,
+        "confidence": 0.9,
+        "sources": [
+          "vision"
+        ],
+        "plane_assumed": "floor",
+        "height_suspect": false,
+        "first_seen_s": 0.0,
+        "last_seen_s": 2.0,
+        "motion": "static"
+      }
+    ],
+    "destination": null,
+    "diff": {
+      "appeared": [],
+      "moved": [],
+      "vanished": []
+    }
+  }
+}

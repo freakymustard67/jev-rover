@@ -1,0 +1,368 @@
+{
+  "note": "W4C loopback prototype run; token value deliberately withheld",
+  "endpoint_scheme": "http://127.0.0.1:<ephemeral>",
+  "token_sha256_prefix": "3fb6ece4",
+  "mock_request_count": 14,
+  "checks": [
+    {
+      "name": "no endpoint anywhere -> clean error",
+      "ok": true,
+      "detail": "msg=remote vision endpoint is not set (env JEV_VISION_ENDPOINT or config)"
+    },
+    {
+      "name": "infer via env endpoint: 2 valid detections, 0 skipped",
+      "ok": true,
+      "detail": "dets=[('mat', (20, 30, 60, 70), 0.91), ('bottle', (80, 10, 100, 40), 0.77)]"
+    },
+    {
+      "name": "infer via constructor endpoint: works",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "baseline pass accepted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "baseline pass merged (2 objects)",
+      "ok": true,
+      "detail": "labels=['mat', 'bottle']"
+    },
+    {
+      "name": "artifacts written",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "submit returns immediately while slow",
+      "ok": true,
+      "detail": "0.1 ms"
+    },
+    {
+      "name": "second submit refused (one in flight)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "60x poll+snapshot in flight stays cheap",
+      "ok": true,
+      "detail": "1.1 ms total"
+    },
+    {
+      "name": "timeout -> clean error recorded",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "timeout: poll() consumes error as None",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "timeout: cooldown armed",
+      "ok": true,
+      "detail": "until=7.0"
+    },
+    {
+      "name": "timeout: cooldown blocks",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "timeout: worker alive",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "timeout: following pass accepted after cooldown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "timeout: following pass succeeds",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "http500: submit accepted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "http500: worker records a clean error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "http500: poll() consumes the error as None (no merge)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "http500: cooldown armed at t+5.0",
+      "ok": true,
+      "detail": "fail_cooldown_until=14.0"
+    },
+    {
+      "name": "http500: cooldown blocks the next pass",
+      "ok": true,
+      "detail": "skipped[cooldown]=2"
+    },
+    {
+      "name": "http500: worker thread still alive",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "http500: in-flight cleared after error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "http500: pass accepted after cooldown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "http500: following pass succeeds (failure isolated)",
+      "ok": true,
+      "detail": "passes=3 objects=2"
+    },
+    {
+      "name": "malformed-json: submit accepted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "malformed-json: worker records a clean error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "malformed-json: poll() consumes the error as None (no merge)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "malformed-json: cooldown armed at t+5.0",
+      "ok": true,
+      "detail": "fail_cooldown_until=21.0"
+    },
+    {
+      "name": "malformed-json: cooldown blocks the next pass",
+      "ok": true,
+      "detail": "skipped[cooldown]=3"
+    },
+    {
+      "name": "malformed-json: worker thread still alive",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "malformed-json: in-flight cleared after error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "malformed-json: pass accepted after cooldown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "malformed-json: following pass succeeds (failure isolated)",
+      "ok": true,
+      "detail": "passes=4 objects=2"
+    },
+    {
+      "name": "wrong-schema: submit accepted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "wrong-schema: worker records a clean error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "wrong-schema: poll() consumes the error as None (no merge)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "wrong-schema: cooldown armed at t+5.0",
+      "ok": true,
+      "detail": "fail_cooldown_until=28.0"
+    },
+    {
+      "name": "wrong-schema: cooldown blocks the next pass",
+      "ok": true,
+      "detail": "skipped[cooldown]=4"
+    },
+    {
+      "name": "wrong-schema: worker thread still alive",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "wrong-schema: in-flight cleared after error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "wrong-schema: pass accepted after cooldown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "wrong-schema: following pass succeeds (failure isolated)",
+      "ok": true,
+      "detail": "passes=5 objects=2"
+    },
+    {
+      "name": "all-invalid-entry: submit accepted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all-invalid-entry: worker records a clean error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all-invalid-entry: poll() consumes the error as None (no merge)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all-invalid-entry: cooldown armed at t+5.0",
+      "ok": true,
+      "detail": "fail_cooldown_until=35.0"
+    },
+    {
+      "name": "all-invalid-entry: cooldown blocks the next pass",
+      "ok": true,
+      "detail": "skipped[cooldown]=5"
+    },
+    {
+      "name": "all-invalid-entry: worker thread still alive",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all-invalid-entry: in-flight cleared after error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all-invalid-entry: pass accepted after cooldown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all-invalid-entry: following pass succeeds (failure isolated)",
+      "ok": true,
+      "detail": "passes=6 objects=2"
+    },
+    {
+      "name": "connection-refused: submit accepted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "connection-refused: worker records a clean error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "connection-refused: poll() consumes the error as None (no merge)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "connection-refused: cooldown armed at t+5.0",
+      "ok": true,
+      "detail": "fail_cooldown_until=42.0"
+    },
+    {
+      "name": "connection-refused: cooldown blocks the next pass",
+      "ok": true,
+      "detail": "skipped[cooldown]=6"
+    },
+    {
+      "name": "connection-refused: worker thread still alive",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "connection-refused: in-flight cleared after error",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "connection-refused: pass accepted after cooldown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "connection-refused: following pass succeeds (failure isolated)",
+      "ok": true,
+      "detail": "passes=7 objects=2"
+    },
+    {
+      "name": "7 passes merged, 6 errors, 13 offers started",
+      "ok": true,
+      "detail": "passes=7 errors=6 started=13"
+    },
+    {
+      "name": "worker thread alive at end of run",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "build_vision(kind='remote') raises at M1",
+      "ok": true,
+      "detail": "msg=vision model kind 'remote' is planned for M2; only 'fake' ships in M1"
+    },
+    {
+      "name": "build_vision(kind='local') raises at M1",
+      "ok": true,
+      "detail": "msg=vision model kind 'local' is planned for M2; only 'fake' ships in M1"
+    },
+    {
+      "name": "gap: bogus endpoint string accepted at load",
+      "ok": true,
+      "detail": "config.py:302-304 validates kind + timeout_s>0 only"
+    },
+    {
+      "name": "'token' config key rejected by strict section",
+      "ok": true,
+      "detail": "msg=w4c.semantics.model: unknown key(s): token"
+    },
+    {
+      "name": "timeout_s=0.0: rejected",
+      "ok": true,
+      "detail": "msg=w4c.semantics.model.timeout_s must be > 0"
+    },
+    {
+      "name": "timeout_s=3600.0: accepted (no upper bound = gap)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "serialized model has no token field (endpoint IS serialized)",
+      "ok": true,
+      "detail": "keys=['endpoint', 'fixtures', 'kind', 'labels', 'timeout_s']"
+    },
+    {
+      "name": "token was sent as Bearer header on every mock request",
+      "ok": true,
+      "detail": "requests=14 auth_received=True value_withheld=True fp=sha256:3fb6ece4"
+    },
+    {
+      "name": "mock saw JSON bodies",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

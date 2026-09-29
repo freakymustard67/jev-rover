@@ -1,0 +1,424 @@
+From 176a535473933473feb77449870264d01ee30293 Mon Sep 17 00:00:00 2001
+From: freakymustard67 <freakymustard67@://github.com>
+Date: Tue, 29 Sep 2026 07:06:37 +0530
+Subject: [PATCH 1/2] semantics: project approach goals to free space; never
+ splice a blocked goal (w4b F1/F2)
+
+- Planner.project_to_free(): the free_near substitute as a public projection;
+  run.py --find uses it so the latch and metrics target a reachable point (F1).
+- Planner.plan() no longer splices a blocked goal onto the path: the final
+  waypoint stays the free substitute, so path_valid/path_bearing_deg cannot
+  advertise a point the planner itself blocks (F2).
+- config: DestinationConfig standoff documented and validated against the
+  geometric floor (inflation + cell + margin); RoomConfig.required_standoff_m()
+  encodes the per-object rule (>= obj_r + 0.35 with the shipped constants).
+- tests/test_approach_standoff.py pins no-splice, projection consistency,
+  the standoff rule and the validation floor.
+---
+ config.py                       |  36 +++++++++-
+ control.py                      |  75 +++++++++++++------
+ run.py                          |  11 +++
+ tests/test_approach_standoff.py | 124 ++++++++++++++++++++++++++++++++
+ 4 files changed, 224 insertions(+), 22 deletions(-)
+ create mode 100644 tests/test_approach_standoff.py
+
+diff --git a/config.py b/config.py
+index b962dad..07a7135 100644
+--- a/config.py
++++ b/config.py
+@@ -8,6 +8,7 @@ loudly, not mid-episode.
+ from __future__ import annotations
+ 
+ import json
++import math
+ from dataclasses import asdict, dataclass, field, fields, is_dataclass
+ from pathlib import Path
+ from typing import Any, get_type_hints
+@@ -158,6 +159,12 @@ class SemanticsConfig:
+ 
+ @dataclass
+ class DestinationConfig:
++    # Standoff for a destination with no known size. It must clear the planner
++    # floor (grid.inflation_m + grid.cell_m + margin), else the goal cell is
++    # blocked and the planner has to substitute it. For objects with a known
++    # radius use RoomConfig.required_standoff_m(obj_radius_m) (w4b rule:
++    # obj_r + 0.35 with the shipped constants; a 0.35 ring is inside the
++    # planner's inflated region for any object of radius >= ~0.12 m).
+     standoff_m: float = 0.35
+ 
+ 
+@@ -297,8 +304,16 @@ class RoomConfig:
+ 
+     def _validate_semantics(self, where: str) -> None:
+         s = self.semantics
+-        if self.destination.standoff_m < 0:
+-            raise ConfigError(f"{where}.destination.standoff_m must be >= 0")
++        # Geometric floor (w4b audit): a goal closer to an obstacle than
++        # inflation + one cell is inside the planner's inflated region and gets
++        # silently substituted; keep a 0.05 m margin on top. Bigger objects
++        # need the per-object rule (see required_standoff_m).
++        floor = self.grid.inflation_m + self.grid.cell_m + 0.05
++        if self.destination.standoff_m < floor:
++            raise ConfigError(
++                f"{where}.destination.standoff_m must be >= {floor:.2f} "
++                f"(grid.inflation_m + cell_m + 0.05; got {self.destination.standoff_m})"
++            )
+         _check_choice(s.model.kind, ("fake", "local", "remote"), f"{where}.semantics.model.kind")
+         if s.model.timeout_s <= 0:
+             raise ConfigError(f"{where}.semantics.model.timeout_s must be > 0")
+@@ -356,6 +371,23 @@ class RoomConfig:
+         wp = self.waypoints[name]
+         return wp[0], wp[1], (wp[2] if len(wp) > 2 else None)
+ 
++    def required_standoff_m(self, obj_radius_m: float, margin_m: float = 0.05) -> float:
++        """Per-object safe standoff for routing to a destination (w4b rule).
++
++        Two envelopes act against the destination object once it is in the
++        occupancy grid: the planner block at ``obj_r + inflation + cell/2`` and
++        the executor stop envelopes (map_brake at a 0.30 m surface gap; the
++        no-Jev blocked-turn at ~0.35 m). Standoff must clear both plus margin;
++        rounded up to 5 cm. With the shipped constants this is ``obj_r + 0.35``
++        (e.g. 0.65 m for r = 0.30, 0.75 m for r = 0.40). A closer standoff is
++        reachable only via the free-space projection
++        (``control.Planner.project_to_free``).
++        """
++        reflex_floor = 0.30          # map_brake stop gap, control.py _reflex
++        floor = max(self.grid.inflation_m + self.grid.cell_m / 2.0, reflex_floor)
++        need = obj_radius_m + floor + margin_m
++        return math.ceil(need / 0.05 - 1e-9) * 0.05
++
+     def to_dict(self) -> dict:
+         out = asdict(self)
+         # Native JSON types for the config round-trip.
+diff --git a/control.py b/control.py
+index f9a2097..1a53cc0 100644
+--- a/control.py
++++ b/control.py
+@@ -36,6 +36,28 @@ MODE_MAX_S = {
+ }
+ 
+ 
++def _to_cell(p: tuple[float, float], grid: OccupancyGrid) -> tuple[int, int]:
++    cell = grid.cell_m
++    return (min(max(int(p[0] / cell), 0), grid.w - 1),
++            min(max(int(p[1] / cell), 0), grid.h - 1))
++
++
++def _free_near(blocked: np.ndarray, grid: OccupancyGrid, ix: int, iy: int,
++               max_r: int = 6) -> tuple[int, int] | None:
++    """Nearest free cell within ``max_r`` cells (Chebyshev), or None."""
++    if not blocked[iy, ix]:
++        return ix, iy
++    for r in range(1, max_r + 1):
++        for dy in range(-r, r + 1):
++            for dx in range(-r, r + 1):
++                if max(abs(dx), abs(dy)) != r:
++                    continue
++                nx, ny = ix + dx, iy + dy
++                if 0 <= nx < grid.w and 0 <= ny < grid.h and not blocked[ny, nx]:
++                    return nx, ny
++    return None
++
++
+ class Planner:
+     """A* over the occupancy grid; unknown cells are allowed but expensive."""
+ 
+@@ -63,25 +85,9 @@ class Planner:
+         blocked = self.blocked()
+         unknown = ~g.observed(t, self.cfg.grid.stale_s)
+ 
+-        def to_cell(p):
+-            return (min(max(int(p[0] / cell), 0), g.w - 1),
+-                    min(max(int(p[1] / cell), 0), g.h - 1))
+-
+-        def free_near(ix, iy, max_r=6):
+-            if not blocked[iy, ix]:
+-                return ix, iy
+-            for r in range(1, max_r + 1):
+-                for dy in range(-r, r + 1):
+-                    for dx in range(-r, r + 1):
+-                        if max(abs(dx), abs(dy)) != r:
+-                            continue
+-                        nx, ny = ix + dx, iy + dy
+-                        if 0 <= nx < g.w and 0 <= ny < g.h and not blocked[ny, nx]:
+-                            return nx, ny
+-            return None
+-
+-        s = free_near(*to_cell(start))
+-        e = free_near(*to_cell(goal))
++        goal_cell = _to_cell(goal, g)
++        s = _free_near(blocked, g, *_to_cell(start, g))
++        e = _free_near(blocked, g, *goal_cell)
+         if s is None or e is None:
+             return [], False
+         sx, sy = s
+@@ -125,9 +131,38 @@ class Planner:
+         cells.reverse()
+         through_unknown = any(unknown[iy, ix] for ix, iy in cells)
+         pts = [((ix + 0.5) * cell, (iy + 0.5) * cell) for ix, iy in cells]
+-        pts[-1] = (float(goal[0]), float(goal[1]))
++        if (ex, ey) == goal_cell:
++            # The goal cell itself is free: publish the exact requested point.
++            pts[-1] = (float(goal[0]), float(goal[1]))
++        # else: the goal cell was blocked and A* ran to the free substitute --
++        # keep the substitute as the final waypoint. Never splice the raw goal
++        # back on: path_valid / path_bearing_deg would advertise a point the
++        # planner itself blocks, and _follow would steer straight into it.
+         return self._smooth(pts, blocked), through_unknown
+ 
++    def project_to_free(self, point: tuple[float, float],
++                        max_r: int = 6) -> tuple[float, float] | None:
++        """Project a goal onto reachable free space (w4b audit, fix F1).
++
++        Returns ``point`` unchanged when the planner accepts its cell; when the
++        cell is blocked (e.g. an approach ring closer to a destination object
++        than ``obj_radius + inflation``), returns the centre of the nearest free
++        cell within ``max_r`` -- the same substitute ``plan()`` uses -- or None
++        if no free cell was found. Callers (run.py --find today, M2 routing
++        later) must aim the GoalManager/latch at this point, so the goal and the
++        executed path cannot disagree.
++        """
++        g = self.grid
++        blocked = self.blocked()
++        cell = g.cell_m
++        c = _to_cell(point, g)
++        fn = _free_near(blocked, g, *c, max_r=max_r)
++        if fn is None:
++            return None
++        if fn == c:
++            return (float(point[0]), float(point[1]))
++        return ((fn[0] + 0.5) * cell, (fn[1] + 0.5) * cell)
++
+     def _smooth(self, pts: list[tuple[float, float]], blocked: np.ndarray) -> list[tuple[float, float]]:
+         """Greedy line-of-sight shortcutting; never cuts a blocked cell."""
+         if len(pts) <= 2:
+diff --git a/run.py b/run.py
+index 954215e..d624437 100644
+--- a/run.py
++++ b/run.py
+@@ -332,11 +332,22 @@ def main(argv=None) -> int:
+                         if dest is not None:
+                             ax, ay = approach_point(dest, (scene.pose.x, scene.pose.y),
+                                                     cfg.destination.standoff_m)
++                            # F1 (w4b audit): when the destination object is in the
++                            # occupancy grid, its approach ring can sit inside the
++                            # planner's inflated region (obj_radius + inflation) and
++                            # the planner would silently substitute the goal. Project
++                            # the approach point to free space; M2 routing must set
++                            # scene.goal to THIS point (then the latch, metrics and
++                            # the executed path all agree).
++                            gx, gy = executor.planner.project_to_free((ax, ay)) or (ax, ay)
+                             runner.set_destination(dest)
+                             print(f"[find] '{find_label}' -> {dest.label} at "
+                                   f"({dest.x:.2f},{dest.y:.2f}) m conf={dest.confidence:.2f} "
+                                   f"object={dest.object_id}; approach ({ax:.2f},{ay:.2f}) "
+                                   f"standoff={cfg.destination.standoff_m} m")
++                            if (gx, gy) != (ax, ay):
++                                print(f"[find] approach inside planner inflation; "
++                                      f"goal projected to ({gx:.2f},{gy:.2f}) m")
+                         else:
+                             print(f"[find] '{find_label}': no destination resolved "
+                                   f"(passes={scene.semantics.passes})")
+diff --git a/tests/test_approach_standoff.py b/tests/test_approach_standoff.py
+new file mode 100644
+index 0000000..424a232
+--- /dev/null
++++ b/tests/test_approach_standoff.py
+@@ -0,0 +1,124 @@
++"""Approach standoff vs the planner's inflated region (w4b audit; fixes F1/F2).
++
++A destination object stamped into the occupancy grid blocks an inflated disc of
++radius ~obj_r + inflation. An approach ring closer than that is silently
++substituted by the planner, so:
++
++* the executed path must end at the free substitute, never at the raw blocked
++  goal (F2 -- otherwise ``path_valid``/``path_bearing_deg`` lie);
++* callers project the goal to free space via ``Planner.project_to_free`` (F1);
++* the per-object standoff rule (``RoomConfig.required_standoff_m``) keeps the
++  ring outside both the planner block and the executor's stop envelopes.
++"""
++import numpy as np
++import pytest
++
++from config import ConfigError, RoomConfig
++from control import Executor, Planner
++from perception import OccupancyGrid
++from scene import Destination, GoalInfo, Scene
++from semantics import approach_point
++
++OBJ = (2.0, 2.0)
++START = (0.7, 2.0)
++
++
++def _grid_with_disc(obj_xy=OBJ, obj_r=0.30):
++    """Wall ring + a disc obstacle stamped the way perception stamps cells."""
++    grid = OccupancyGrid(4.0, 4.0, 0.05)
++    wall = np.zeros((grid.h, grid.w), bool)
++    wall[[0, -1], :] = True
++    wall[:, [0, -1]] = True
++    grid.set_occupied(wall, 0.0)
++    step = 0.01
++    xs = np.arange(obj_xy[0] - obj_r, obj_xy[0] + obj_r + 1e-9, step)
++    ys = np.arange(obj_xy[1] - obj_r, obj_xy[1] + obj_r + 1e-9, step)
++    xx, yy = np.meshgrid(xs, ys)
++    m = (xx - obj_xy[0]) ** 2 + (yy - obj_xy[1]) ** 2 <= obj_r ** 2
++    grid.update(np.zeros((0, 2)), np.column_stack([xx[m], yy[m]]), 0.0)
++    return grid
++
++
++def _cell(p, grid):
++    return min(int(p[0] / grid.cell_m), grid.w - 1), min(int(p[1] / grid.cell_m), grid.h - 1)
++
++
++def test_plan_never_ends_on_a_blocked_goal_cell():
++    cfg = RoomConfig()
++    grid = _grid_with_disc()
++    planner = Planner(grid, cfg.grid.inflation_m, cfg)
++    dest = Destination(label="mat", x=OBJ[0], y=OBJ[1], confidence=0.9)
++    ax, ay = approach_point(dest, START, cfg.destination.standoff_m)   # the 0.35 m ring
++
++    blocked = planner.blocked()
++    assert blocked[_cell((ax, ay), grid)[1], _cell((ax, ay), grid)[0]], \
++        "precondition: the 0.35 m approach cell lies inside the inflated region"
++
++    path, _ = planner.plan(START, (ax, ay), 0.0)
++    assert path, "planner found no path to the substitute"
++    end = path[-1]
++    assert end != (ax, ay), "blocked goal was spliced back onto the path (F2 regression)"
++    ix, iy = _cell(end, grid)
++    assert not blocked[iy, ix], "final waypoint is a blocked cell"
++    # and it is exactly the point project_to_free tells callers to aim at (F1)
++    assert planner.project_to_free((ax, ay)) == end
++
++
++def test_executor_replan_ends_at_the_substitute_not_the_raw_goal():
++    cfg = RoomConfig()
++    grid = _grid_with_disc()
++    ex = Executor(cfg, grid)
++    dest = Destination(label="mat", x=OBJ[0], y=OBJ[1], confidence=0.9)
++    ax, ay = approach_point(dest, START, cfg.destination.standoff_m)
++    scene = Scene()
++    scene.pose.x, scene.pose.y = START
++    scene.goal = GoalInfo(type="goto", name="dest", x=ax, y=ay)
++    ex._replan(scene, 0.0)
++    assert ex.path and ex.path[-1] != (ax, ay)
++    assert ex.path[-1] == ex.planner.project_to_free((ax, ay))
++
++
++def test_plan_keeps_the_exact_goal_when_its_cell_is_free():
++    cfg = RoomConfig()
++    grid = _grid_with_disc()
++    planner = Planner(grid, cfg.grid.inflation_m, cfg)
++    goal = (1.1, 1.4)
++    path, _ = planner.plan(START, goal, 0.0)
++    assert path and path[-1] == goal, "free goal must be published exactly"
++    assert planner.project_to_free(goal) == goal
++
++
++def test_required_standoff_clears_planner_and_reflex_envelopes():
++    cfg = RoomConfig()
++    for r in (0.15, 0.30, 0.40):
++        need = cfg.required_standoff_m(r)
++        assert need >= r + cfg.grid.inflation_m + cfg.grid.cell_m, \
++            "standoff must clear the planner block (inflation + cell)"
++        assert need >= r + 0.30 + 0.05, "standoff must clear the map_brake envelope"
++        assert need >= r + 0.35, "w4b rule with the shipped constants"
++        assert abs(need / 0.05 - round(need / 0.05)) < 1e-9, "rounded to 5 cm"
++    assert cfg.required_standoff_m(0.30) == 0.65
++    assert cfg.required_standoff_m(0.40) == 0.75
++
++
++def test_rule_standoff_ring_is_planner_free():
++    """At the per-object standoff the ring must not need projection (r=0.30)."""
++    cfg = RoomConfig()
++    grid = _grid_with_disc()
++    planner = Planner(grid, cfg.grid.inflation_m, cfg)
++    standoff = cfg.required_standoff_m(0.30)
++    ax, ay = approach_point(Destination("mat", OBJ[0], OBJ[1], 0.9), START, standoff)
++    assert planner.project_to_free((ax, ay)) == (ax, ay)
++
++
++def test_config_rejects_standoff_below_the_planner_floor(synth_cfg):
++    raw = synth_cfg.to_dict()
++    floor = synth_cfg.grid.inflation_m + synth_cfg.grid.cell_m
++    raw["destination"]["standoff_m"] = floor - 0.01        # 0.26 < 0.27 floor
++    with pytest.raises(ConfigError, match="standoff_m"):
++        RoomConfig.from_dict(raw)
++    raw["destination"]["standoff_m"] = 0.20                # far below: still rejected
++    with pytest.raises(ConfigError, match="standoff_m"):
++        RoomConfig.from_dict(raw)
++    raw["destination"]["standoff_m"] = floor + 0.05        # at the floor + margin: OK
++    RoomConfig.from_dict(raw)
+-- 
+2.47.3
+
+
+From 2105e4a28b66c9afee77edddf3a20036fce11bc1 Mon Sep 17 00:00:00 2001
+From: freakymustard67 <freakymustard67@://github.com>
+Date: Tue, 29 Sep 2026 07:06:43 +0530
+Subject: [PATCH 2/2] docs: errata for approach standoff vs planner inflation
+ (w4b/I7 audit)
+
+- semantics-layer-proposal.md: items 4 and the M1 acceptance corrected: the
+  standoff must clear obj_radius + inflation, and the routed goal must be the
+  free-space projection of the ring point.
+- m1-plan.md: M1 acceptance note for the M2 routing wiring.
+- m2-design.md: routing decision addendum (project_to_free + required_standoff_m).
+---
+ docs/planning/m1-plan.md                  | 5 +++++
+ docs/planning/semantics-layer-proposal.md | 4 ++--
+ docs/reviews/m1-semantics/m2-design.md    | 5 ++++-
+ 3 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/docs/planning/m1-plan.md b/docs/planning/m1-plan.md
+index 1fea4d1..002aa5d 100644
+--- a/docs/planning/m1-plan.md
++++ b/docs/planning/m1-plan.md
+@@ -351,6 +351,11 @@ within 20% of the disabled baseline. State-size bound: 10 objects → `len(json.
+ 2. `--semantics off` (default): behavior byte-identical apart from two `null` keys.
+ 3. `--semantics fake --semantics-once --find "blue mat"` on `room.synthetic.json` resolves the
+    fixture and prints the standoff approach point (routing/driving intentionally not wired yet).
++   **Note (w4b/I7 audit, 2026-09-29):** when M2 wires routing, set `scene.goal` to
++   `executor.planner.project_to_free(approach_point(...))` — never the raw ring point — and derive the
++   standoff per object (`cfg.required_standoff_m(obj_radius)`; ≥ obj_r + 0.35). A raw ring point inside
++   the planner's inflated region stalls the rover ~0.3 m short (permanent standstill, 658 map_brake
++   trips). The fix is implemented in `control.py`/`run.py` (PR `review/m1-semantics-audit` + I7).
+ 4. Budget/cooldown/error counters visible in `runs/summary_*.json` under `"semantics"`.
+ 5. Loop-rate invariant test passes with a deliberately slow fake model.
+ 
+diff --git a/docs/planning/semantics-layer-proposal.md b/docs/planning/semantics-layer-proposal.md
+index 002e9ae..9aa5873 100644
+--- a/docs/planning/semantics-layer-proposal.md
++++ b/docs/planning/semantics-layer-proposal.md
+@@ -168,10 +168,10 @@ Pipeline:
+ 1. Extract the object reference from the mission string (rule-based; "go to the …", "patrol until …").
+ 2. Rank candidate objects from the semantic map by string similarity (embeddings if available; else normalized token overlap). If the top candidates are ambiguous (scores within epsilon), ask **Jev Choice over the candidate labels** (one budgeted call; code owns the option list, Jev picks the intended one).
+ 3. If no candidate or confidence too low → trigger a fresh semantic pass (optionally with a targeted prompt/labels) and retry once.
+-4. Destination = object `(x, y)` with a configured standoff (`destination.standoff_m`, e.g. 0.35 m before the point; obstacle inflation already exists in the planner).
++4. Destination = object `(x, y)` with a configured standoff (`destination.standoff_m`, e.g. 0.35 m before the point). **Errata (w4b/I7 audit, 2026-09-29):** "obstacle inflation already exists in the planner" is exactly what makes a 0.35 m ring unreachable for objects of radius ≥ ~0.12 m — the planner blocks a disc of radius ≈ obj_r + inflation + cell/2, and the executor's reflex stops at a ~0.30 m surface gap. The standoff must satisfy `standoff ≥ obj_radius + 0.35` (`RoomConfig.required_standoff_m`; 0.65/0.75 m for r = 0.30/0.40), and the goal handed to routing must be the free-space projection of the ring point (`Planner.project_to_free`), never the raw ring point: the raw point parks the rover ~0.3 m short (658 map_brake trips, permanent standstill) while `path_valid`/`path_bearing_deg` stay green.
+ 5. Feasibility check reuses the existing mission feasibility Noul. If unresolved after retry: abort with a clear message, never wander.
+ 
+-Acceptance for the first real feature: **`run.py --find "blue mat"` routes the rover to the mat and stops within standoff**, on synthetic fixtures first, then on the live camera.
++Acceptance for the first real feature: **`run.py --find "blue mat"` routes the rover to the mat and stops within standoff**, on synthetic fixtures first, then on the live camera. **Errata (w4b/I7 audit, 2026-09-29):** "within standoff" is only meaningful at the per-object standoff (`obj_radius + 0.35`); at a fixed 0.35 m ring and r ≥ ~0.12 m the rover reaches the projected free-space goal and the 0.30 m latch, but the reflex holds it at the inflated boundary (map_brake trips) rather than at the requested ring.
+ 
+ ---
+ 
+diff --git a/docs/reviews/m1-semantics/m2-design.md b/docs/reviews/m1-semantics/m2-design.md
+index 5baf928..5daf63a 100644
+--- a/docs/reviews/m1-semantics/m2-design.md
++++ b/docs/reviews/m1-semantics/m2-design.md
+@@ -538,7 +538,10 @@ resolution time; README's older capture shows `(3.12,1.53)`.)
+    adapter + manual trigger (per the commission). If routing is in scope, the minimal version is:
+    on resolve, set `scene.goal` to the approach point through the existing `GoalManager`/`Executor`
+    path, gated by a new `semantics.drive_to_destination: false` default — a separate workstream,
+-   not covered here. Also still open: `--find` currently latches on the first attempt even on a
++   not covered here. **I7 addendum (w4b audit, 2026-09-29):** aim at the free-space projection
++   (`executor.planner.project_to_free(approach)`), not the raw approach point, and use the per-object
++   standoff (`cfg.required_standoff_m`); the raw point can sit inside the planner's inflated region
++   and stalls the rover. Also still open: `--find` currently latches on the first attempt even on a
+    miss (`run.py:298-311`); proposal §7's "retry once with a fresh targeted pass" is the natural
+    M2 follow-up.
+ 
+-- 
+2.47.3
+

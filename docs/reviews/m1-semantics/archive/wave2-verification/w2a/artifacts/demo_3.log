@@ -1,0 +1,14 @@
+CLAIM 3: no eviction; unmatched for 50 passes -> still present, can resurrect with same id
+config: vanish_passes=2
+
+pass 1: object obj_0001 'blue mat' at (3.0, 1.2)
+after 50 empty passes: passes=51 objects_in_map=1
+    obj_0001 label='blue mat' pos=(3.0,1.2) last_seen_s=0.0 misses=50 next_id=2
+    events.jsonl: vanished fired 1 time(s): [(2.0, ['obj_0001'])] (fires once at miss #2, never again; object never removed)
+    resolve_destination('blue mat') still resolves the 50-pass-stale object: label='blue mat' at (3.0,1.2) object_id=obj_0001
+
+pass 52: detection at (3.05, 1.2) -> matched object id=obj_0001 (same as the original: True), appeared=[] moved=[] misses_reset=0 next_id=2
+    -> the id was never retired, so the 'vanished' object silently came back under the same id
+
+VERDICT claim 3: CONFIRMED
+incident code: semantics.py L308-313 (misses/diff only), no eviction anywhere in SemanticStore
