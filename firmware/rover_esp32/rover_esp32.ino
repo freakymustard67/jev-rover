@@ -231,6 +231,11 @@
 // unavailable on ESP32-WROVER modules (PSRAM uses them).
 #define RVR_HCSR04_TRIG_PIN 5
 #define RVR_HCSR04_ECHO_PIN 17
+
+// --- Status LED ---
+// Onboard blue LED on most ESP32 DevKit boards is GPIO 2. Blinks at 1 Hz as a
+// heartbeat (and twice fast at boot / after an OTA). Set -1 to disable.
+#define RVR_LED_PIN 2
 #define RVR_HCSR04_REAR_TRIG_PIN 4    // only used if RVR_ENABLE_REAR_SENSOR
 #define RVR_HCSR04_REAR_ECHO_PIN 16   // only used if RVR_ENABLE_REAR_SENSOR
 
@@ -1719,6 +1724,17 @@ void setup() {
   Serial.println();
   Serial.println("=== jev-rover reference firmware (ESP32) ===");
 
+#if RVR_LED_PIN >= 0
+  pinMode(RVR_LED_PIN, OUTPUT);
+  Serial.printf("[led] heartbeat on GPIO %d (two fast blinks at boot)\n", RVR_LED_PIN);
+  for (uint8_t i = 0; i < 4; ++i) {   // two fast blinks: visible reboot indicator
+    digitalWrite(RVR_LED_PIN, HIGH);
+    delay(90);
+    digitalWrite(RVR_LED_PIN, LOW);
+    delay(90);
+  }
+#endif
+
   // Motors first, before anything can ask them to move: the drive object
   // starts with all outputs at zero (RVR_MOTOR_STBY is raised inside
   // RvrDrive::begin()).
@@ -1845,4 +1861,14 @@ void loop() {
     g_lastTelemMs = now;
     rvrSendTelemetry(now);
   }
+
+#if RVR_LED_PIN >= 0
+  // Heartbeat: proves the firmware is alive (and that an OTA landed) with no
+  // network involved. 1 Hz, non-blocking.
+  static uint32_t ledNextMs = 0;
+  if ((uint32_t)(now - ledNextMs) >= 500u) {
+    ledNextMs = now;
+    digitalWrite(RVR_LED_PIN, !digitalRead(RVR_LED_PIN));
+  }
+#endif
 }

@@ -1,0 +1,9 @@
+{
+  "additionalFiles": "../..",
+  "compiler.optimization_flags": "-Os",
+  "customBuildProperties": "",
+  "fqbn": "esp32:esp32:esp32",
+  "hardwareFolders": "/home/freakymustard/.arduino15/packages/esp32/hardware/esp32/3.3.12,/home/freakymustard/.arduino15/packages/esp32/hardware/esp32/3.3.12",
+  "otherLibrariesFolders": "/home/freakymustard/Arduino/libraries",
+  "sketchLocation": "/home/freakymustard/jev-rover/firmware/rover_esp32"
+}

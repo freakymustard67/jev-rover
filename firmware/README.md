@@ -447,6 +447,13 @@ and couple the ToF rigidly to the servo horn.
 > TRIG only when `RVR_ENABLE_REAR_SENSOR` + HC-SR04 are selected — pick any free
 > output-capable pin and change `RVR_SERVO_PIN`.
 
+### Status LED (optional)
+
+The onboard blue LED (GPIO 2 on most ESP32 DevKit boards, `RVR_LED_PIN`) blinks at
+1 Hz as a heartbeat and gives two fast blinks at boot — a visible "the firmware is
+running / an OTA landed" indicator with no network and no cable involved. Set
+`RVR_LED_PIN` to `-1` to disable, or to your board's LED pin if it differs.
+
 ### Encoders (optional)
 
 Set `RVR_ENABLE_ENCODERS` to 1 and wire both channels. Example pins: left A/B = 18/19,
