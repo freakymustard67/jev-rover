@@ -271,6 +271,7 @@ def main(argv=None) -> int:
     semantics_fired = False
     next_audit_t = float("inf")
     find_done = False
+    last_frame_h: np.ndarray | None = None
     log_file = open(args.log, "a") if args.log else None
 
     # ---- loop
@@ -309,13 +310,18 @@ def main(argv=None) -> int:
 
             if t >= next_perc:
                 scene = perception.process(frame, t, last_cmd.v_mps, last_cmd.w_deg_s, frame_age)
+                # Frame-space contract (docs/reviews/m1-semantics/m2-design.md §1):
+                # the worker and the renderer consume homography space, never the
+                # raw capture. Without intrinsics the two are the same object.
+                frame_h = perception.frame_h if perception.frame_h is not None else frame
+                last_frame_h = frame_h
                 goals.update(scene, t)
                 scene.hardware = link.telemetry(t)
                 if runner is not None:
                     runner.poll(t)
                     if not semantics_fired and t >= 1.0:
                         # Mission-start trigger (proposal §8); M3 adds the scheduler.
-                        if runner.maybe_pass(t, perception.semantic_context(t), frame,
+                        if runner.maybe_pass(t, perception.semantic_context(t), frame_h,
                                              kind="full", force=True):
                             semantics_fired = True
                             next_audit_t = t + cfg.semantics.audit_period_s
@@ -323,7 +329,7 @@ def main(argv=None) -> int:
                           and t >= next_audit_t):
                         # Audit cadence (proposal §8); --semantics-once pins the
                         # mission-start pass only. Budgets/interval still apply.
-                        runner.maybe_pass(t, perception.semantic_context(t), frame,
+                        runner.maybe_pass(t, perception.semantic_context(t), frame_h,
                                           kind="audit")
                         next_audit_t = t + cfg.semantics.audit_period_s
                     scene.semantics = runner.snapshot(t)
@@ -370,7 +376,8 @@ def main(argv=None) -> int:
                               f"cmd=({cmd.v_mps:+.2f},{cmd.w_deg_s:+.0f},{cmd.source})")
 
             if args.video or args.show:
-                canvas = renderer.draw(frame, scene, judg, cmd, executor.path)
+                canvas = renderer.draw(last_frame_h if last_frame_h is not None else frame,
+                                       scene, judg, cmd, executor.path)
                 renderer.write(canvas)
             last_cmd = cmd
 

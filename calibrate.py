@@ -21,6 +21,7 @@ import cv2
 import numpy as np
 
 from config import RoomConfig, _need  # noqa: F401  (kept for symmetry of config imports)
+from perception import load_intrinsics
 
 
 def _open(source: str, width: int = 0, height: int = 0) -> cv2.VideoCapture:
@@ -41,6 +42,21 @@ def _grab(cap: cv2.VideoCapture, warmup: int = 10) -> np.ndarray:
     if frame is None:
         raise SystemExit("camera delivered no frames")
     return frame
+
+
+def _homography_space(frame: np.ndarray, cfg: RoomConfig) -> np.ndarray:
+    """Undistort iff camera.intrinsics is configured (the same rule Perception applies).
+
+    Calibration clicks must land in the space the homography is defined in -
+    otherwise a calibrated lens silently biases every reference point, and the
+    perception/semantics pipeline (which undistorts first) inherits the error.
+    """
+    if not cfg.camera.intrinsics:
+        return frame
+    intr = load_intrinsics(cfg.camera.intrinsics)
+    if intr is None:
+        raise SystemExit(f"camera.intrinsics is set but {cfg.camera.intrinsics} is not readable")
+    return cv2.undistort(frame, intr[0], intr[1])
 
 
 # ------------------------------------------------------------------ cameras
@@ -153,6 +169,7 @@ def cmd_floor(args) -> int:
         raise SystemExit(f"cannot open camera {args.camera or cfg.camera.source}")
     frame = _grab(cap)
     cap.release()
+    frame = _homography_space(frame, cfg)
     h, w = frame.shape[:2]
     if (w, h) != (cfg.camera.width, cfg.camera.height):
         print(f"note: capture is {w}x{h} but config says "
@@ -286,8 +303,9 @@ def cmd_check(args) -> int:
     out = Path(args.out or "runs/calibration_check.png")
     out.parent.mkdir(parents=True, exist_ok=True)
     r = Renderer(cfg, perc.grid)
-    canvas = r.draw(frame, scene, {"source": "none", "maneuver": "-", "probabilities": {},
-                                   "age_s": None}, __import__("link").Cmd())
+    canvas = r.draw(perc.frame_h if perc.frame_h is not None else frame, scene,
+                    {"source": "none", "maneuver": "-", "probabilities": {},
+                     "age_s": None}, __import__("link").Cmd())
     cv2.imwrite(str(out), canvas)
     print(f"overlay written to {out} - check that the belief map lines up with the floor")
     return 0

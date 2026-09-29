@@ -153,6 +153,24 @@ the whole pipeline is testable offline; real adapters are M2.
   Counters land in `runs/summary_*.json` under `"semantics"`.
 * Artifacts: `runs/semantic/<room>_latest.json` and `_events.jsonl` (written,
   not auto-loaded yet).
+* **Frame space**: the worker and the HUD consume `Perception.frame_h` — the
+  post-undistort, full-res frame the homography, polygon and probe are defined
+  in. With `camera.intrinsics` configured the raw capture is *not* that space
+  (measured 46–88 px corner offset), so passing it would be a real
+  misprojection, not a cosmetic one.
+* **Smoke tool**: `tools/smoke_semantics.py` runs one pass against a chosen
+  adapter and prints detections + floor coordinates, in isolation from the
+  runner. It works offline with `--kind fake`; `local`/`remote` report the
+  M2 blocker (owner decision D1) until a real adapter lands.
+
+### M2 status
+
+M2 (per `docs/reviews/m1-semantics/m2-design.md`) is the real vision adapter +
+manual trigger. Landed so far: the frame-space contract above, the calibrated
+floor-click fix it required, and the smoke tool. Still open before the adapter:
+**D1** (which model/placement becomes the default), **D5** (routing/driving in
+or after M2), plus **D3** (audit cadence) and **D4** (probe staging) — see
+`docs/planning/README.md`.
 
 Perception itself: AprilTag pose straight from the floor homography (no
 intrinsics needed for the planar case), floor-color model (optionally with an

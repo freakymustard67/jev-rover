@@ -55,6 +55,13 @@ class Renderer:
     def draw(self, frame: np.ndarray, scene: Scene, judg: dict, cmd: Cmd,
              path: list[tuple[float, float]] | None = None,
              truth_pose=None, target_truth=None) -> np.ndarray:
+        """Render the HUD.
+
+        Precondition: ``frame`` is ``Perception.frame_h`` (homography space,
+        post-undistort) - the overlay warps the belief grid with the same
+        homography, so a raw capture would misalign every overlay whenever
+        camera intrinsics are configured.
+        """
         view = frame.copy()
         H = _homography(self.cfg)
         Hin = np.linalg.inv(H)

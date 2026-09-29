@@ -673,6 +673,11 @@ class Perception:
         self.fps = 0.0
         self._t_prev: float | None = None
         self.nogo = np.asarray(cfg.nogo, float) if cfg.nogo else np.zeros((0, 3))
+        # Last frame in HOMOGRAPHY SPACE (post-undistort, full configured
+        # resolution). Semantics worker and renderer must consume this, never the
+        # raw capture: the homography, floor polygon and probe are all defined
+        # in this space.
+        self.frame_h: np.ndarray | None = None
 
         # Everything outside the floor polygon is wall: occupied, not unknown.
         # Without this, cells beyond the declared floor stay "unseen" forever
@@ -704,7 +709,11 @@ class Perception:
         return bool(np.any(d < self.nogo[:, 2]))
 
     def semantic_context(self, t: float) -> SemanticContext:
-        """Snapshot for the semantics worker; safe to hand to another thread."""
+        """Snapshot for the semantics worker; safe to hand to another thread.
+
+        The polygon and floor colour are in full-res homography space, so the
+        frame offered with this context must be ``Perception.frame_h``.
+        """
         lo, seen = self.grid.snapshot()
         poly = np.asarray(self.cfg.floor.polygon_px, np.float32).reshape(-1, 2).copy()
         lab = None if self.floor.color_lab is None else np.array(self.floor.color_lab, float)
@@ -728,6 +737,13 @@ class Perception:
     # -- main ---------------------------------------------------------------
     def process(self, frame: np.ndarray, t: float, cmd_v: float = 0.0,
                 cmd_w_deg_s: float = 0.0, frame_age_s: float = 0.0) -> Scene:
+        """Contract: `frame` is a raw capture at the configured camera resolution.
+
+        On return, ``self.frame_h`` is that frame in HOMOGRAPHY SPACE (post-
+        undistort, full-res) - the space the homography, floor polygon and probe
+        live in. Every consumer after this call (semantics worker, renderer)
+        must use ``self.frame_h``, never the raw capture.
+        """
         self.frame_id += 1
         if self._t_prev is not None and t > self._t_prev:
             inst = 1.0 / (t - self._t_prev)
@@ -736,6 +752,7 @@ class Perception:
 
         if self.intrinsics is not None:
             frame = cv2.undistort(frame, self.intrinsics[0], self.intrinsics[1])
+        self.frame_h = frame
 
         # 1. pose from the rover tag
         corners = self.tag.detect(frame)
