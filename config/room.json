@@ -14,6 +14,7 @@
   "grid": {"cell_m": 0.05, "inflation_m": 0.24, "max_range_m": 5.5, "stale_s": 3.0},
   "rover": {
     "footprint_radius_m": 0.18,
+    "pose_source": "blob",
     "tag_id": 0,
     "tag_size_m": 0.15,
     "tag_yaw_offset_deg": 0.0,

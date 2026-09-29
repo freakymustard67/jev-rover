@@ -44,13 +44,15 @@ class Truth:
 
 
 class SyntheticRoom:
-    def __init__(self, cfg: RoomConfig, seed: int = 0, noise: float = 2.5):
+    def __init__(self, cfg: RoomConfig, seed: int = 0, noise: float = 2.5,
+                 draw_rover: bool = True):
         self.cfg = cfg
         self.px = float(cfg.synthetic.px_per_m)
         self.w = int(round(cfg.width_m * self.px))
         self.h = int(round(cfg.height_m * self.px))
         self.rng = np.random.default_rng(seed)
         self.noise = noise
+        self.draw_rover = bool(draw_rover)
         self.t = 0.0
         self.rover = Pose(x=cfg.width_m * 0.5, y=cfg.height_m * 0.5, yaw_deg=0.0)
         self.target: Pose | None = None
@@ -115,10 +117,11 @@ class SyntheticRoom:
             cv2.circle(frame, c, int(0.09 * self.px), (40, 200, 40), thickness=-1)
 
         # rover body, then the rotated AprilTag on top
-        cx, cy = self.world_to_px(self.rover.x, self.rover.y)
-        cv2.circle(frame, (int(round(cx)), int(round(cy))),
-                   int(self.cfg.rover.footprint_radius_m * 0.85 * self.px), ROVER_BGR, -1)
-        frame = self._paste_tag(frame, cx, cy, self.rover.yaw_deg)
+        if self.draw_rover:
+            cx, cy = self.world_to_px(self.rover.x, self.rover.y)
+            cv2.circle(frame, (int(round(cx)), int(round(cy))),
+                       int(self.cfg.rover.footprint_radius_m * 0.85 * self.px), ROVER_BGR, -1)
+            frame = self._paste_tag(frame, cx, cy, self.rover.yaw_deg)
 
         if self.noise > 0:
             frame = self._add_noise(frame)

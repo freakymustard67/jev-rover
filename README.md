@@ -168,6 +168,36 @@ the whole pipeline is testable offline; real adapters are M2.
   `LocalVision`). Switching local↔remote is config-only; selections are
   `--semantics local|remote|fake|off`.
 
+### Camera-only calibration + pose (test-grade)
+
+No tags, no tape measure: `calibrate.py depth` runs a metric depth model
+(Depth-Anything-V2-Metric-Indoor-Small), medians 5 frames, fits the floor plane
+with RANSAC on the lower ~2/3, and writes the plane + the pixel→floor mapping
+(a homography — the same interface as the tag path), the floor polygon, the room
+rectangle and the quality metrics into the config, plus an annotated overlay for
+eyeballing:
+
+```bash
+.venv/bin/python calibrate.py bg    --config config/room.json   # empty-room reference (rover absent)
+.venv/bin/python calibrate.py depth --config config/room.json   # writes homography + polygon + depth quality
+.venv/bin/python calibrate.py check --config config/room.json   # belief map must line up
+```
+
+`rover.pose_source: "blob"` then gives the rover pose from static-scene
+background subtraction (the empty-room reference when present, otherwise MOG2 —
+with MOG2 the rover must move during/after warm-up or it is learned as
+background). Position comes from the blob's contact point through the mapping;
+heading comes from the motion direction and is **held with
+`quality.heading_uncertain = true` while stationary**, so Jev sees the
+uncertainty by design.
+
+**Limits (documented, deliberate):** the Small metric model has ~5–15% indoor
+scale error, depth wobbles frame-to-frame, the focal comes from the configured
+`camera.hfov_deg` (no intrinsics), and the room frame is camera-derived. This is
+bootstrap/test-grade, not survey-grade. The M4 sweep-ruler replaces the mapping
+without interface changes — everything downstream consumes a `Homography`, a
+floor polygon and a room rectangle either way.
+
 ### M2 status
 
 Phase 1 (owner decision D5): adapters + find-side live testing. Landed: the

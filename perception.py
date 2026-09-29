@@ -601,9 +601,11 @@ class TargetTracker:
 # --------------------------------------------------------------------------- estimator
 
 class RoverEstimator:
-    """Tag fixes when visible; short-horizon dead reckoning when not."""
+    """Fixes when visible; short-horizon dead reckoning when not. The source
+    label ("tag" or "blob") is what the scene reports as ``pose_source``."""
 
-    def __init__(self, footprint_radius_m: float):
+    def __init__(self, footprint_radius_m: float, *, source_label: str = "tag",
+                 alpha: float = 0.55):
         self.pose: Pose | None = None
         self.vel = np.zeros(2)
         self.yaw_rate = 0.0
@@ -611,6 +613,8 @@ class RoverEstimator:
         self.last_t = 0.0
         self.hist: deque = deque(maxlen=64)
         self.footprint_radius_m = footprint_radius_m
+        self.source_label = source_label
+        self.alpha = float(alpha)
 
     def update(self, fix: TagFix | None, t: float, cmd_v: float, cmd_w_deg_s: float) -> None:
         dt = t - self.last_t
@@ -618,7 +622,7 @@ class RoverEstimator:
             if self.pose is None:
                 self.pose = Pose(round(fix.x, 3), round(fix.y, 3), round(fix.yaw_deg, 1))
             else:
-                a = 0.55
+                a = self.alpha
                 self.pose.x += a * (fix.x - self.pose.x)
                 self.pose.y += a * (fix.y - self.pose.y)
                 self.pose.yaw_deg = wrap_deg(self.pose.yaw_deg + a * wrap_deg(fix.yaw_deg - self.pose.yaw_deg))
@@ -640,7 +644,8 @@ class RoverEstimator:
         if self.pose is None:
             return None, "lost", t - self.last_fix_t
         age = t - self.last_fix_t
-        source = "tag" if age <= 0.35 else ("dead_reckon" if age <= 5.0 else "lost")
+        source = (self.source_label if age <= 0.35
+                  else ("dead_reckon" if age <= 5.0 else "lost"))
         return self.pose, source, age
 
     def twist(self, pose: Pose | None) -> Twist:
@@ -649,6 +654,127 @@ class RoverEstimator:
         yaw = math.radians(pose.yaw_deg)
         v = float(self.vel[0] * math.cos(yaw) + self.vel[1] * math.sin(yaw))
         return Twist(v_mps=round(v, 2), w_deg_s=round(self.yaw_rate, 1))
+
+
+@dataclass
+class BlobFix:
+    x: float
+    y: float
+    heading_deg: float | None
+    heading_uncertain: bool
+    speed_mps: float
+    area_px: int
+    center_px: tuple[float, float]
+
+
+class BlobPoseEstimator:
+    """Camera-only rover pose: static-scene background subtraction -> blob.
+
+    Background: ``floor.background`` (an empty-room reference) when configured -
+    the rover must be absent when that image was taken - otherwise an MOG2 model
+    learns the scene online; with MOG2 the rover must MOVE during/after warm-up
+    or it is learned as background (documented limitation, test-grade).
+
+    Position: the blob's bottom-centre pixel through the floor homography, then a
+    light EMA (frame-to-frame depth wobble is real). Heading: the direction of
+    motion over a ~0.6 s window; while the rover is nearly stationary the last
+    heading is HELD and flagged ``heading_uncertain`` - Jev sees that flag and
+    must not trust yaw-dependent decisions.
+    """
+
+    def __init__(self, homography: Homography, *, background_bgr: np.ndarray | None = None,
+                 diff_thr: int = 25, min_area_px: int = 120, max_area_frac: float = 0.35,
+                 warmup_frames: int = 40, heading_window_s: float = 0.6,
+                 move_thresh_mps: float = 0.04, alpha: float = 0.4,
+                 open_px: int = 3, close_px: int = 7):
+        self.H = homography
+        self.bg_gray = (cv2.cvtColor(background_bgr, cv2.COLOR_BGR2GRAY)
+                        if background_bgr is not None else None)
+        self.mog = (None if self.bg_gray is not None else
+                    cv2.createBackgroundSubtractorMOG2(
+                        history=max(50, warmup_frames * 4), varThreshold=diff_thr,
+                        detectShadows=False))
+        self.diff_thr = int(diff_thr)
+        self.min_area_px = int(min_area_px)
+        self.max_area_frac = float(max_area_frac)
+        self.warmup_frames = int(warmup_frames)
+        self.heading_window_s = float(heading_window_s)
+        self.move_thresh_mps = float(move_thresh_mps)
+        self.alpha = float(alpha)
+        self.open_k = np.ones((max(1, int(open_px)),) * 2, np.uint8)
+        self.close_k = np.ones((max(1, int(close_px)),) * 2, np.uint8)
+        self.frames = 0
+        self.hist: deque = deque()
+        self.pos: tuple[float, float] | None = None
+        self.last_heading: float | None = None
+
+    @property
+    def warm(self) -> bool:
+        return self.frames >= self.warmup_frames
+
+    def _foreground(self, frame: np.ndarray) -> np.ndarray | None:
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        if self.bg_gray is not None:
+            if self.bg_gray.shape != gray.shape:
+                return None
+            diff = cv2.absdiff(gray, self.bg_gray)
+            _, fg = cv2.threshold(diff, self.diff_thr, 255, cv2.THRESH_BINARY)
+            return fg
+        fg = self.mog.apply(gray)          # auto learning rate
+        return None if not self.warm else fg
+
+    def update(self, frame: np.ndarray, t: float) -> BlobFix | None:
+        self.frames += 1
+        fg = self._foreground(frame)
+        if fg is None:
+            return None
+        fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN, self.open_k)
+        fg = cv2.morphologyEx(fg, cv2.MORPH_CLOSE, self.close_k)
+        contours, _ = cv2.findContours(fg, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if not contours:
+            return None
+        big = max(contours, key=cv2.contourArea)
+        area = float(cv2.contourArea(big))
+        h, w = frame.shape[:2]
+        if area < self.min_area_px or area > self.max_area_frac * h * w:
+            return None
+        x, y, bw, bh = cv2.boundingRect(big)
+        cx_px, cy_px = x + bw / 2.0, float(y + bh)          # contact point
+        world = self.H.img_to_world(np.array([[cx_px, cy_px]]))[0]
+        wx, wy = float(world[0]), float(world[1])
+        if not (math.isfinite(wx) and math.isfinite(wy)):
+            return None
+        self.pos = ((wx, wy) if self.pos is None else
+                    (self.pos[0] + self.alpha * (wx - self.pos[0]),
+                     self.pos[1] + self.alpha * (wy - self.pos[1])))
+        self.hist.append((t, wx, wy))
+        while self.hist and t - self.hist[0][0] > self.heading_window_s + 0.2:
+            self.hist.popleft()
+
+        speed, heading = self._motion(t)
+        if heading is not None:
+            self.last_heading = heading
+        uncertain = speed is None or speed < self.move_thresh_mps
+        return BlobFix(x=self.pos[0], y=self.pos[1], heading_deg=self.last_heading,
+                       heading_uncertain=uncertain, speed_mps=float(speed or 0.0),
+                       area_px=int(area), center_px=(cx_px, cy_px))
+
+    def _motion(self, t: float) -> tuple[float | None, float | None]:
+        if len(self.hist) < 2 or self.pos is None:
+            return None, None
+        ref = self.hist[0]
+        for sample in self.hist:                 # oldest sample within the window
+            if t - sample[0] <= self.heading_window_s:
+                ref = sample
+                break
+        dt = t - ref[0]
+        if dt < 0.15:
+            return None, None
+        dx, dy = self.pos[0] - ref[1], self.pos[1] - ref[2]
+        dist = math.hypot(dx, dy)
+        speed = dist / dt
+        heading = wrap_deg(math.degrees(math.atan2(dy, dx))) if dist >= 0.02 else None
+        return speed, heading
 
 
 # --------------------------------------------------------------------------- perception
@@ -666,7 +792,15 @@ class Perception:
         self.grid = OccupancyGrid(cfg.width_m, cfg.height_m, cfg.grid.cell_m)
         self.blobs = BlobTracker(cfg.width_m, cfg.height_m)
         self.target = TargetTracker(cfg.target)
-        self.est = RoverEstimator(cfg.rover.footprint_radius_m)
+        self.pose_mode = cfg.rover.pose_source
+        blob_bg = None
+        if self.pose_mode == "blob" and cfg.floor.background:
+            blob_bg = cv2.imread(cfg.floor.background, cv2.IMREAD_COLOR)
+        self.blob = (BlobPoseEstimator(self.homography, background_bgr=blob_bg)
+                     if self.pose_mode == "blob" else None)
+        self.est = RoverEstimator(cfg.rover.footprint_radius_m,
+                                  source_label=self.pose_mode,
+                                  alpha=(0.35 if self.pose_mode == "blob" else 0.55))
         self.angles = np.arange(-90.0, 90.01, 3.0)
         self.intrinsics = load_intrinsics(cfg.camera.intrinsics) if cfg.camera.intrinsics else None
         self.frame_id = 0
@@ -754,9 +888,20 @@ class Perception:
             frame = cv2.undistort(frame, self.intrinsics[0], self.intrinsics[1])
         self.frame_h = frame
 
-        # 1. pose from the rover tag
-        corners = self.tag.detect(frame)
-        fix = self.tag.pose_from_corners(corners, self.homography) if corners is not None else None
+        # 1. pose from the rover tag, or the camera-only blob estimator
+        blob_fix: BlobFix | None = None
+        fix = None
+        if self.blob is not None:
+            blob_fix = self.blob.update(frame, t)
+            if blob_fix is not None:
+                yaw = blob_fix.heading_deg
+                if yaw is None:                     # stationary: hold, do not blend
+                    yaw = self.est.pose.yaw_deg if self.est.pose is not None else 0.0
+                fix = TagFix(blob_fix.x, blob_fix.y, yaw, blob_fix.center_px,
+                             float(blob_fix.area_px), np.zeros((4, 2), np.float64))
+        else:
+            corners = self.tag.detect(frame)
+            fix = self.tag.pose_from_corners(corners, self.homography) if corners is not None else None
         self.est.update(fix, t, cmd_v, cmd_w_deg_s)
         pose, pose_source, pose_age = self.est.state(t)
         twist = self.est.twist(pose)
@@ -818,8 +963,12 @@ class Perception:
             quality=PerceptionQuality(
                 fps=round(self.fps, 1), frame_age_s=round(frame_age_s, 3),
                 pose_source=pose_source, pose_age_s=round(pose_age, 2),
-                tag_visible=fix is not None, occlusion_risk=round(risk, 2),
-                unknowns_near_rover=near_unknown),
+                tag_visible=fix is not None and self.blob is None,
+                occlusion_risk=round(risk, 2),
+                unknowns_near_rover=near_unknown,
+                heading_uncertain=bool(blob_fix.heading_uncertain) if blob_fix else False,
+                blob_area_px=None if blob_fix is None else blob_fix.area_px,
+                pose_speed_mps=None if blob_fix is None else round(blob_fix.speed_mps, 3)),
             tracks=tracks,
             nogo_hit=self._nogo_hit(pose),
             target=target_obs,

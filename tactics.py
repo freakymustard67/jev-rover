@@ -161,8 +161,10 @@ QUESTIONS = {
         instructions={
             "question": "Are the observations too poor to justify a full-speed decision?",
             "inspect": "`observed.quality`",
-            "focus": "Dead-reckoned pose, a stale tag, or a high occlusion_risk near the "
-                     "rover all argue that the picture cannot be trusted at speed.",
+            "focus": "A dead-reckoned or lost pose, `heading_uncertain` set (a "
+                     "camera-only pose that is stationary and cannot measure its "
+                     "heading), or a high occlusion_risk near the rover all argue that "
+                     "the picture cannot be trusted at speed.",
         },
         criteria={
             "true": "Slow down or creep until the observation improves.",

@@ -1,9 +1,10 @@
-# Optional dependencies for the real local vision adapter
+# Optional dependencies for the real vision adapters and the depth calibration
 # (semantics.model.kind = "local"; owner decision D1: MM-GDINO-T).
 #
 # CPU-only install on this host:
-#   uv pip install --python .venv/bin/python torch --index-url https://download.pytorch.org/whl/cpu
+#   uv pip install --python .venv/bin/python torch torchvision --index-url https://download.pytorch.org/whl/cpu
 #   uv pip install --python .venv/bin/python -r requirements-vision.txt
 torch>=2.3
+torchvision>=0.18            # DepthAnything's image processor requires it
 transformers>=4.55
 pillow

@@ -247,11 +247,15 @@ class Hardware:
 class PerceptionQuality:
     fps: float = 0.0
     frame_age_s: float = 0.0
-    pose_source: str = "tag"        # tag | dead_reckon | lost
+    pose_source: str = "tag"        # tag | blob | dead_reckon | lost
     pose_age_s: float = 0.0
     tag_visible: bool = False
     occlusion_risk: float = 0.0     # fraction of the 1.5 m ring around the rover never seen
     unknowns_near_rover: int = 0
+    # --- camera-only ("blob") pose provenance, test-grade by design ---
+    heading_uncertain: bool = False  # blob pose: heading held, not measured (stationary)
+    blob_area_px: int | None = None
+    pose_speed_mps: float | None = None
 
 
 @dataclass

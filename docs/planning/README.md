@@ -59,16 +59,34 @@ JEV_ROVER_REALVISION=1 .venv/bin/python -m pytest tests/test_vision_local_real.p
     --kind local --labels "mat,box" --shortest-edge 400 --longest-edge 666
 ```
 
-### Live find-side acceptance status (2026-09-29)
+### Live acceptance status (camera-only path, 2026-09-29)
 
-`config/room.json` is created from the example and points at `/dev/video10` with
-the MM-GDINO-T CPU profile and `max_age_s: 120`. **Blocked on two things only
-the owner can provide:** the tablet camera stream (`/dev/video10` currently has
-no producer) and the interactive `calibrate.py floor` click pass on a live feed.
-Once both are up: `calibrate.py check` must show the belief map aligned, then
-`run.py --config config/room.json --source camera --mission patrol --seconds 90
---no-jev --semantics local --find "<object>"` records `semantics.median_ms` in
-`runs/summary_*.json`. Routing/driving stays phase 2 (D5).
+`config/room.json` points at `/dev/video10`, uses the MM-GDINO-T CPU profile
+(`max_age_s: 120`) and `rover.pose_source: "blob"`. Calibration is now
+camera-only and non-interactive: `calibrate.py depth` writes the floor plane +
+pixel→floor homography + floor polygon (with quality metrics and an overlay),
+and `calibrate.py bg` captures the empty-room reference the blob pose subtracts.
+**Blocked only on the tablet camera stream** (`/dev/video10` has no producer).
+Once it is up:
+
+```bash
+.venv/bin/python calibrate.py bg    --config config/room.json   # rover absent from the frame
+.venv/bin/python calibrate.py depth --config config/room.json   # ~30 s: 5 frames x ~6 s CPU
+.venv/bin/python calibrate.py check --config config/room.json   # belief map must line up
+.venv/bin/python run.py --config config/room.json --source camera \
+    --mission patrol --seconds 60 --semantics local --find "<object>"
+```
+
+The run records `semantics.median_ms` and the Jev judgment stats in
+`runs/summary_*.json`; one HUD frame is saved from the `--video` mp4. Depth-model
+measurement on this host: load 1.7 s, **5.8 s per frame** (5-frame median ≈ 30 s
+per calibration); MM-GDINO-T pass ~19 s at the 400/666 profile.
+
+**Named limits (test-grade, by design):** Depth-Anything-V2-Metric-Indoor-Small
+has ~5–15% indoor scale error and frame-to-frame wobble; the focal comes from
+`camera.hfov_deg`, not intrinsics; the room frame is camera-derived. The M4
+sweep-ruler replaces the mapping without interface changes. Routing/driving to a
+resolved destination stays phase 2 (D5).
 
 ## Design invariants (do not break)
 
