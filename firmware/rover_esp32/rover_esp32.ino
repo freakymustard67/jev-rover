@@ -296,10 +296,21 @@ constexpr uint16_t RVR_SCAN_DATAGRAM_CAP = 512; // policy cap for result datagra
 constexpr uint8_t  RVR_SCAN_CHUNK_HARD = 64;    // spec hard max: samples per datagram
 
 // Compile-time optional sample columns (protocol v1 ver_flags bits 2..4).
+// These are #defines on purpose: they are consumed by #if sections in the
+// sample staging and sensor code, which a `constexpr` cannot reach.
 // Default: signal + ambient (8 B/sample). t_us is compile-time off.
-constexpr uint8_t RVR_SCAN_OPT_SIGNAL  = 1;
-constexpr uint8_t RVR_SCAN_OPT_AMBIENT = 1;
-constexpr uint8_t RVR_SCAN_OPT_T_US    = 0;
+#define RVR_SCAN_OPT_SIGNAL  1
+#define RVR_SCAN_OPT_AMBIENT 1
+#define RVR_SCAN_OPT_T_US    0
+
+// Protocol constants (v1).
+constexpr uint8_t RVR_SCAN_MSG = 0x53;      // 'S' first byte of a chunk
+constexpr uint8_t RVR_SCAN_VERSION = 1;     // ver_flags bits 0-1
+constexpr uint8_t RVR_SCAN_FLAG_HAS_SIGNAL  = 0x04;
+constexpr uint8_t RVR_SCAN_FLAG_HAS_AMBIENT = 0x08;
+constexpr uint8_t RVR_SCAN_FLAG_HAS_T_US    = 0x10;
+constexpr uint8_t RVR_SCAN_FLAG_PARTIAL     = 0x20;  // sweep aborted
+constexpr uint8_t RVR_SCAN_FLAG_TIMEOUTS    = 0x40;  // any 0xFE in this chunk
 
 // Per-sample size: angle_dd i8 + range_mm u16 + status u8 [+ optionals].
 constexpr uint8_t RVR_SCAN_SAMPLE_BYTES =
@@ -337,10 +348,13 @@ constexpr uint32_t RVR_SERVO_PARK_US = (RVR_SERVO_PULSE_MIN_US + RVR_SERVO_PULSE
 // Minimum time one sample slot may take. The L1X paces itself with the
 // timing budget; the L0X fallback has no readiness poll, so its slots are
 // paced by the budget instead of recording the same measurement repeatedly.
+// RVR_SCAN_HAS_SAMPLE_MIN exists because #if cannot test a constexpr.
 #if RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L0X
-constexpr uint32_t RVR_SCAN_SAMPLE_MIN_MS = RVR_SCAN_BUDGET_MS;
+  #define RVR_SCAN_HAS_SAMPLE_MIN 1
+  constexpr uint32_t RVR_SCAN_SAMPLE_MIN_MS = RVR_SCAN_BUDGET_MS;
 #else
-constexpr uint32_t RVR_SCAN_SAMPLE_MIN_MS = 0u;
+  #define RVR_SCAN_HAS_SAMPLE_MIN 0
+  constexpr uint32_t RVR_SCAN_SAMPLE_MIN_MS = 0u;
 #endif
 
 // --- battery divider ---
@@ -884,7 +898,7 @@ void IRAM_ATTR rvrEncRightIsr() {
 }
 
 // =====================================================================
-// 11. COMMAND PARSING  (all outputs are primitives so that this file
+// 13. COMMAND PARSING  (all outputs are primitives so that this file
 //     survives Arduino's automatic prototype generation)
 // =====================================================================
 
@@ -901,10 +915,15 @@ static bool rvrIsNumber(JsonVariant v) {
 
 // Returns true only for a well-formed, in-range command. A rejected
 // datagram must NOT refresh the watchdog and must NOT become the
-// telemetry destination.
+// telemetry destination. That includes a datagram whose optional "scan"
+// object is present but malformed: it invalidates the WHOLE datagram.
 static bool rvrParseCommand(const char* json, size_t len,
                            float* outT, int32_t* outSeq,
-                           float* outV, float* outW, int32_t* outTtlMs) {
+                           float* outV, float* outW, int32_t* outTtlMs,
+                           bool* outScanPresent, bool* outScanStop,
+                           int32_t* outScanId, int32_t* outScanStartDd,
+                           int32_t* outScanEndDd, int32_t* outScanStepDd,
+                           int32_t* outScanRateHz) {
   JsonDocument doc;
   const DeserializationError err = deserializeJson(doc, json, len);
   if (err) {
@@ -953,16 +972,445 @@ static bool rvrParseCommand(const char* json, size_t len,
     ttlMs = (int32_t)rvrClamp(ttlF, 0.0f, 60000.0f);
   }
 
+  // ---- optional scan object (protocol v1; README "Scan mode") ----
+  // Both actions carry the full object, so every field is validated here
+  // regardless of the action. Any violation makes the datagram invalid.
+  bool scanPresent = false;
+  bool scanStop = false;
+  int32_t scanId = 0;
+  int32_t scanStartDd = 0;
+  int32_t scanEndDd = 0;
+  int32_t scanStepDd = 0;
+  int32_t scanRateHz = 0;
+
+  if (!root["scan"].isNull()) {
+    if (!root["scan"].is<JsonObject>()) return false;
+    JsonObject so = root["scan"].as<JsonObject>();
+
+    // id: integral, 0..65535.
+    if (!rvrIsNumber(so["id"])) return false;
+    const float idF = so["id"].as<float>();
+    if (!isfinite(idF)) return false;
+    const float idR = roundf(idF);
+    if (fabsf(idF - idR) > 0.0f) return false;
+    if (idR < 0.0f || idR > 65535.0f) return false;
+
+    // action: exactly "start" or "stop".
+    if (!so["action"].is<const char*>()) return false;
+    const char* action = so["action"].as<const char*>();
+    if (strcmp(action, "start") != 0 && strcmp(action, "stop") != 0) return false;
+    scanStop = (strcmp(action, "stop") == 0);
+
+    // start_deg/end_deg: finite numbers inside [-90, 90], start < end.
+    if (!rvrIsNumber(so["start_deg"]) || !rvrIsNumber(so["end_deg"])) return false;
+    const float startF = so["start_deg"].as<float>();
+    const float endF = so["end_deg"].as<float>();
+    if (!isfinite(startF) || !isfinite(endF)) return false;
+    if (startF < -90.0f || startF > 90.0f) return false;
+    if (endF < -90.0f || endF > 90.0f) return false;
+    if (!(startF < endF)) return false;
+
+    // step_deg: integral, 1..180.
+    if (!rvrIsNumber(so["step_deg"])) return false;
+    const float stepF = so["step_deg"].as<float>();
+    if (!isfinite(stepF)) return false;
+    const float stepR = roundf(stepF);
+    if (fabsf(stepF - stepR) > 0.0f) return false;
+    if (stepR < 1.0f || stepR > 180.0f) return false;
+
+    // rate_hz: finite, 1..50. Nominal only (see README): the sweep cadence
+    // is sensor/servo limited and is reported per chunk as period_us.
+    if (!rvrIsNumber(so["rate_hz"])) return false;
+    const float rateF = so["rate_hz"].as<float>();
+    if (!isfinite(rateF)) return false;
+    if (rateF < 1.0f || rateF > 50.0f) return false;
+
+    // Degrees are stored as integers: the result payload is int8 degrees,
+    // and the servo is coarser than 0.5 deg anyway.
+    scanStartDd = (int32_t)rvrClamp(roundf(startF), -90.0f, 90.0f);
+    scanEndDd = (int32_t)rvrClamp(roundf(endF), -90.0f, 90.0f);
+    scanStepDd = (int32_t)stepR;
+    scanRateHz = (int32_t)roundf(rateF);
+    scanId = (int32_t)idR;
+    scanPresent = true;
+  }
+
   *outT = t;
   *outSeq = (int32_t)rvrClamp(seqRounded, -2147483647.0f, 2147483647.0f);
   *outV = v;
   *outW = w;
   *outTtlMs = ttlMs;
+  *outScanPresent = scanPresent;
+  *outScanStop = scanStop;
+  *outScanId = scanId;
+  *outScanStartDd = scanStartDd;
+  *outScanEndDd = scanEndDd;
+  *outScanStepDd = scanStepDd;
+  *outScanRateHz = scanRateHz;
   return true;
 }
 
+// Latches an accepted scan request. Pure state: NO I/O, no servo write, no
+// datagram, and no g_cmd / watchdog writes -- the FSM (section 14) does all
+// of that, one bounded step per loop() pass.
+static void rvrScanAcceptCommand(bool stop, uint16_t id, int8_t startDd, int8_t endDd,
+                                 uint16_t stepDd, uint8_t rateHz) {
+  if (stop) {
+    g_scan.startPending = false;   // the action that arrives last wins
+    if (g_scan.phase != RVR_SCAN_IDLE) {
+      g_scan.stopPending = true;
+    }
+    return;
+  }
+
+  // Idempotence: the host repeats the same start until telemetry echoes it
+  // as scan_seq; a repeat must never restart or disturb the running sweep.
+  if (g_scan.haveLastStarted && g_scan.lastStartedId == id) {
+    return;
+  }
+  g_scan.haveLastStarted = true;
+  g_scan.lastStartedId = id;
+
+  g_scan.next.id = id;
+  g_scan.next.startDd = startDd;
+  g_scan.next.endDd = endDd;
+  g_scan.next.stepDd = stepDd;
+  g_scan.next.rateHz = rateHz;
+  g_scan.stopPending = false;
+  g_scan.startPending = true;      // the FSM starts it (or replaces)
+}
+
 // =====================================================================
-// 12. UDP
+// 14. SCAN FSM  (servo ToF sweep; v1, HARDWARE-UNVERIFIED)
+// ---------------------------------------------------------------------
+//  Serviced from loop() once per pass, after rvrPollUdp(). One pass does
+//  at most:
+//    * ONE bounded I2C burst (readiness poll + sample fetch), never a wait;
+//    * ONE servo PWM write (ledcWrite);
+//    * ONE result datagram;
+//  and never more often than every RVR_SCAN_GRID_MS (millis() arithmetic).
+//  The whole sweep is never executed in one call. The watchdog is
+//  untouched: this section never writes g_cmd, g_cmd.lastMs or g_watchdog,
+//  and it never resets the watchdog.
+// =====================================================================
+
+// Writes a u32 little-endian (the binary scan path must not depend on the
+// host's byte order).
+static void rvrPutU32LE(uint8_t* p, uint32_t v) {
+  p[0] = (uint8_t)(v & 0xFFu);
+  p[1] = (uint8_t)((v >> 8) & 0xFFu);
+  p[2] = (uint8_t)((v >> 16) & 0xFFu);
+  p[3] = (uint8_t)((v >> 24) & 0xFFu);
+}
+
+// Telemetry scan_state. ARMED reports as "scanning": the sweep is under way
+// (the servo move and the first slot are simply deferred to the next pass).
+static const char* rvrScanStateName() {
+  if (g_scan.phase == RVR_SCAN_SCANNING || g_scan.phase == RVR_SCAN_ARMED) {
+    return "scanning";
+  }
+  if (g_scan.phase == RVR_SCAN_FLUSHING) {
+    return "flushing";
+  }
+  return "idle";
+}
+
+// Stages one sample into g_scanBuf for the slot being measured, then
+// advances the sweep (servo + slot clock) unless `advance` is false (the
+// 0xFF "aborted" sample stamped at abort time). No I2C here.
+static void rvrScanRecordSample(uint32_t now, uint8_t status, uint16_t rangeMm,
+                                uint16_t signal, uint16_t ambient, bool advance) {
+  const uint32_t t = now - g_scan.tStartMs;   // ms since sweep start
+  if (g_scan.chunkN == 0) g_scan.tChunkFirstMs = t;
+  if (g_scan.idx == 0) g_scan.tFirstMs = t;
+  g_scan.tLastMs = t;
+  g_scan.discardFirst = false;
+
+  // Defensive: chunks are flushed as soon as they are full, so this is
+  // never true. Dropping a sample beats overrunning the buffer.
+  if (g_scan.chunkN >= RVR_SCAN_CHUNK_MAX) return;
+
+  size_t o = 16u + (size_t)g_scan.chunkN * RVR_SCAN_SAMPLE_BYTES;
+  g_scanBuf[o + 0] = (uint8_t)(int8_t)g_scan.angleDd;
+  g_scanBuf[o + 1] = (uint8_t)(rangeMm & 0xFFu);
+  g_scanBuf[o + 2] = (uint8_t)(rangeMm >> 8);
+  g_scanBuf[o + 3] = status;
+  o += 4u;
+#if RVR_SCAN_OPT_SIGNAL
+  g_scanBuf[o++] = (uint8_t)(signal & 0xFFu);
+  g_scanBuf[o++] = (uint8_t)(signal >> 8);
+#else
+  (void)signal;
+#endif
+#if RVR_SCAN_OPT_AMBIENT
+  g_scanBuf[o++] = (uint8_t)(ambient & 0xFFu);
+  g_scanBuf[o++] = (uint8_t)(ambient >> 8);
+#else
+  (void)ambient;
+#endif
+#if RVR_SCAN_OPT_T_US
+  // Optional t_us: ms since sweep start, saturating at 0xFFFF. With the
+  // header's t0_ms/period_us this is only needed if the cadence wobbles.
+  const uint32_t tus = (t > 65535u) ? 65535u : t;
+  g_scanBuf[o++] = (uint8_t)(tus & 0xFFu);
+  g_scanBuf[o++] = (uint8_t)(tus >> 8);
+#endif
+
+  g_scan.chunkN++;
+  if (status == RVR_SCAN_STATUS_TIMEOUT) g_scan.chunkTimeout = true;
+  g_scan.idx++;
+
+  if (advance && g_scan.idx < g_scan.n) {
+    g_scan.angleDd = (int16_t)(g_scan.angleDd + (int16_t)g_scan.stepDd);
+    rvrServoWriteAngle(g_scan.angleDd, g_scan.act.startDd, g_scan.act.endDd);  // ONE write
+    g_scan.tSlotMs = now;   // the next slot starts waiting now
+  }
+}
+
+// Latches g_scan.next as the active sweep. Pure state: the FSM's ARMED
+// branch performs the servo move and opens the first slot.
+static void rvrScanBeginAccepted() {
+  g_scan.act = g_scan.next;
+  g_scan.startPending = false;
+  g_scan.stopPending = false;
+
+  const int32_t span = (int32_t)g_scan.act.endDd - (int32_t)g_scan.act.startDd;
+  int32_t n = (span / (int32_t)g_scan.act.stepDd) + 1;
+  if (n < 1) n = 1;
+  if (n > (int32_t)RVR_SCAN_MAX_SAMPLES) n = (int32_t)RVR_SCAN_MAX_SAMPLES;
+
+  g_scan.n = (uint16_t)n;
+  g_scan.idx = 0;
+  g_scan.angleDd = (int16_t)g_scan.act.startDd;
+  g_scan.chunkIdx = 0;
+  g_scan.chunkCount =
+      (uint8_t)((n + (int32_t)RVR_SCAN_CHUNK_MAX - 1) / (int32_t)RVR_SCAN_CHUNK_MAX);
+  g_scan.chunkN = 0;
+  g_scan.chunkFirstIdx = 0;
+  g_scan.chunkTimeout = false;
+  g_scan.finalFlush = false;
+  g_scan.partialFlush = false;
+  g_scan.discardFirst = true;
+  g_scan.periodUs = 0;
+  g_scan.tStartMs = 0;
+  g_scan.tSlotMs = 0;
+  g_scan.tChunkFirstMs = 0;
+  g_scan.tFirstMs = 0;
+  g_scan.tLastMs = 0;
+  g_scan.lastId = g_scan.act.id;   // telemetry scan_seq: the active sweep
+  g_scan.phase = RVR_SCAN_ARMED;
+}
+
+// Sends the staged chunk (<= one datagram) and advances the chunk
+// bookkeeping. Also the single place that finishes a sweep.
+static void rvrScanFlushChunk(uint32_t now) {
+  g_scan.tOpMs = now;
+
+  const uint8_t n = g_scan.chunkN;
+  const size_t len = 16u + (size_t)n * RVR_SCAN_SAMPLE_BYTES;
+
+  // Achieved cadence estimate (desmear): average spacing of the samples
+  // recorded so far. 0 = unknown (fewer than 2 samples, or same ms).
+  if (g_scan.idx >= 2) {
+    const uint32_t spanMs = g_scan.tLastMs - g_scan.tFirstMs;
+    g_scan.periodUs = (spanMs == 0u)
+                          ? 0u
+                          : (spanMs * 1000u) / (uint32_t)(g_scan.idx - 1u);
+  } else {
+    g_scan.periodUs = 0u;
+  }
+
+  // Header v1 (16 B; see README "Scan mode" for the byte table).
+  g_scanBuf[0] = RVR_SCAN_MSG;
+  g_scanBuf[1] = (uint8_t)(RVR_SCAN_VERSION
+      | (RVR_SCAN_OPT_SIGNAL ? RVR_SCAN_FLAG_HAS_SIGNAL : 0u)
+      | (RVR_SCAN_OPT_AMBIENT ? RVR_SCAN_FLAG_HAS_AMBIENT : 0u)
+      | (RVR_SCAN_OPT_T_US ? RVR_SCAN_FLAG_HAS_T_US : 0u)
+      | (g_scan.partialFlush ? RVR_SCAN_FLAG_PARTIAL : 0u)
+      | (g_scan.chunkTimeout ? RVR_SCAN_FLAG_TIMEOUTS : 0u));
+  g_scanBuf[2] = (uint8_t)(g_scan.act.id & 0xFFu);
+  g_scanBuf[3] = (uint8_t)(g_scan.act.id >> 8);
+  g_scanBuf[4] = g_scan.chunkIdx;
+  g_scanBuf[5] = g_scan.chunkCount;
+  g_scanBuf[6] = g_scan.chunkFirstIdx;
+  g_scanBuf[7] = n;
+  rvrPutU32LE(&g_scanBuf[8], g_scan.tChunkFirstMs);
+  rvrPutU32LE(&g_scanBuf[12], g_scan.periodUs);
+
+  // Never send a truncated datagram (same discipline as telemetry). By
+  // construction len <= RVR_SCAN_DATAGRAM_CAP <= sizeof(g_scanBuf); the
+  // guard is defensive only.
+  if (n > 0u && len <= RVR_SCAN_DATAGRAM_CAP && len <= sizeof(g_scanBuf) &&
+      g_telemTargetValid) {
+    g_udp.beginPacket(g_peerIp, g_peerPort);
+    g_udp.write(g_scanBuf, len);
+    g_udp.endPacket();
+  }
+
+  // Advance the chunk bookkeeping.
+  g_scan.chunkN = 0;
+  g_scan.chunkTimeout = false;
+  g_scan.chunkFirstIdx = (uint8_t)g_scan.idx;
+  g_scan.chunkIdx = (uint8_t)(g_scan.chunkIdx + 1u);
+
+  if (g_scan.partialFlush || g_scan.finalFlush) {
+    // Sweep over (completed or aborted): idle, unless a replacement start
+    // is already waiting.
+    g_scan.finalFlush = false;
+    g_scan.partialFlush = false;
+    if (g_scan.startPending) {
+      rvrScanBeginAccepted();
+    } else {
+      g_scan.phase = RVR_SCAN_IDLE;
+    }
+  } else {
+    g_scan.phase = RVR_SCAN_SCANNING;
+  }
+}
+
+// Aborts the sweep (watchdog trip, action "stop", or a replacing start).
+// No I2C, no servo write; at most one partial datagram, emitted by the
+// FLUSHING phase on a later pass (one datagram per pass).
+static void rvrScanAbort(uint32_t now) {
+  if (g_scan.phase == RVR_SCAN_SCANNING && g_scan.idx < g_scan.n) {
+    // Stamp the in-flight slot as aborted so the partial sweep shows where
+    // it stopped, then flush whatever is staged.
+    rvrScanRecordSample(now, RVR_SCAN_STATUS_ABORTED, 0, 0, 0, false);
+  }
+  g_scan.partialFlush = true;
+  if (g_scan.chunkN > 0u) {
+    g_scan.phase = RVR_SCAN_FLUSHING;
+    return;
+  }
+  g_scan.partialFlush = false;
+  if (g_scan.startPending) {
+    rvrScanBeginAccepted();
+  } else {
+    g_scan.phase = RVR_SCAN_IDLE;
+  }
+}
+
+// One bounded sample step: poll readiness (non-blocking), fetch one sample
+// when ready, or record a timeout when the slot is overdue. Never loops.
+static void rvrScanServiceSample(uint32_t now) {
+  g_scan.tOpMs = now;
+
+#if RVR_SCAN_HAS_SAMPLE_MIN
+  // L0X fallback pacing (absent on the L1X path): never complete slots
+  // faster than the timing budget, or the fallback would record the same
+  // measurement over and over.
+  if ((uint32_t)(now - g_scan.tSlotMs) < RVR_SCAN_SAMPLE_MIN_MS) return;
+#endif
+
+  if (rvrScanSensorReady()) {
+    uint16_t mm = 0, signal = 0, ambient = 0;
+    uint8_t status = 0;
+    if (rvrScanSensorFetch(&mm, &status, &signal, &ambient)) {   // ONE burst
+      if (g_scan.discardFirst) {
+        // The first ready measurement may predate the servo's move to the
+        // start angle; drop it and restart the slot clock so the first
+        // *recorded* sample is a fresh one.
+        g_scan.discardFirst = false;
+        g_scan.tSlotMs = now;
+        return;
+      }
+      rvrScanRecordSample(now, status, mm, signal, ambient, true);
+    } else if ((uint32_t)(now - g_scan.tSlotMs) > RVR_SCAN_TIMEOUT_MS) {
+      // The read failed and the slot is overdue: record the timeout.
+      rvrScanRecordSample(now, RVR_SCAN_STATUS_TIMEOUT, 0, 0, 0, true);
+    } else {
+      return;   // read failed but there is budget left; try again next grid
+    }
+  } else if ((uint32_t)(now - g_scan.tSlotMs) > RVR_SCAN_TIMEOUT_MS) {
+    // Not ready within 1.5x the timing budget: record status 0xFE and
+    // advance. A wedged sensor degrades the sweep, never the loop.
+    rvrScanRecordSample(now, RVR_SCAN_STATUS_TIMEOUT, 0, 0, 0, true);
+  } else {
+    return;   // still waiting for this slot
+  }
+
+  // Time to flush? Chunk full, or the sweep reached its last sample.
+  if (g_scan.idx >= g_scan.n) {
+    g_scan.finalFlush = true;
+    g_scan.phase = RVR_SCAN_FLUSHING;
+  } else if (g_scan.chunkN >= RVR_SCAN_CHUNK_MAX) {
+    g_scan.phase = RVR_SCAN_FLUSHING;
+  }
+}
+
+// The FSM itself. Called once per loop() pass; every path is bounded.
+static void rvrScanStep(uint32_t now) {
+  // ---- rule 7: abort when the watchdog is down ----
+  // A FLUSHING partial chunk is allowed to drain (one datagram per pass).
+  if (g_watchdog && g_scan.phase != RVR_SCAN_IDLE && g_scan.phase != RVR_SCAN_FLUSHING) {
+    rvrScanAbort(now);
+    return;
+  }
+
+  // ---- action "stop" (consumed even when it arrives too late) ----
+  if (g_scan.stopPending) {
+    g_scan.stopPending = false;
+    if (g_scan.phase == RVR_SCAN_SCANNING || g_scan.phase == RVR_SCAN_ARMED) {
+      rvrScanAbort(now);
+      return;
+    }
+    if (g_scan.phase == RVR_SCAN_FLUSHING && !g_scan.finalFlush) {
+      // A mid-sweep chunk is already going out (one datagram per pass), so
+      // mark it aborted; the flush then ends the sweep instead of resuming.
+      g_scan.partialFlush = true;
+    }
+  }
+
+  // ---- a new start replaces a running sweep ----
+  if (g_scan.startPending) {
+    if (g_scan.phase == RVR_SCAN_SCANNING || g_scan.phase == RVR_SCAN_ARMED) {
+      rvrScanAbort(now);   // finishes the old sweep, then starts the new one
+      return;
+    }
+    if (g_scan.phase == RVR_SCAN_FLUSHING && !g_scan.finalFlush) {
+      g_scan.partialFlush = true;   // the old sweep is being cut short
+    }
+  }
+
+  // ---- rule 4: at most one scan operation every RVR_SCAN_GRID_MS ----
+  if ((uint32_t)(now - g_scan.tOpMs) < RVR_SCAN_GRID_MS) {
+    return;
+  }
+
+  switch (g_scan.phase) {
+    case RVR_SCAN_ARMED:
+      // Start: move the servo to the first angle (ONE write) and open the
+      // first slot. No I2C here: the sensor is already free-running.
+      g_scan.tOpMs = now;
+      g_scan.tStartMs = now;
+      g_scan.tSlotMs = now;
+      rvrServoWriteAngle(g_scan.act.startDd, g_scan.act.startDd, g_scan.act.endDd);
+      Serial.printf("[scan] sweep id=%u %d..%d deg step=%u rate=%u Hz (nominal), budget=%u ms\n",
+                    (unsigned)g_scan.act.id, (int)g_scan.act.startDd,
+                    (int)g_scan.act.endDd, (unsigned)g_scan.act.stepDd,
+                    (unsigned)g_scan.act.rateHz, (unsigned)RVR_SCAN_BUDGET_MS);
+      g_scan.phase = RVR_SCAN_SCANNING;
+      break;
+
+    case RVR_SCAN_SCANNING:
+      rvrScanServiceSample(now);
+      break;
+
+    case RVR_SCAN_FLUSHING:
+      rvrScanFlushChunk(now);
+      break;
+
+    case RVR_SCAN_IDLE:
+    default:
+      if (g_scan.startPending) {
+        rvrScanBeginAccepted();
+      }
+      break;
+  }
+}
+
+// =====================================================================
+// 15. UDP
 // =====================================================================
 
 static void rvrPollUdp(uint32_t now) {
@@ -983,7 +1431,16 @@ static void rvrPollUdp(uint32_t now) {
     float w = 0.0f;
     int32_t seq = 0;
     int32_t ttlMs = 0;
-    if (!rvrParseCommand(g_rxBuf, (size_t)len, &t, &seq, &v, &w, &ttlMs)) {
+    bool scanPresent = false;
+    bool scanStop = false;
+    int32_t scanId = 0;
+    int32_t scanStartDd = 0;
+    int32_t scanEndDd = 0;
+    int32_t scanStepDd = 0;
+    int32_t scanRateHz = 0;
+    if (!rvrParseCommand(g_rxBuf, (size_t)len, &t, &seq, &v, &w, &ttlMs,
+                         &scanPresent, &scanStop, &scanId, &scanStartDd,
+                         &scanEndDd, &scanStepDd, &scanRateHz)) {
       if ((uint32_t)(now - g_lastRejectLogMs) > 1000u) {
         g_lastRejectLogMs = now;
         Serial.printf("[cmd] rejected datagram (%d bytes)\n", len);
@@ -1011,11 +1468,20 @@ static void rvrPollUdp(uint32_t now) {
       g_watchdog = false;
       g_loggedWatchdog = false;
     }
+
+    // Scan request (v1). Latch only: no I/O, no watchdog write (rule 6);
+    // the FSM in section 14 does the bounded work. A malformed scan object
+    // never reaches this point -- rvrParseCommand() rejects the datagram.
+    if (scanPresent) {
+      rvrScanAcceptCommand(scanStop, (uint16_t)scanId, (int8_t)scanStartDd,
+                           (int8_t)scanEndDd, (uint16_t)scanStepDd,
+                           (uint8_t)scanRateHz);
+    }
   }
 }
 
 // =====================================================================
-// 13. CONTROL TICK  (watchdog -> reflex -> mixing -> motors)
+// 16. CONTROL TICK  (watchdog -> reflex -> mixing -> motors)
 // =====================================================================
 
 static void rvrControlTick(uint32_t now) {
@@ -1129,7 +1595,7 @@ static void rvrControlTick(uint32_t now) {
 }
 
 // =====================================================================
-// 14. TELEMETRY
+// 17. TELEMETRY
 // =====================================================================
 
 // Writes a JSON null. Assigning nullptr lands on ArduinoJson's null
@@ -1175,6 +1641,12 @@ static void rvrSendTelemetry(uint32_t now) {
   root["watchdog"] = g_watchdog;
   root["uptime_s"] = (float)((uint32_t)(now - g_bootMs)) / 1000.0f;
 
+  // Scan (v1) status: the id currently active or most recently finished
+  // (0 = none yet), and the phase. These two fields leave ~170 B of
+  // headroom under RVR_TX_BUF (measured, see README).
+  root["scan_seq"] = g_scan.lastId;
+  root["scan_state"] = rvrScanStateName();
+
   char buf[RVR_TX_BUF];
   const size_t n = serializeJson(doc, buf, sizeof(buf));
   if (n == 0 || n >= sizeof(buf)) {
@@ -1189,7 +1661,7 @@ static void rvrSendTelemetry(uint32_t now) {
 }
 
 // =====================================================================
-// 15. SETUP / LOOP
+// 18. SETUP / LOOP
 // =====================================================================
 
 static void rvrInitEncoderPins() {
@@ -1219,8 +1691,10 @@ void setup() {
   // RvrDrive::begin()).
   g_drive.begin();
 
-  // Distance sensors.
-#if RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X
+  // Distance sensors. The I2C bus is also needed when the scan sensor is
+  // the VL53L1X, even if the front distance sensor is an HC-SR04.
+#if (RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X) || \
+    (RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L1X)
   Wire.begin(RVR_I2C_SDA, RVR_I2C_SCL);
   Wire.setClock(400000);
 #endif
@@ -1234,6 +1708,21 @@ void setup() {
   const bool rearOk = g_rearSensor.begin(RVR_HCSR04_REAR_TRIG_PIN, RVR_HCSR04_REAR_ECHO_PIN);
   Serial.printf("[sensor] rear distance sensor %s\n", rearOk ? "ready" : "FAILED");
 #endif
+
+  // Scan sensor + servo (HARDWARE-UNVERIFIED; see README "Scan mode").
+  // The sensor init runs here and only here: it may block internally, and
+  // it is unreachable from the scan FSM (interleave rule 3).
+  const bool scanOk = rvrScanSensorBegin();
+  if (scanOk) {
+    Serial.println("[scan] scan sensor ready");
+  } else {
+    Serial.println("[scan] SCAN SENSOR INIT FAILED - sweeps will record timeouts only");
+  }
+  rvrServoBegin();
+  Serial.printf("[scan] servo ch=%u pin=%u @ %u Hz; grid=%u ms budget=%u ms timeout=%u ms\n",
+                (unsigned)RVR_SERVO_CH, (unsigned)RVR_SERVO_PIN,
+                (unsigned)RVR_SERVO_HZ, (unsigned)RVR_SCAN_GRID_MS,
+                (unsigned)RVR_SCAN_BUDGET_MS, (unsigned)RVR_SCAN_TIMEOUT_MS);
 
   rvrInitEncoderPins();
 
@@ -1280,7 +1769,11 @@ void loop() {
   const uint32_t now = millis();
 
   // Incoming commands first: they are the only input the control loop needs.
+  // (Interleave rule 1: this stays the first statement of every pass.)
   rvrPollUdp(now);
+
+  // Servo ToF sweep: one bounded step per pass, never the whole sweep.
+  rvrScanStep(now);
 
   if ((uint32_t)(now - g_lastTickMs) >= RVR_TICK_MS) {
     g_lastTickMs = now;

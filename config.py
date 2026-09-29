@@ -181,6 +181,13 @@ class SweepSensorConfig:
     kind: str = "tof"
     min_range_m: float = 0.04
     max_range_m: float = 4.0
+    # --- scan control (spec v1 §2.3; mirrors link.encode_scan_command) ---
+    start_deg: float = -90.0
+    end_deg: float = 90.0
+    step_deg: float = 6.0
+    rate_hz: float = 20.0
+    budget_ms: int = 33                # VL53L1X timing budget (20-1000 ms)
+    scan_daemon: bool = False          # reserved for M4 continuous scanning (no consumer yet)
 
 
 @dataclass
@@ -188,6 +195,8 @@ class SweepMatchConfig:
     coarse_step_m: float = 0.2
     fine_step_m: float = 0.05
     yaw_step_deg: float = 5.0
+    min_beams: int = 6                 # fewer valid beams than this -> no match
+    inlier_m: float = 0.15             # residual counted as an inlier
 
 
 @dataclass
@@ -378,8 +387,20 @@ class RoomConfig:
         _check_choice(w.sensor.kind, ("tof",), f"{where}.sweep.sensor.kind")
         if not (0.0 < w.sensor.min_range_m < w.sensor.max_range_m):
             raise ConfigError(f"{where}.sweep.sensor: need 0 < min_range_m < max_range_m")
+        if not (-90.0 <= w.sensor.start_deg < w.sensor.end_deg <= 90.0):
+            raise ConfigError(f"{where}.sweep.sensor: need -90 <= start_deg < end_deg <= 90")
+        if not float(w.sensor.step_deg).is_integer() or not 1 <= w.sensor.step_deg <= 180:
+            raise ConfigError(f"{where}.sweep.sensor.step_deg must be an integer in [1, 180]")
+        if not float(w.sensor.rate_hz).is_integer() or not 1 <= w.sensor.rate_hz <= 50:
+            raise ConfigError(f"{where}.sweep.sensor.rate_hz must be an integer in [1, 50]")
+        if not 20 <= w.sensor.budget_ms <= 1000:
+            raise ConfigError(f"{where}.sweep.sensor.budget_ms must be in [20, 1000]")
         if w.match.coarse_step_m <= 0 or w.match.fine_step_m <= 0 or w.match.yaw_step_deg <= 0:
             raise ConfigError(f"{where}.sweep.match: steps must be > 0")
+        if w.match.min_beams < 1:
+            raise ConfigError(f"{where}.sweep.match.min_beams must be >= 1")
+        if not 0.0 < w.match.inlier_m < 1.0:
+            raise ConfigError(f"{where}.sweep.match.inlier_m must be in (0, 1)")
         _check_choice(self.confirmation.backend, ("none", "sweep"),
                       f"{where}.confirmation.backend")
         if self.confirmation.tolerance_m <= 0:
