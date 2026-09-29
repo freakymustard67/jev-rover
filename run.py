@@ -217,7 +217,14 @@ def main(argv=None) -> int:
         cam = None
     else:
         syn = None
-        cam = Camera(cfg.camera)
+        try:
+            cam = Camera(cfg.camera)
+        except RuntimeError as e:
+            print(f"[fatal] {e}\n"
+                  f"        the camera source must be producing frames: check the "
+                  f"stream/device, or use --source synthetic for a dry run",
+                  file=sys.stderr)
+            return 2
 
     if args.link == "udp":
         if args.arm:

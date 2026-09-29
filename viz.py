@@ -164,7 +164,11 @@ class Renderer:
              jets),
             (f"pose_src={q.pose_source} age={q.pose_age_s:.2f}s  tag={'Y' if q.tag_visible else 'N'} "
              f"fps={q.fps:.0f}", jets),
-            (f"occlusion={q.occlusion_risk:.2f} unknown_near={q.unknowns_near_rover}", jets),
+            (f"occlusion={q.occlusion_risk:.2f} unknown_near={q.unknowns_near_rover} "
+             f"heading_uncertain={'Y' if q.heading_uncertain else 'N'}", jets),
+            (f"blob={'%.0fpx' % q.blob_area_px if q.blob_area_px else '-'} "
+             f"speed={q.pose_speed_mps if q.pose_speed_mps is not None else '-'} m/s",
+             jets) if q.pose_source == "blob" else ("", jets),
             (f"nearest={scene.nearest_m} m @ {scene.nearest_bearing_deg}deg   "
              f"clear_ahead={scene.clear_ahead_m}", jets),
             (f"widest gap {scene.widest_run_deg:.0f}deg @ {scene.widest_run_center_deg} "
@@ -172,6 +176,12 @@ class Renderer:
             ("", jets),
             (f"JEV [{judg.get('source')}] age={judg.get('age_s')} "
              f"conf={judg.get('confidence')}", color),
+            (f"sem: {'off' if scene.semantics is None else ''}"
+             + ("" if scene.semantics is None else
+                f"{scene.semantics.passes}p age={scene.semantics.age_s:.0f}s "
+                f"objs={len(scene.semantics.objects)} "
+                f"dest={scene.semantics.destination.label if scene.semantics.destination else '-'}"),
+             jets),
             (f"risk={judg.get('risk')}  stuck={judg.get('truly_stuck')}  "
              f"blocked={judg.get('path_obstructed')}  unreliable={judg.get('observation_unreliable')}",
              jets),

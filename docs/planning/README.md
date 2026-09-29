@@ -82,6 +82,14 @@ The run records `semantics.median_ms` and the Jev judgment stats in
 measurement on this host: load 1.7 s, **5.8 s per frame** (5-frame median ≈ 30 s
 per calibration); MM-GDINO-T pass ~19 s at the 400/666 profile.
 
+**Synthetic stand-in, recorded 2026-09-29** (the camera command fails fast and
+cleanly while `/dev/video10` has no producer: `cannot open camera source`, with a
+pointer to `--source synthetic`). Same stack, synthetic room, `--semantics local`
+with the CPU profile: warm-up **25.4 s**, pass **median 15.9 s**, 20 Jev calls /
+0 errors / median latency 0.33 s / 72k tokens, patrol **16 goals / 18.95 m /
+7.8% stuck**; HUD frames extracted from `runs/acceptance_local.mp4`
+(`/tmp/opencode/acceptance_{patrol,late}.png`).
+
 **Named limits (test-grade, by design):** Depth-Anything-V2-Metric-Indoor-Small
 has ~5–15% indoor scale error and frame-to-frame wobble; the focal comes from
 `camera.hfov_deg`, not intrinsics; the room frame is camera-derived. The M4
