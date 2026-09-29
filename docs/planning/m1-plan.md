@@ -349,8 +349,15 @@ within 20% of the disabled baseline. State-size bound: 10 objects → `len(json.
 **Acceptance (M1 done)**
 1. `pytest` green: existing 25 unchanged + ~22 new, no network, no live calls.
 2. `--semantics off` (default): behavior byte-identical apart from two `null` keys.
-3. `--semantics fake --semantics-once --find "blue mat"` on `room.synthetic.json` resolves the
+3. `--semantics fake --find "blue mat"` on `room.synthetic.json` resolves the
    fixture and prints the standoff approach point (routing/driving intentionally not wired yet).
+   Runnable form — the originally written command was missing `--mission`/`--no-jev`; corrected
+   in the M1 deep review (`docs/reviews/m1-semantics/REVIEW.md` §3.1):
+
+   ```bash
+   .venv/bin/python run.py --config config/room.synthetic.json --source synthetic \
+       --mission patrol --seconds 20 --no-jev --semantics fake --find "blue mat"
+   ```
 4. Budget/cooldown/error counters visible in `runs/summary_*.json` under `"semantics"`.
 5. Loop-rate invariant test passes with a deliberately slow fake model.
 

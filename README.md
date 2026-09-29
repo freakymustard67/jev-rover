@@ -275,6 +275,15 @@ hardware.
   `testpaths` is `tests/`)
 * `../tools/sim/tof_sim.py` — the sweep simulator (numpy-only)
 
-**Status:** M1 (offline semantic skeleton) shipped —
-`.venv/bin/python run.py --config config/room.synthetic.json --source synthetic --semantics fake --semantics-once --find "blue mat" --seconds 5`.
-Next: M2 (real vision adapter + driving to a resolved destination).
+**Status:** M1 (offline semantic skeleton) shipped; M1.5 (independent-review fix
+package) merged 2026-09-29 — 80 tests. Runnable check:
+
+```bash
+.venv/bin/python run.py --config config/room.synthetic.json --source synthetic \
+    --mission patrol --seconds 20 --no-jev --semantics fake --find "blue mat"
+```
+
+Next: M2 (real vision adapter + manual trigger) per
+`docs/reviews/m1-semantics/m2-design.md`. The vision default (D1) and the
+routing/driving scope (D5) are open owner decisions — see
+`docs/planning/README.md` for the decision record.

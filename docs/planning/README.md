@@ -12,6 +12,9 @@ it does — not just what it does.
 | `m1-plan.md` | The implementation plan for M1 as executed, including the conflicts it found in the proposal (and their resolutions), the owner-approved decisions, and the measured findings folded in. |
 | `sweep-validation.md` | Simulation evidence for marker-less localization: a 180° ToF sweep on a servo, scan matching, and desmear. Written to decide whether to build the hardware. |
 | `prototype/` | Pre-implementation validation scripts (projection, merge/diff, destination ranking) and their tests. These measurements (e.g. anchor bias for flat objects, raw-displacement motion rule) are reflected in `semantics.py`. |
+| `../reviews/m1-semantics/REVIEW.md` | Independent deep review of M1: adjudicated behavioral claims, confirmed defects, the 12-fix package, and owner decisions D1–D5. |
+| `../reviews/m1-semantics/m2-design.md` | M2 design note: frame-space contract, LocalVision/RemoteVision design, corrected acceptance commands, test strategy. |
+| `../reviews/m1-semantics/archive/` | Complete raw research archive (waves 1–2 + six cron passes; evidence, transcripts, unapplied prototype patches). |
 | `../tools/sim/tof_sim.py` | The sweep simulator itself (numpy-only, no repo imports). Reproduce: `.venv/bin/python tools/sim/tof_sim.py`. |
 
 ## Status
@@ -19,9 +22,17 @@ it does — not just what it does.
 | Milestone | Scope | State |
 |---|---|---|
 | **M1** | Offline semantic skeleton: schema, `semantics.py` (FakeVision, projection, merge/diff, destinations), worker with budgets, tests | ✅ shipped (`--semantics fake --find "<label>"`) |
-| **M2** | Real vision adapter (open-vocabulary detector), live-camera testing, driving to a resolved destination | 🔜 next |
+| **M1.5** | Fix package from the independent M1 deep review (PR #1, merged 2026-09-29): distance-ordered merge assignment, frame-resolution guard, probe/dedupe/label hardening, tri-state `--semantics` + wired `--semantics-once`, `--trace` fix | ✅ shipped (80 tests) |
+| **M2** | Real vision adapter + manual trigger, per `../reviews/m1-semantics/m2-design.md` | 🔜 next — adapter blocked on D1; routing/driving scope pending D5 |
 | **M3** | Trigger scheduler (mission start, Jev-uncertainty, audits) + Jev state compaction | planned |
 | **M4** | Sweep hardware: servo + ToF, `sweep.py` matcher (desmear required), object confirmation | planned — sim-validated |
+
+**Open owner decisions (recorded here; not resolved by M1.5):** D1 — vision default
+(MM-GDINO-T vs YOLOE vs remote placement); D3 — audit cadence (the M1.5
+`--semantics-once` = mission-start-only interpretation is live, pending
+confirmation); D4/D5 — probe staging and M2 scope (routing/driving in or after
+M2). See `../reviews/m1-semantics/REVIEW.md` §6 and
+`../reviews/m1-semantics/archive/research-state/BACKLOG.md` (I10–I17).
 
 ## Design invariants (do not break)
 
@@ -35,7 +46,7 @@ it does — not just what it does.
 ## How to verify the current state
 
 ```bash
-.venv/bin/python -m pytest tests/ -q          # 67 tests, no network
+.venv/bin/python -m pytest tests/ -q          # 80 tests, no network
 .venv/bin/python run.py --config config/room.synthetic.json --source synthetic \
-    --semantics fake --semantics-once --find "blue mat" --seconds 5
+    --mission patrol --seconds 20 --no-jev --semantics fake --find "blue mat"
 ```
