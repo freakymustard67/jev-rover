@@ -5,6 +5,10 @@ One wire protocol, three implementations:
   * MockLink   -- a tiny simulated rover so the loop runs with no hardware
   * DryRunLink -- accepts commands, transmits nothing (safe observation mode)
 
+UDPLink speaks JSON both ways; the ESP32 may also send spec-v1 binary scan
+chunks (v6 §2.2, magic 0x53) which are routed to `scan_payload.py` and exposed
+via `last_scan` / `scan_assembler` — they never touch the JSON telemetry path.
+
 Safety stance: the link is not trusted with safety. The ESP32 owns a watchdog
 (stop on command loss) and its own distance reflex. The laptop mirrors the
 reflex so behavior is identical in mock and live runs.
@@ -15,6 +19,14 @@ import json
 import math
 import socket
 
+from scan_payload import (
+    ScanAssembly,
+    ScanAssembler,
+    ScanChunk,
+    ScanPayloadError,
+    decode_scan_chunk,
+    is_scan_chunk,
+)
 from scene import Hardware
 
 DEFAULT_PORT = 4210
@@ -69,7 +81,13 @@ class DryRunLink(RoverLink):
 
 
 class UDPLink(RoverLink):
-    """Laptop -> ESP32 commands, ESP32 -> laptop telemetry, JSON over UDP."""
+    """Laptop -> ESP32 commands, ESP32 -> laptop telemetry, JSON over UDP.
+
+    Also accepts spec-v1 binary scan chunks (magic 0x53): decoded chunks land
+    in `last_scan`, feed `scan_assembler`, and finished scans queue in
+    `scan_results` (drained by `take_scans()`). Scan traffic never updates the
+    Hardware telemetry state.
+    """
 
     def __init__(self, host: str, port: int = DEFAULT_PORT,
                  local_port: int = DEFAULT_LOCAL_PORT, ttl_ms: int = 400):
@@ -83,6 +101,12 @@ class UDPLink(RoverLink):
         self.send_errors = 0
         self.last_rx_t: float | None = None
         self.last_hw = Hardware()
+        # Scan payload (v6 spec v1, scan_payload.py)
+        self.scan_rx = 0
+        self.scan_rx_errors = 0
+        self.last_scan: ScanChunk | None = None
+        self.scan_assembler = ScanAssembler()
+        self.scan_results: list[ScanAssembly] = []
 
     def send(self, cmd: Cmd, t: float) -> None:
         self.seq += 1
@@ -104,9 +128,23 @@ class UDPLink(RoverLink):
                 break
             except OSError:
                 break
+            # Spec-v1 binary scan chunk? Sniff before json.loads (v6 §2.5):
+            # 0x53 is unambiguous because JSON datagrams start with '{' (0x7B).
+            if is_scan_chunk(data):
+                try:
+                    chunk = decode_scan_chunk(data)
+                    finished = self.scan_assembler.add(chunk, t)
+                except ScanPayloadError:
+                    self.scan_rx_errors += 1
+                    continue
+                self.scan_rx += 1
+                self.last_scan = chunk
+                if finished is not None:
+                    self.scan_results.append(finished)
+                continue
             try:
                 pkt = json.loads(data)
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, UnicodeDecodeError):
                 continue
             if not isinstance(pkt, dict) or "seq" not in pkt:
                 continue
@@ -121,16 +159,28 @@ class UDPLink(RoverLink):
                 reflex=bool(pkt.get("reflex", False)),
                 telemetry_age_s=0.0,
             )
+        # §2.3 host policy: a scan with no new chunk for 0.5 s is closed as a
+        # partial (never silently treated as complete).
+        stale = self.scan_assembler.poll(t)
+        if stale is not None:
+            self.scan_results.append(stale)
         if self.last_rx_t is not None:
             self.last_hw.telemetry_age_s = round(t - self.last_rx_t, 2)
         return self.last_hw
+
+    def take_scans(self) -> list[ScanAssembly]:
+        """Finished scans (complete or timed-out partial); cleared on take."""
+        out = self.scan_results
+        self.scan_results = []
+        return out
 
     def close(self) -> None:
         self.sock.close()
 
     def stats(self) -> dict:
         return {"link": "udp", "commands": self.seq, "telemetry_rx": self.telemetry_rx,
-                "send_errors": self.send_errors}
+                "send_errors": self.send_errors,
+                "scan_rx": self.scan_rx, "scan_rx_errors": self.scan_rx_errors}
 
 
 class MockLink(RoverLink):
