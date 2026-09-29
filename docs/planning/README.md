@@ -25,7 +25,7 @@ it does — not just what it does.
 | **M1.5** | Fix package from the independent M1 deep review (PR #1, merged 2026-09-29): distance-ordered merge assignment, frame-resolution guard, probe/dedupe/label hardening, tri-state `--semantics` + wired `--semantics-once`, `--trace` fix | ✅ shipped (80 tests) |
 | **M2** | Phase 1: real vision adapters + find-side live testing (owner decision D5). `LocalVision` (MM-GDINO-T, D1) + `RemoteVision` + `tools/vision_server.py`; frame-space contract landed earlier | 🔄 adapters shipped; live find-side acceptance pending the camera stream |
 | **M3** | Trigger scheduler (mission start, Jev-uncertainty, audits) + Jev state compaction | planned |
-| **M4** | Sweep hardware: servo + ToF, `sweep.py` matcher (desmear required), object confirmation | planned — sim-validated |
+| **M4** | Sweep hardware: servo + ToF, `sweep.py` matcher (desmear required), object confirmation | 🔄 host side landed (`sweep.py` matcher + `confirm_objects`, spec-v1 host codec, bench + fake rover, hermetic tests); firmware scan mode written but **hardware-unverified**; servo/ToF bench this evening |
 
 **Owner decisions (settled 2026-09-29):** **D1** — MM-GDINO-T (Apache-2.0,
 `transformers>=4.55`) is the local vision default; switching local↔remote is a
@@ -58,6 +58,17 @@ JEV_ROVER_REALVISION=1 .venv/bin/python -m pytest tests/test_vision_local_real.p
 .venv/bin/python tools/smoke_semantics.py --config config/room.json --source camera \
     --kind local --labels "mat,box" --shortest-edge 400 --longest-edge 666
 ```
+
+### Live find-side acceptance status (2026-09-29)
+
+`config/room.json` is created from the example and points at `/dev/video10` with
+the MM-GDINO-T CPU profile and `max_age_s: 120`. **Blocked on two things only
+the owner can provide:** the tablet camera stream (`/dev/video10` currently has
+no producer) and the interactive `calibrate.py floor` click pass on a live feed.
+Once both are up: `calibrate.py check` must show the belief map aligned, then
+`run.py --config config/room.json --source camera --mission patrol --seconds 90
+--no-jev --semantics local --find "<object>"` records `semantics.median_ms` in
+`runs/summary_*.json`. Routing/driving stays phase 2 (D5).
 
 ## Design invariants (do not break)
 

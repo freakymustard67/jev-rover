@@ -178,6 +178,39 @@ Measured on this CPU host: ~18.9 s/pass at the 400/666 processor profile
 `docs/planning/README.md`. Routing/driving to a resolved destination is phase 2
 (after find-side acceptance); `--find` still resolves and prints only.
 
+Live find-side acceptance (pending the camera stream and interactive floor
+calibration):
+
+```bash
+.venv/bin/python calibrate.py floor --config config/room.json   # clicks, live feed
+.venv/bin/python calibrate.py check --config config/room.json   # belief map must line up
+set -a && . ./.env && set +a
+.venv/bin/python run.py --config config/room.json --source camera \
+    --mission patrol --seconds 90 --no-jev --semantics local --find "mat"
+```
+
+latency lands in `runs/summary_*.json` under `semantics.median_ms`; the pass is
+~20-35 s on this CPU, which is why `config/room.json` raises `max_age_s` to 120.
+
+### Sweep track (M4 groundwork, off by default)
+
+The host side of the servo/ToF sweep is in `sweep.py`: `ScanBeams` from the
+spec-v1 payload, `RectWorld`/`GridWorld` ray models, a coarse/fine matcher with
+**desmear** (each beam predicted from the pose advanced along the candidate's
+arc by the commanded motion), and `confirm_objects` (confirmed / contradicted /
+absent). Everything is gated by `sweep.enabled=false` and tested hermetically
+against `tools/sim/tof_sim.py` — including the desmear-vs-naive contrast while
+driving. Bench it without hardware:
+
+```bash
+.venv/bin/python tools/smoke_scan.py --mode synthetic --pose 2.5,1.8,20 \
+    --step-deg 6 --motion 0.45,0 --desmear
+.venv/bin/python tools/smoke_scan.py --mode udp --loopback        # wire path, fake rover
+```
+
+The firmware scan mode (servo FSM + binary chunks) is marked
+hardware-unverified; see `firmware/README.md` for the bench checklist.
+
 Perception itself: AprilTag pose straight from the floor homography (no
 intrinsics needed for the planar case), floor-color model (optionally with an
 empty-room background + slow adaptation), log-odds occupancy grid with explicit

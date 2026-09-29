@@ -181,7 +181,7 @@ little-endian.
 | 1 | `ver_flags` | u8 | bits 0-1 version (=1); bit 2 `has_signal`; bit 3 `has_ambient`; bit 4 `has_t_us`; bit 5 `partial` (sweep aborted); bit 6 any `0xFE` timeout in this chunk; bit 7 reserved (0) |
 | 2 | `scan_id` | u16 | Echoes the command's `scan.id` |
 | 4 | `chunk_idx` | u8 | 0-based |
-| 5 | `chunk_count` | u8 | Total chunks of this sweep (`ceil(N/64)`; smaller chunks when the optionals are on, see framing) |
+| 5 | `chunk_count` | u8 | Total chunks of this sweep (framing-dependent: `ceil(N/62)` with the default optionals, up to `ceil(N/64)` with fewer columns) |
 | 6 | `first_idx` | u8 | Index of the first sample in this chunk |
 | 7 | `n_samples` | u8 | Samples in this chunk, 1…64 |
 | 8 | `t0_ms` | u32 | ms since sweep start at which `first_idx` was **read** (desmear anchor) |
@@ -612,6 +612,12 @@ All in the config block of `rover_esp32.ino`:
   stream; whoever commands last wins.
 - **The reflex only watches the front sensor.** A rear sensor is telemetry-only: the
   firmware will happily reverse into something.
+- **Scan mode is hardware-unverified.** The L1X glue, servo numbers and timing
+  constants are examples to validate; the L0X fallback cannot honour the non-blocking
+  interleave rules. See "Scan mode (v1, hardware-unverified)".
+- **Scans are fire-and-forget.** No acknowledgements or retries; a missing chunk is
+  detectable via `chunk_idx`/`chunk_count`, and an aborted sweep sends what it has with
+  the partial bit rather than retrying.
 - **The reflex acts on commands, not on physics.** It sets `v = 0` in the control path,
   so a car already rolling fast on a slippery surface still needs the braking distance
   the slew limiter gives it. Keep `RVR_PWM_FULLSCALE_MPS` honest.
@@ -625,6 +631,8 @@ All in the config block of `rover_esp32.ino`:
 ## Defaults to review before flashing
 
 `RVR_MOTOR_STBY` is `-1` by default (TB6612 users: either tie STBY to 3V3 or set a GPIO).
-`RVR_INVERT_LEFT`/`RVR_INVERT_RIGHT` are both `false`. The example pin map is
+`RVR_INVERT_LEFT`/`RVR_INVERT_RIGHT` are both `false`. `RVR_SERVO_PIN` is GPIO 4 and
+`RVR_SERVO_CH` is 2 for the optional scan servo — check both against your wiring (and
+against whatever pins you keep for the motors and sensors). The example pin map is
 conflict-free for the default configuration but shares nothing with your car — read
 section 3 of the sketch before flashing.
