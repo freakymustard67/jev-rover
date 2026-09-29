@@ -160,17 +160,23 @@ the whole pipeline is testable offline; real adapters are M2.
   misprojection, not a cosmetic one.
 * **Smoke tool**: `tools/smoke_semantics.py` runs one pass against a chosen
   adapter and prints detections + floor coordinates, in isolation from the
-  runner. It works offline with `--kind fake`; `local`/`remote` report the
-  M2 blocker (owner decision D1) until a real adapter lands.
+  runner. `--kind fake` works offline; `--kind local` runs MM-GDINO-T on this
+  box and reports latency + peak RSS.
+* **Real adapters (M2, D1)**: `LocalVision` (MM-GDINO-T, Apache-2.0, lazy
+  `torch`/`transformers` load on the worker thread) and `RemoteVision` (one JSON
+  POST per pass; `tools/vision_server.py` serves the same contract around
+  `LocalVision`). Switching local↔remote is config-only; selections are
+  `--semantics local|remote|fake|off`.
 
 ### M2 status
 
-M2 (per `docs/reviews/m1-semantics/m2-design.md`) is the real vision adapter +
-manual trigger. Landed so far: the frame-space contract above, the calibrated
-floor-click fix it required, and the smoke tool. Still open before the adapter:
-**D1** (which model/placement becomes the default), **D5** (routing/driving in
-or after M2), plus **D3** (audit cadence) and **D4** (probe staging) — see
-`docs/planning/README.md`.
+Phase 1 (owner decision D5): adapters + find-side live testing. Landed: the
+frame-space contract, the calibrated floor-click fix, the smoke tool, both
+adapters, the LAN server, prewarm-on-worker, and the opt-in `realvision` test.
+Measured on this CPU host: ~18.9 s/pass at the 400/666 processor profile
+(1282 MB peak RSS), ~35.6 s at 800/1333 (2149 MB) — full table in
+`docs/planning/README.md`. Routing/driving to a resolved destination is phase 2
+(after find-side acceptance); `--find` still resolves and prints only.
 
 Perception itself: AprilTag pose straight from the floor homography (no
 intrinsics needed for the planar case), floor-color model (optionally with an

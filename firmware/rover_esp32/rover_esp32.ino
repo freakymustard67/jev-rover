@@ -39,6 +39,16 @@
  * both are evaluated every tick from the last known values.
  *
  * ---------------------------------------------------------------------
+ * OPTIONAL SERVO TOF SCAN  (v1, HARDWARE-UNVERIFIED; see README)
+ * ---------------------------------------------------------------------
+ * A commanded servo sweep of a time-of-flight sensor ("scan"). It is
+ * serviced from loop() one bounded step at a time and never weakens the
+ * two mechanisms above: the scan path cannot block the loop (no wait
+ * functions), performs at most one bounded I2C burst and one servo PWM
+ * write per pass, and aborts the moment the watchdog trips. The interleave
+ * rules and the wire format are in firmware/README.md, "Scan mode".
+ *
+ * ---------------------------------------------------------------------
  * THIS IS REFERENCE FIRMWARE
  * ---------------------------------------------------------------------
  * Every pin and tuning constant in section 2 below is an EXAMPLE VALUE
@@ -48,7 +58,8 @@
  *
  * Libraries: WiFi.h / WiFiUdp.h (ESP32 core), ArduinoJson v7,
  *            Adafruit_VL53L0X (+ Adafruit BusIO) when using the default
- *            distance sensor. No other dependencies.
+ *            distance sensor, and the ST ULD VL53L1X API headers when
+ *            using the default scan sensor. No other dependencies.
  * ===================================================================== */
 
 // =====================================================================
@@ -61,6 +72,20 @@
 // EXAMPLE default: a VL53L0X time-of-flight sensor on I2C.
 // Switch to RVR_SENSOR_HCSR04 for the HC-SR04 (pulseIn) fallback.
 #define RVR_DISTANCE_SENSOR RVR_SENSOR_VL53L0X
+
+// --- scan sensor (servo ToF sweep; HARDWARE-UNVERIFIED, see README) ---
+#define RVR_SCAN_SENSOR_VL53L1X 1   // ST ULD API shape; 4 m class; non-blocking ready poll
+#define RVR_SCAN_SENSOR_VL53L0X 2   // Adafruit VL53L0X (the front sensor); 2 m; best effort
+
+// Which ToF the servo sweep reads.
+//   VL53L1X (default): needs the ST ULD API headers (section 2). This is
+//     the only path that can honour the non-blocking interleave rules.
+//   VL53L0X: reuses the Adafruit VL53L0X front-sensor driver; requires
+//     RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X (checked below). The
+//     Adafruit API has no readiness poll, so that path is bench-only and
+//     its scan timing guarantees are weaker. Its 2.0 m validity applies;
+//     the 4 m numbers do not.
+#define RVR_SCAN_SENSOR RVR_SCAN_SENSOR_VL53L1X
 
 // Rear distance is optional and disabled by default. It is only
 // implemented for the HC-SR04 driver: two VL53L0X sensors share one I2C
@@ -81,6 +106,20 @@
 #error "RVR_ENABLE_REAR_SENSOR=1 needs the HC-SR04 driver: two VL53L0X sensors share I2C address 0x29 and re-addressing via XSHUT is not implemented. Set RVR_ENABLE_REAR_SENSOR to 0, or set RVR_DISTANCE_SENSOR to RVR_SENSOR_HCSR04."
 #endif
 
+#if (RVR_SCAN_SENSOR != RVR_SCAN_SENSOR_VL53L1X) && (RVR_SCAN_SENSOR != RVR_SCAN_SENSOR_VL53L0X)
+#error "RVR_SCAN_SENSOR must be RVR_SCAN_SENSOR_VL53L1X or RVR_SCAN_SENSOR_VL53L0X."
+#endif
+
+// The L0X scan fallback is just the Adafruit VL53L0X front driver, so it
+// can only be compiled when that driver is selected for the front sensor.
+#if (RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L0X) && (RVR_DISTANCE_SENSOR != RVR_SENSOR_VL53L0X)
+#error "RVR_SCAN_SENSOR_VL53L0X reuses the Adafruit VL53L0X front-sensor driver, which is only compiled in when RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X. Either set RVR_DISTANCE_SENSOR to RVR_SENSOR_VL53L0X, or use RVR_SCAN_SENSOR_VL53L1X for the sweep."
+#endif
+
+#if RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L0X
+#warning "Scan fallback: the Adafruit VL53L0X has no non-blocking readiness poll, so the scan interleave guarantees are weaker (bench use only; see README)."
+#endif
+
 // =====================================================================
 //  2. INCLUDES
 // =====================================================================
@@ -95,6 +134,14 @@
 
 #if RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X
   #include <Adafruit_VL53L0X.h>
+#endif
+
+#if RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L1X
+  // HARDWARE-UNVERIFIED: the ST ULD VL53L1X API. Ports differ in header
+  // names and platform bring-up; section 9 uses the function names from
+  // UM2356 and isolates every hardware call in three small functions.
+  #include <vl53l1_api.h>
+  #include <vl53l1_platform.h>
 #endif
 
 // Credentials live in secrets.h, which must NOT be committed. Copy
@@ -128,6 +175,25 @@
 // TB6612FNG STBY pin. Set to -1 when there is none (L298N), or wire STBY
 // to 3V3. If you want software control, set this to a free GPIO.
 #define RVR_MOTOR_STBY (-1)
+
+// --- scan servo (servo ToF sweep; HARDWARE-UNVERIFIED) ---
+// A standard analog servo (SG90/MG90S class) on its own LEDC channel. The
+// motors own LEDC channels 0 and 1 (see RvrDrive::begin), so the servo must
+// use another one. The pulse endpoints are mapped over the COMMAND's
+// start_deg..end_deg (section 4), not over the servo's mechanical range.
+//
+// Pin note: the sweep analysis offered GPIO 25 as an example, but 25 is
+// RVR_MOTOR_L_PWM in this map, so this file uses GPIO 4 instead -- free in
+// the default configuration (it is only the rear HC-SR04 TRIG pin when
+// RVR_ENABLE_REAR_SENSOR and the HC-SR04 are selected). Any free
+// output-capable GPIO works.
+#define RVR_SERVO_PIN 4
+#define RVR_SERVO_CH  2
+
+// I2C address the scan sensor is expected to answer on. A VL53L1X and a
+// VL53L0X both power up on 0x29: if both sit on this bus, one of them must
+// be re-addressed (XSHUT); this reference firmware does not do that for you.
+#define RVR_SCAN_I2C_ADDR 0x29
 
 // --- VL53L0X over I2C (default distance sensor) ---
 #define RVR_I2C_SDA 21
@@ -217,6 +283,65 @@ constexpr float RVR_SPEED_OF_SOUND_MPS = 343.0f;
 constexpr uint32_t RVR_US_TIMEOUT_US = 25000;   // HC-SR04 round-trip timeout (~4 m)
 constexpr float RVR_HCSR04_NO_ECHO_M = 4.0f;    // reported when the echo times out (must stay < RVR_HCSR04_MAX_M)
 constexpr uint16_t RVR_VL53L0X_INVALID_MM = 8190;  // Adafruit driver's "no reading" value
+
+// --- scan: servo ToF sweep (v1; HARDWARE-UNVERIFIED) ---
+// See README "Scan mode (v1, hardware-unverified)" for the wire format and
+// the interleave rules these constants implement. Every value here is an
+// example to validate on your bench.
+constexpr uint32_t RVR_SCAN_GRID_MS = 5;      // >= this between two scan ops (rule 4)
+constexpr uint32_t RVR_SCAN_BUDGET_MS = 33;   // VL53L1X timing budget; >=33 ms works in all distance modes
+constexpr uint32_t RVR_SCAN_TIMEOUT_MS = (RVR_SCAN_BUDGET_MS * 3u + 1u) / 2u;  // 1.5x budget -> status 0xFE
+constexpr uint16_t RVR_SCAN_MAX_SAMPLES = 181;  // -90..+90 deg at 1 deg steps
+constexpr uint16_t RVR_SCAN_DATAGRAM_CAP = 512; // policy cap for result datagrams
+constexpr uint8_t  RVR_SCAN_CHUNK_HARD = 64;    // spec hard max: samples per datagram
+
+// Compile-time optional sample columns (protocol v1 ver_flags bits 2..4).
+// Default: signal + ambient (8 B/sample). t_us is compile-time off.
+constexpr uint8_t RVR_SCAN_OPT_SIGNAL  = 1;
+constexpr uint8_t RVR_SCAN_OPT_AMBIENT = 1;
+constexpr uint8_t RVR_SCAN_OPT_T_US    = 0;
+
+// Per-sample size: angle_dd i8 + range_mm u16 + status u8 [+ optionals].
+constexpr uint8_t RVR_SCAN_SAMPLE_BYTES =
+    4u + 2u * RVR_SCAN_OPT_SIGNAL + 2u * RVR_SCAN_OPT_AMBIENT + 2u * RVR_SCAN_OPT_T_US;
+
+// Effective chunk size: the 512 B datagram cap can cut 64 down (e.g. to 62
+// with signal+ambient on), but never below 1.
+constexpr uint8_t RVR_SCAN_CHUNK_MAX =
+    (((RVR_SCAN_DATAGRAM_CAP - 16u) / RVR_SCAN_SAMPLE_BYTES) < RVR_SCAN_CHUNK_HARD)
+        ? (uint8_t)((RVR_SCAN_DATAGRAM_CAP - 16u) / RVR_SCAN_SAMPLE_BYTES)
+        : RVR_SCAN_CHUNK_HARD;
+
+// Staging buffer sized for the spec's worst case (16 B header + 64 x 10 B).
+constexpr size_t RVR_SCAN_BUF_BYTES = 16u + (size_t)RVR_SCAN_CHUNK_HARD * 10u;
+
+// Result status codes (protocol v1).
+constexpr uint8_t RVR_SCAN_STATUS_TIMEOUT = 0xFE;  // sample not ready in 1.5x budget
+constexpr uint8_t RVR_SCAN_STATUS_ABORTED = 0xFF;  // sweep aborted mid-slot
+
+static_assert(RVR_SCAN_OPT_SIGNAL <= 1 && RVR_SCAN_OPT_AMBIENT <= 1 && RVR_SCAN_OPT_T_US <= 1,
+              "scan optional-column switches are boolean");
+static_assert(RVR_SCAN_CHUNK_MAX >= 1 && RVR_SCAN_CHUNK_MAX <= RVR_SCAN_CHUNK_HARD,
+              "scan chunk size out of range");
+static_assert(16u + (size_t)RVR_SCAN_CHUNK_MAX * RVR_SCAN_SAMPLE_BYTES <= RVR_SCAN_DATAGRAM_CAP,
+              "scan result datagram would exceed the 512 B policy cap");
+
+// --- scan servo (HARDWARE-UNVERIFIED) ---
+constexpr uint32_t RVR_SERVO_HZ = 50;             // analog hobby-servo frame rate
+constexpr uint8_t  RVR_SERVO_RES_BITS = 16;       // ~0.3 us duty steps at 50 Hz
+constexpr uint32_t RVR_SERVO_PULSE_MIN_US = 500;  // pulse at start_deg
+constexpr uint32_t RVR_SERVO_PULSE_MAX_US = 2400; // pulse at end_deg
+constexpr uint32_t RVR_SERVO_PERIOD_US = 1000000u / RVR_SERVO_HZ;
+constexpr uint32_t RVR_SERVO_PARK_US = (RVR_SERVO_PULSE_MIN_US + RVR_SERVO_PULSE_MAX_US) / 2u;
+
+// Minimum time one sample slot may take. The L1X paces itself with the
+// timing budget; the L0X fallback has no readiness poll, so its slots are
+// paced by the budget instead of recording the same measurement repeatedly.
+#if RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L0X
+constexpr uint32_t RVR_SCAN_SAMPLE_MIN_MS = RVR_SCAN_BUDGET_MS;
+#else
+constexpr uint32_t RVR_SCAN_SAMPLE_MIN_MS = 0u;
+#endif
 
 // --- battery divider ---
 // RVR_BATT_DIVIDER = (R_top + R_bottom) / R_bottom. Example: 100k over
@@ -455,7 +580,179 @@ private:
 };
 
 // =====================================================================
-//  9. GLOBAL STATE
+//  9. SCAN SENSOR ABSTRACTION  (ToF for the servo sweep)
+// ---------------------------------------------------------------------
+//  HARDWARE-UNVERIFIED. Nothing in this section has been compiled or run
+//  against real hardware; both options below are shapes to adapt.
+//
+//  These three functions are the whole sensor surface the scan FSM uses:
+//    rvrScanSensorBegin()  -- setup() only; may block internally
+//    rvrScanSensorReady()  -- NON-BLOCKING readiness poll
+//    rvrScanSensorFetch()  -- one bounded read burst
+//  The FSM never calls VL53L1_WaitMeasurementDataReady() or any other
+//  wait/loop-inside function: readiness is polled with the non-blocking
+//  VL53L1_GetMeasurementDataReady(), as required by interleave rule 3.
+// =====================================================================
+
+#if RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L1X
+
+// ST ULD device handle. The ST API is plain C: every call takes &g_l1x.
+// If your port wraps it in a C++ class (common on Arduino), adapt the
+// three functions below -- nothing else in this file touches the sensor.
+static VL53L1_Dev_t g_l1x;
+
+// Setup-time bring-up, following UM2356 "mandatory ranging functions".
+// NOTE: this runs ONCE from setup(), before loop() -- the one place where
+// blocking calls are acceptable. It is unreachable from the scan FSM.
+// VL53L1_WaitDeviceBooted() is bounded to ~4 ms by UM2356 and is the only
+// wait-like call in this file; it never runs on the scan path.
+static bool rvrScanSensorBegin() {
+  // Platform bring-up is port-specific (I2C is already up from setup()).
+  // Typical ST ULD ports want one call here to bind the bus/address, e.g.:
+  //   VL53L1_CommsInitialise(&g_l1x, RVR_SCAN_I2C_ADDR);   // port-specific
+  // Add yours before WaitDeviceBooted if your port needs it.
+  VL53L1_WaitDeviceBooted(&g_l1x);
+  if (VL53L1_DataInit(&g_l1x) != VL53L1_ERROR_NONE) return false;
+  if (VL53L1_StaticInit(&g_l1x) != VL53L1_ERROR_NONE) return false;
+  if (VL53L1_SetMeasurementTimingBudgetMicroSeconds(
+          &g_l1x, (uint32_t)RVR_SCAN_BUDGET_MS * 1000u) != VL53L1_ERROR_NONE) {
+    return false;
+  }
+  if (VL53L1_StartMeasurement(&g_l1x) != VL53L1_ERROR_NONE) return false;
+  return true;
+}
+
+// NON-BLOCKING readiness poll (UM2356: "does not block other operations").
+static bool rvrScanSensorReady() {
+  uint8_t ready = 0;
+  const VL53L1_Error rc = VL53L1_GetMeasurementDataReady(&g_l1x, &ready);
+  return (rc == VL53L1_ERROR_NONE) && (ready != 0);
+}
+
+#if RVR_SCAN_OPT_SIGNAL || RVR_SCAN_OPT_AMBIENT
+// ST FixPoint16.16 MCPS -> centi-MCPS (u16), saturating at 0xFFFF.
+static uint16_t rvrScanCentiMcps(uint32_t fix1616) {
+  const uint32_t c = (uint32_t)(((uint64_t)fix1616 * 100u) / 65536u);
+  return (c > 65535u) ? (uint16_t)65535u : (uint16_t)c;
+}
+#endif
+
+// One bounded burst: read the measurement, then clear the interrupt and
+// start the next ranging (both mandatory per UM2356). Range statuses are
+// passed through unchanged: the HOST filters invalid ones (4/7/8/14),
+// which is the v1 contract.
+static bool rvrScanSensorFetch(uint16_t* outMm, uint8_t* outStatus,
+                               uint16_t* outSignal, uint16_t* outAmbient) {
+  VL53L1_RangingMeasurementData_t m;
+  if (VL53L1_GetRangingMeasurementData(&g_l1x, &m) != VL53L1_ERROR_NONE) {
+    return false;
+  }
+  // Best effort: if this fails, the sensor simply has no fresh data and the
+  // slot times out (rule 5). Either way the loop is never blocked.
+  (void)VL53L1_ClearInterruptAndStartMeasurement(&g_l1x);
+
+  *outMm = (m.RangeMilliMeter > 4000u) ? (uint16_t)4000u : (uint16_t)m.RangeMilliMeter;
+  *outStatus = (uint8_t)m.RangeStatus;
+#if RVR_SCAN_OPT_SIGNAL
+  *outSignal = rvrScanCentiMcps(m.SignalRateRtnMegaCps);
+#else
+  *outSignal = 0;
+#endif
+#if RVR_SCAN_OPT_AMBIENT
+  *outAmbient = rvrScanCentiMcps(m.AmbientRateRtnMegaCps);
+#else
+  *outAmbient = 0;
+#endif
+  return true;
+}
+
+#elif RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L0X
+
+// ---------------------------------------------------------------------
+// VL53L0X fallback -- BEST EFFORT / BENCH ONLY, and HARDWARE-UNVERIFIED.
+// It reuses the Adafruit VL53L0X front-sensor object (g_lox). The Adafruit
+// API has NO non-blocking readiness poll: readRange() waits inside the
+// driver, bounded only by the driver's own timeout, so this path cannot
+// promise interleave rules 3-5 the way the VL53L1X path does. Range
+// numbers: 2.0 m validity (RVR_VL53L0X_MAX_M), NOT the L1X's 4 m.
+// ---------------------------------------------------------------------
+
+static bool rvrScanSensorBegin() {
+  // g_lox is initialised by the front-sensor code in setup(); nothing to do.
+  return true;
+}
+
+static bool rvrScanSensorReady() {
+  // No poll exists; the FSM's RVR_SCAN_SAMPLE_MIN_MS pacing (== the timing
+  // budget) is what stops this path from recording one reading forever.
+  return true;
+}
+
+static bool rvrScanSensorFetch(uint16_t* outMm, uint8_t* outStatus,
+                               uint16_t* outSignal, uint16_t* outAmbient) {
+  *outSignal = 0;    // not provided by the L0X path; 0 = unknown
+  *outAmbient = 0;
+  const uint16_t mm = g_lox.readRange();   // bounded by the Adafruit driver
+  if (g_lox.timeoutOccurred() || mm == 0 || mm >= RVR_VL53L0X_INVALID_MM ||
+      mm > (uint16_t)(RVR_VL53L0X_MAX_M * 1000.0f)) {
+    *outMm = 0;
+    *outStatus = RVR_SCAN_STATUS_TIMEOUT;  // no usable sample this slot
+    return true;
+  }
+  *outMm = mm;
+  *outStatus = 0;    // success (the Adafruit driver has no RangeStatus field)
+  return true;
+}
+
+#endif
+
+// =====================================================================
+// 10. SCAN SERVO  (HARDWARE-UNVERIFIED)
+// ---------------------------------------------------------------------
+//  Same LEDC attach style as RvrMotor::begin(): ledcSetup + ledcAttachPin,
+//  then ledcWrite. The servo has its own channel (RVR_SERVO_CH) because the
+//  motors own 0 and 1. A write is cheap, but the FSM still performs AT MOST
+//  ONE per loop() pass (interleave rule 2).
+// =====================================================================
+
+// Writes one pulse width (us) as a duty cycle on RVR_SERVO_CH. ONE ledcWrite.
+static void rvrServoWritePulseUs(uint32_t pulseUs) {
+  if (pulseUs > RVR_SERVO_PERIOD_US) pulseUs = RVR_SERVO_PERIOD_US;  // defensive
+  const uint32_t duty =
+      (pulseUs * ((1u << RVR_SERVO_RES_BITS) - 1u)) / RVR_SERVO_PERIOD_US;
+  ledcWrite(RVR_SERVO_CH, duty);
+}
+
+// Pulse for an angle: start_deg -> RVR_SERVO_PULSE_MIN_US, end_deg ->
+// RVR_SERVO_PULSE_MAX_US, linear in between (the scan's endpoints, not the
+// servo's mechanical limits). A degenerate span (start == end after
+// rounding) parks at the mid pulse.
+static uint32_t rvrServoPulseUsFor(int16_t angleDd, int16_t startDd, int16_t endDd) {
+  const int32_t span = (int32_t)endDd - (int32_t)startDd;
+  if (span <= 0) return RVR_SERVO_PARK_US;
+  int32_t rel = (int32_t)angleDd - (int32_t)startDd;
+  if (rel < 0) rel = 0;
+  if (rel > span) rel = span;
+  return RVR_SERVO_PULSE_MIN_US +
+         ((uint32_t)rel * (RVR_SERVO_PULSE_MAX_US - RVR_SERVO_PULSE_MIN_US)) /
+             (uint32_t)span;
+}
+
+// Convenience: one servo write for `angleDd` of the active sweep.
+static void rvrServoWriteAngle(int16_t angleDd, int16_t startDd, int16_t endDd) {
+  rvrServoWritePulseUs(rvrServoPulseUsFor(angleDd, startDd, endDd));
+}
+
+// Setup-time init; call once from setup(). Parks the servo mid-range until a
+// command asks for a sweep.
+static void rvrServoBegin() {
+  ledcSetup(RVR_SERVO_CH, RVR_SERVO_HZ, RVR_SERVO_RES_BITS);
+  ledcAttachPin(RVR_SERVO_PIN, RVR_SERVO_CH);
+  rvrServoWritePulseUs(RVR_SERVO_PARK_US);
+}
+
+// =====================================================================
+// 11. GLOBAL STATE
 // =====================================================================
 
 static WiFiUDP g_udp;
@@ -517,8 +814,56 @@ static uint32_t g_lastSensorLogMs = 0;
 static bool g_loggedWatchdog = false;
 static bool g_loggedReflex = false;
 
+// --- scan (servo ToF sweep; v1, HARDWARE-UNVERIFIED) ---
+// Phases: the FSM advances at most one bounded step per loop() pass.
+enum RvrScanPhase : uint8_t {
+  RVR_SCAN_IDLE     = 0,   // no sweep; the last scan id stays in telemetry
+  RVR_SCAN_ARMED    = 1,   // params latched; servo move + first slot next pass
+  RVR_SCAN_SCANNING = 2,   // waiting for / recording samples
+  RVR_SCAN_FLUSHING = 3,   // one result datagram pending, sent on the grid
+};
+
+struct RvrScanParams {
+  uint16_t id;        // host-chosen scan id (telemetry echoes it as scan_seq)
+  int8_t   startDd;   // degrees; -90..+90 (validated on receipt)
+  int8_t   endDd;     // degrees; >= startDd after rounding
+  uint16_t stepDd;    // degrees; 1..180
+  uint8_t  rateHz;    // nominal only; the achieved cadence is sensor-limited
+};
+
+struct RvrScanState {
+  RvrScanPhase phase;
+  bool     startPending;     // a start request sits in `next`
+  bool     stopPending;      // action "stop" seen; abort on the next pass
+  bool     haveLastStarted;  // idempotence latch for scan.id
+  uint16_t lastStartedId;
+  RvrScanParams next;        // pending start request
+  RvrScanParams act;         // active (or most recent) sweep
+  uint16_t lastId;           // telemetry scan_seq; 0 = none yet
+  uint16_t n;                // samples in this sweep
+  uint16_t idx;              // samples recorded so far
+  int16_t  angleDd;          // angle of the slot being measured
+  uint8_t  chunkIdx;         // 0-based
+  uint8_t  chunkCount;       // ceil(n / RVR_SCAN_CHUNK_MAX)
+  uint8_t  chunkN;           // samples staged in g_scanBuf
+  uint8_t  chunkFirstIdx;    // index of the first staged sample
+  bool     chunkTimeout;     // a staged sample has status 0xFE
+  bool     finalFlush;       // the staged chunk ends a completed sweep
+  bool     partialFlush;     // send the staged chunk with the partial bit
+  bool     discardFirst;     // drop the first sample taken after the servo move
+  uint32_t periodUs;         // achieved cadence so far (0 = unknown)
+  uint32_t tStartMs;         // millis() at sweep start
+  uint32_t tOpMs;            // last scan operation (RVR_SCAN_GRID_MS grid)
+  uint32_t tSlotMs;          // when the current sample slot began waiting
+  uint32_t tChunkFirstMs;    // ms since tStartMs of the chunk's first sample
+  uint32_t tFirstMs;         // ms since tStartMs of the sweep's first sample
+  uint32_t tLastMs;          // ms since tStartMs of the latest sample
+};
+static RvrScanState g_scan;                    // zero-initialised: phase == IDLE
+static uint8_t g_scanBuf[RVR_SCAN_BUF_BYTES];  // 16 B header + staged samples
+
 // =====================================================================
-// 10. ENCODER INTERRUPTS  (must stay tiny and never block)
+// 12. ENCODER INTERRUPTS  (must stay tiny and never block)
 // =====================================================================
 
 void IRAM_ATTR rvrEncLeftIsr() {

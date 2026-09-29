@@ -152,6 +152,63 @@ def test_frame_resolution_match_is_accepted(tmp_path):
         runner.close()
 
 
+class WarmVision:
+    name = "warm"
+
+    def __init__(self):
+        self.warmed = 0
+
+    def warmup(self):
+        time.sleep(0.05)
+        self.warmed += 1
+
+    def infer(self, frame, *, labels=None):
+        return []
+
+
+def test_prewarm_loads_and_is_not_merged(tmp_path):
+    vision = WarmVision()
+    runner = _runner(vision, tmp_path)
+    try:
+        assert runner.prewarm(1.0), "prewarm must be accepted while idle"
+        for _ in range(100):
+            runner.poll(1.0)
+            if runner.prewarmed:
+                break
+            time.sleep(0.01)
+        assert runner.prewarmed and vision.warmed == 1
+        assert runner.store.passes == 0, "a warm-up must never merge as a data pass"
+        stats = runner.stats()
+        assert stats["warmup_ms"] is not None and stats["prewarmed"] is True
+    finally:
+        runner.close()
+
+
+def test_warmup_failure_arms_cooldown(tmp_path):
+    class BoomWarm:
+        name = "boomwarm"
+
+        def warmup(self):
+            raise RuntimeError("weights gone")
+
+        def infer(self, frame, *, labels=None):
+            return []
+
+    runner = _runner(BoomWarm(), tmp_path, failure_cooldown_s=5.0, min_interval_s=0.0)
+    try:
+        assert runner.prewarm(0.0)
+        for _ in range(100):
+            runner.poll(0.05)
+            if runner.worker.errors:
+                break
+            time.sleep(0.01)
+        assert runner.worker.errors == 1
+        assert not runner.maybe_pass(1.0, _ctx(), FRAME, force=True), "cooldown must arm"
+        assert runner.skipped["cooldown"] >= 1
+    finally:
+        runner.close()
+
+
 def test_stats_shape(tmp_path):
     runner = _runner(FastVision(), tmp_path)
     try:

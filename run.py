@@ -188,9 +188,9 @@ def parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--local-port", type=int, default=4211)
     p.add_argument("--perception-hz", type=float, default=15.0)
     p.add_argument("--control-hz", type=float, default=20.0)
-    p.add_argument("--semantics", choices=["off", "fake"], default=None,
+    p.add_argument("--semantics", choices=["off", "fake", "local", "remote"], default=None,
                    help="unset follows config.semantics.enabled; off disables outright; "
-                        "fake forces the fixture adapter (M1)")
+                        "fake|local|remote force the adapter kind")
     p.add_argument("--semantics-once", action="store_true",
                    help="mission-start pass only; without it audits run every audit_period_s")
     p.add_argument("--find", default=None, metavar="LABEL",
@@ -241,7 +241,8 @@ def main(argv=None) -> int:
         if args.find:
             print("[find] ignored: --semantics off disables the semantic layer")
     else:
-        sem_on = cfg.semantics.enabled or args.semantics == "fake" or bool(args.find)
+        sem_on = cfg.semantics.enabled or args.semantics in ("fake", "local", "remote") \
+            or bool(args.find)
         find_label = args.find
 
     # --find only resolves and prints, so it gets an idle default mission
@@ -260,14 +261,19 @@ def main(argv=None) -> int:
     runner = None
     if sem_on:
         sem_cfg = cfg.semantics
-        if args.semantics == "fake" and sem_cfg.model.kind != "fake":
-            sem_cfg = replace(sem_cfg, model=replace(sem_cfg.model, kind="fake"))
+        if args.semantics in ("fake", "local", "remote") and sem_cfg.model.kind != args.semantics:
+            sem_cfg = replace(sem_cfg, model=replace(sem_cfg.model, kind=args.semantics))
         vision = build_vision(sem_cfg, perception.homography)
         runner = SemanticsRunner(cfg, cfg.name, vision)
         n_fixtures = len(getattr(vision, "fixtures", []))
         cadence = ("one pass at mission start" if args.semantics_once
                    else f"mission-start pass + audit every {cfg.semantics.audit_period_s:.0f}s")
-        print(f"[semantics] enabled: model={vision.name} fixtures={n_fixtures} ({cadence})")
+        warm = ""
+        if sem_cfg.model.kind in ("local", "remote") and sem_cfg.model.warmup:
+            runner.prewarm(0.0)
+            warm = " prewarming"
+        print(f"[semantics] enabled: model={vision.name} kind={sem_cfg.model.kind} "
+              f"fixtures={n_fixtures} ({cadence}){warm}")
     semantics_fired = False
     next_audit_t = float("inf")
     find_done = False

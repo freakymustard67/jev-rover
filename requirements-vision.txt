@@ -1,0 +1,9 @@
+# Optional dependencies for the real local vision adapter
+# (semantics.model.kind = "local"; owner decision D1: MM-GDINO-T).
+#
+# CPU-only install on this host:
+#   uv pip install --python .venv/bin/python torch --index-url https://download.pytorch.org/whl/cpu
+#   uv pip install --python .venv/bin/python -r requirements-vision.txt
+torch>=2.3
+transformers>=4.55
+pillow

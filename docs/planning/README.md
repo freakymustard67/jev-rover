@@ -23,16 +23,41 @@ it does — not just what it does.
 |---|---|---|
 | **M1** | Offline semantic skeleton: schema, `semantics.py` (FakeVision, projection, merge/diff, destinations), worker with budgets, tests | ✅ shipped (`--semantics fake --find "<label>"`) |
 | **M1.5** | Fix package from the independent M1 deep review (PR #1, merged 2026-09-29): distance-ordered merge assignment, frame-resolution guard, probe/dedupe/label hardening, tri-state `--semantics` + wired `--semantics-once`, `--trace` fix | ✅ shipped (80 tests) |
-| **M2** | Real vision adapter + manual trigger, per `../reviews/m1-semantics/m2-design.md` | 🔜 next — adapter blocked on D1; routing/driving scope pending D5 |
+| **M2** | Phase 1: real vision adapters + find-side live testing (owner decision D5). `LocalVision` (MM-GDINO-T, D1) + `RemoteVision` + `tools/vision_server.py`; frame-space contract landed earlier | 🔄 adapters shipped; live find-side acceptance pending the camera stream |
 | **M3** | Trigger scheduler (mission start, Jev-uncertainty, audits) + Jev state compaction | planned |
 | **M4** | Sweep hardware: servo + ToF, `sweep.py` matcher (desmear required), object confirmation | planned — sim-validated |
 
-**Open owner decisions (recorded here; not resolved by M1.5):** D1 — vision default
-(MM-GDINO-T vs YOLOE vs remote placement); D3 — audit cadence (the M1.5
-`--semantics-once` = mission-start-only interpretation is live, pending
-confirmation); D4/D5 — probe staging and M2 scope (routing/driving in or after
-M2). See `../reviews/m1-semantics/REVIEW.md` §6 and
-`../reviews/m1-semantics/archive/research-state/BACKLOG.md` (I10–I17).
+**Owner decisions (settled 2026-09-29):** **D1** — MM-GDINO-T (Apache-2.0,
+`transformers>=4.55`) is the local vision default; switching local↔remote is a
+config-only change (`semantics.model.kind` + `endpoint`). **D5** — M2 phase 1 is
+adapters + find-side live testing only; routing/driving to a resolved
+destination is phase 2, after find-side acceptance (dry-run/mock, no `--arm`).
+**D3/D4** — the M1.5 behaviour stands: the `--semantics-once` audit-cadence
+interpretation and the probe staging are unchanged. Historical detail:
+`../reviews/m1-semantics/REVIEW.md` §6.
+
+### M2 local-vision measurements (CPU, this host, 2026-09-29)
+
+MM-GDINO-T, `transformers` 5.17, CPU-only torch 2.14, one pass per profile
+after warm-up, same 640×480 photo fixture (cat/couch/remote control detected in
+all runs):
+
+| processor size (shortest/longest) | pass latency | peak RSS |
+|---|---|---|
+| 400 / 666 (CPU profile) | ~18.9 s | 1282 MB |
+| 800 / 1333 (default) | ~35.6 s | 2149 MB |
+
+Weight load ≈ 5.6–6.1 s once per process; warm-up adds one forward pass.
+Zero-shot detection on the synthetic renderer's flat top-down rectangles is not
+reliable at sane thresholds (0 detections at ≥0.30) — the opt-in `realvision`
+test asserts pipeline liveness there, and ≥1 detection on a real photo via
+`JEV_ROVER_REALVISION_IMAGE`. Reproduce with:
+
+```bash
+JEV_ROVER_REALVISION=1 .venv/bin/python -m pytest tests/test_vision_local_real.py -m realvision -q
+.venv/bin/python tools/smoke_semantics.py --config config/room.json --source camera \
+    --kind local --labels "mat,box" --shortest-edge 400 --longest-edge 666
+```
 
 ## Design invariants (do not break)
 

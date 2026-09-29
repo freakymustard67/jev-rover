@@ -64,6 +64,10 @@ class Detection:
 class VisionModel(Protocol):
     name: str
 
+    def warmup(self) -> None:
+        """Load/ready the model. Runs on the semantics worker thread only."""
+        ...
+
     def infer(self, frame: np.ndarray, *, labels: list[str] | None = None) -> list[Detection]:
         ...
 
@@ -86,6 +90,9 @@ class FakeVision:
     def __init__(self, fixtures: list[Detection], name: str = "fake-vision-v0"):
         self.fixtures = list(fixtures)
         self.name = name
+
+    def warmup(self) -> None:
+        return None                                 # nothing to load
 
     def infer(self, frame: np.ndarray, *, labels: list[str] | None = None) -> list[Detection]:
         if frame is None or frame.ndim != 3:
@@ -114,7 +121,11 @@ class FakeVision:
 
 
 def build_vision(cfg: SemanticsConfig, homography: Homography) -> VisionModel:
-    """Adapter factory. M1 ships only the fake; real models are M2."""
+    """Adapter factory. ``fake`` = fixtures; ``local``/``remote`` = real models.
+
+    The real adapters are imported lazily so torch/transformers never enter the
+    default import graph or the test suite.
+    """
     kind = cfg.model.kind
     if kind == "fake":
         entries = list(cfg.model.fixtures)
@@ -122,8 +133,10 @@ def build_vision(cfg: SemanticsConfig, homography: Homography) -> VisionModel:
             want = {canonical_label(lbl) for lbl in cfg.model.labels}
             entries = [e for e in entries if canonical_label(e.label) in want]
         return FakeVision.from_world(entries, homography)
-    raise NotImplementedError(
-        f"vision model kind {kind!r} is planned for M2; only 'fake' ships in M1")
+    if kind in ("local", "remote"):
+        from vision import make_vision                  # lazy: optional deps
+        return make_vision(cfg.model)
+    raise NotImplementedError(f"unknown vision model kind {kind!r}")
 
 
 # ---------------------------------------------------------------- projection
@@ -463,9 +476,9 @@ class PassRequest:
     pass_id: int
     t: float                                   # loop clock at submit
     frame: np.ndarray
-    ctx: SemanticContext
+    ctx: SemanticContext | None                # None for kind="warmup"
     labels: list[str] | None
-    kind: str                                  # full | roi | destination
+    kind: str                                  # full | roi | destination | warmup
 
 
 @dataclass
@@ -493,6 +506,7 @@ class SemanticsWorker:
         self.errors = 0
         self.last_error: str | None = None
         self.latencies: list[float] = []
+        self.warmup_s: float | None = None
         self._q: queue.Queue[PassRequest] = queue.Queue(maxsize=1)
         self._out: queue.Queue[PassResult] = queue.Queue(maxsize=1)
         self._stop = threading.Event()
@@ -531,6 +545,14 @@ class SemanticsWorker:
                 continue
             t0 = time.time()
             try:
+                if req.kind == "warmup":
+                    self.vision.warmup()
+                    self.warmup_s = time.time() - t0
+                    self.completed += 1
+                    self._push(PassResult(
+                        pass_id=req.pass_id, t_submit=req.t, kind="warmup",
+                        labels=None, model=self.vision.name, t_done_wall=time.time()))
+                    continue
                 dets = self.vision.infer(req.frame, labels=req.labels)
                 objects, rejected = project_detections(dets, req.frame, req.ctx, self.cfg, req.t)
                 self.completed += 1
@@ -546,9 +568,9 @@ class SemanticsWorker:
                     pass_id=req.pass_id, t_submit=req.t, kind=req.kind, labels=req.labels,
                     model=self.vision.name, error=self.last_error, t_done_wall=time.time()))
 
-    def close(self) -> None:
+    def close(self, timeout_s: float = 1.0) -> None:
         self._stop.set()
-        self._thread.join(timeout=1.0)
+        self._thread.join(timeout=timeout_s)
 
 
 class SemanticsRunner:
@@ -569,6 +591,25 @@ class SemanticsRunner:
                         "resolution": 0, "cooldown": 0}
         self.stale_dropped = 0
         self._resolution_warned = False
+        self.warmup_ms: float | None = None
+        self.prewarmed = False
+
+    # -- warm-up ------------------------------------------------------------
+    def prewarm(self, t: float) -> bool:
+        """Offer a warm-up pass so a real model loads on the worker thread.
+
+        Without this the first data pass pays a 5-60 s load and its result is
+        dropped as stale (``max_age_s`` is measured against submit time).
+        """
+        if self._inflight is not None:
+            return False
+        pid = self._next_pass_id
+        self._next_pass_id += 1
+        req = PassRequest(pid, t, np.zeros((32, 32, 3), np.uint8), None, None, "warmup")
+        if not self.worker.offer(req):
+            return False
+        self._inflight = pid
+        return True
 
     # -- passes -------------------------------------------------------------
     def maybe_pass(self, t: float, ctx: SemanticContext, frame: np.ndarray, *,
@@ -622,6 +663,14 @@ class SemanticsRunner:
             return None
         if self._inflight == res.pass_id:
             self._inflight = None
+        if res.kind == "warmup":
+            if res.error:
+                self.fail_cooldown_until = t + self.semantics_cfg.failure_cooldown_s
+            else:
+                self.prewarmed = True
+                if self.worker.warmup_s is not None:
+                    self.warmup_ms = round(self.worker.warmup_s * 1000.0, 1)
+            return None
         if res.error:
             self.fail_cooldown_until = t + self.semantics_cfg.failure_cooldown_s
             return None
@@ -636,8 +685,8 @@ class SemanticsRunner:
     def set_destination(self, dest: Destination | None) -> None:
         self.store.set_destination(dest)
 
-    def close(self) -> None:
-        self.worker.close()
+    def close(self, timeout_s: float = 5.0) -> None:
+        self.worker.close(timeout_s=timeout_s)
 
     def stats(self) -> dict:
         lat = sorted(self.worker.latencies)
@@ -651,6 +700,11 @@ class SemanticsRunner:
             "rejected_total": self.store.rejected_total,
             "stale_dropped": self.stale_dropped,
             "skipped": dict(self.skipped),
+            "warmup_ms": self.warmup_ms,
+            "prewarmed": self.prewarmed,
+            "model_load_s": getattr(self.vision, "load_s", None),
+            "unknown_phrases": getattr(self.vision, "unknown_phrases", 0),
+            "malformed_entries": getattr(self.vision, "malformed_entries", 0),
             "median_ms": round(lat[len(lat) // 2] * 1000, 1) if lat else None,
         }
 

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import resource
 import sys
 import time
 from pathlib import Path
@@ -78,6 +79,10 @@ def main(argv=None) -> int:
     p.add_argument("--seconds-warm", type=float, default=2.0,
                    help="extra camera warm-up time (floor sample + grid)")
     p.add_argument("--save-frame", default=None, help="write the homography-space frame here")
+    p.add_argument("--shortest-edge", type=int, default=None,
+                   help="override semantics.model.image_shortest_edge (processor size)")
+    p.add_argument("--longest-edge", type=int, default=None,
+                   help="override semantics.model.image_longest_edge (processor size)")
     args = p.parse_args(argv)
 
     cfg = RoomConfig.load(args.config)
@@ -85,6 +90,10 @@ def main(argv=None) -> int:
         cfg.semantics.model.kind = args.kind
     if args.labels:
         cfg.semantics.model.labels = [s.strip() for s in args.labels.split(",") if s.strip()]
+    if args.shortest_edge:
+        cfg.semantics.model.image_shortest_edge = args.shortest_edge
+    if args.longest_edge:
+        cfg.semantics.model.image_longest_edge = args.longest_edge
     kind = cfg.semantics.model.kind
 
     perc = Perception(cfg)
@@ -110,10 +119,10 @@ def main(argv=None) -> int:
 
     try:
         vision = build_vision(cfg.semantics, perc.homography)
-    except NotImplementedError as e:
+    except (NotImplementedError, RuntimeError) as e:
         print(f"[smoke] cannot build adapter: {e}", file=sys.stderr)
-        print("[smoke] real adapters are the M2 blocker gated on owner decision D1 "
-              "(vision default); see docs/reviews/m1-semantics/m2-design.md §2",
+        print("[smoke] for kind=local install requirements-vision.txt; for kind=remote "
+              "set semantics.model.endpoint (see docs/reviews/m1-semantics/m2-design.md §2)",
               file=sys.stderr)
         return 1
 
@@ -124,12 +133,26 @@ def main(argv=None) -> int:
         print(f"[smoke] {type(e).__name__}: {e}", file=sys.stderr)
         return 1
     latency_ms = (time.time() - t0) * 1000.0
+    peak_rss_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
     print(f"[smoke] model={vision.name} load_s={getattr(vision, 'load_s', None)} "
-          f"latency_ms={latency_ms:.0f} detections={len(dets)}")
+          f"latency_ms={latency_ms:.0f} detections={len(dets)} "
+          f"peak_rss_mb={peak_rss_mb:.0f}")
     for d in dets:
         print(f"  det {d.label!r} bbox={d.bbox_px} score={d.score:.2f}")
 
     ctx = perc.semantic_context(t)
+    frame_matches = (perc.frame_h.shape[1], perc.frame_h.shape[0]) == \
+        (cfg.camera.width, cfg.camera.height)
+    if not frame_matches:
+        print(f"[smoke] note: frame {perc.frame_h.shape[1]}x{perc.frame_h.shape[0]} does not match "
+              f"the configured camera {cfg.camera.width}x{cfg.camera.height}; floor projection "
+              f"skipped for this run (detections only)")
+        print(json.dumps({"model": vision.name, "latency_ms": round(latency_ms, 1),
+                          "peak_rss_mb": round(peak_rss_mb, 1), "objects": [],
+                          "projection": "skipped: frame/camera size mismatch",
+                          "detections": [{"label": d.label, "bbox_px": list(d.bbox_px),
+                                          "score": d.score} for d in dets]}))
+        return 0 if dets else 2
     objects, rejected = project_detections(dets, perc.frame_h, ctx, cfg.semantics, t)
     for o in objects:
         print(f"  obj {o.label!r} -> ({o.x:.2f},{o.y:.2f}) m conf={o.confidence:.2f} "
@@ -138,6 +161,9 @@ def main(argv=None) -> int:
     print(json.dumps({
         "model": vision.name,
         "latency_ms": round(latency_ms, 1),
+        "peak_rss_mb": round(peak_rss_mb, 1),
+        "shortest_edge": cfg.semantics.model.image_shortest_edge,
+        "longest_edge": cfg.semantics.model.image_longest_edge,
         "objects": [{"label": o.label, "x": o.x, "y": o.y,
                      "confidence": o.confidence, "height_suspect": o.height_suspect}
                     for o in objects],

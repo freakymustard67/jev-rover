@@ -8,6 +8,7 @@ loudly, not mid-episode.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import asdict, dataclass, field, fields, is_dataclass
 from pathlib import Path
 from typing import Any, get_type_hints
@@ -123,6 +124,20 @@ class VisionModelConfig:
     endpoint: str = ""
     timeout_s: float = 10.0
     fixtures: list[FixtureEntry] = field(default_factory=list)
+    # --- M2 real adapters (m2-design.md §2.6) ---
+    model_id: str = ""                 # local: HF id; "" -> vision.DEFAULT_LOCAL_MODEL
+    device: str = "auto"               # auto | cpu | cuda | cuda:N
+    half: bool = False                 # fp16, cuda only
+    image_shortest_edge: int = 800     # processor size (CPU profile: 400)
+    image_longest_edge: int = 1333     # (CPU profile: 666)
+    box_threshold: float = 0.30
+    text_threshold: float = 0.25
+    warmup: bool = True                # one forward pass on the worker thread at startup
+    input_scale: float = 1.0           # optional frame downscale; boxes rescaled back
+    prompt_attributes: bool = False    # FG-OVD-style repeated class token in the prompt
+    jpeg_quality: int = 85             # remote
+    jpeg_max_px: int = 0               # remote: longest JPEG edge; 0 = off
+    auth_env: str = "JEV_ROVER_VISION_TOKEN"   # remote bearer token, env only
 
 
 @dataclass
@@ -302,6 +317,27 @@ class RoomConfig:
         _check_choice(s.model.kind, ("fake", "local", "remote"), f"{where}.semantics.model.kind")
         if s.model.timeout_s <= 0:
             raise ConfigError(f"{where}.semantics.model.timeout_s must be > 0")
+        m = s.model
+        if m.kind in ("local", "remote") and not m.labels:
+            raise ConfigError(f"{where}.semantics.model.labels must be non-empty "
+                              f"for kind {m.kind!r} (a real model needs a prompt)")
+        for name, value in (("box_threshold", m.box_threshold),
+                            ("text_threshold", m.text_threshold)):
+            if not 0.0 < value < 1.0:
+                raise ConfigError(f"{where}.semantics.model.{name} must be in (0, 1)")
+        if not 0.0 < m.input_scale <= 1.0:
+            raise ConfigError(f"{where}.semantics.model.input_scale must be in (0, 1]")
+        if m.image_shortest_edge < 64:
+            raise ConfigError(f"{where}.semantics.model.image_shortest_edge must be >= 64")
+        if m.image_longest_edge < m.image_shortest_edge:
+            raise ConfigError(f"{where}.semantics.model.image_longest_edge must be "
+                              f">= image_shortest_edge")
+        if not 1 <= m.jpeg_quality <= 100:
+            raise ConfigError(f"{where}.semantics.model.jpeg_quality must be in [1, 100]")
+        if m.jpeg_max_px < 0:
+            raise ConfigError(f"{where}.semantics.model.jpeg_max_px must be >= 0")
+        if not re.fullmatch(r"(auto|cpu|cuda(:\d+)?)", m.device):
+            raise ConfigError(f"{where}.semantics.model.device must be auto|cpu|cuda[:N]")
         for i, fx in enumerate(s.model.fixtures):
             w = f"{where}.semantics.model.fixtures[{i}]"
             if not fx.label:
