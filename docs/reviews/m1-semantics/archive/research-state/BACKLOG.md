@@ -45,3 +45,4 @@ Rules: take from the top; keep items small enough for a 2–3 subagent hour; add
 ## Ops
 - [x] **O1 — Docs errata list** — collected → `REVIEW-m1-consolidated.md` §7; application pending owner (track via V11).
 - [x] **O2 — PR contents** — **PR #1 open:** https://github.com/freakymustard67/jev-rover/pull/1 (review doc + fix rationale + M2 design note + 14 commits).
+- [x] **O3 — Consolidate all reports → archive PR** — done 2026-09-29: **PR #2 open:** https://github.com/freakymustard67/jev-rover/pull/2 (waves 1–2 + cron #1–6 reports/evidence/patches under `docs/reviews/m1-semantics/archive/`). Cron paused the same morning.

@@ -1,7 +1,7 @@
 # jev-rover research workspace
 
 Hourly, automated, **read-only** verification & improvement over the jev-rover
-semantics layer (plan: `~/jev-rover/docs/planning/`, milestones M1–M4). Seeded 2026-09-29.
+semantics layer (plan: `~/jev-rover/docs/planning/`, milestones M1–M4). Seeded 2026-09-29; **paused 2026-09-29 (after six full passes)** — resume anytime via the Stop/adjust line below.
 
 Each hour a fresh agent session:
 1. checks the repo for new commits — if any, that run verifies the delta first;
