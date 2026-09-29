@@ -294,7 +294,11 @@ There is no automated test for this hardware path; do these by hand.
    ```
 
    One-shot is not enough: without command traffic the watchdog aborts the sweep by
-   design (rule 7).
+   design (rule 7). A raw one-liner also triggers a (short-lived) sweep:
+
+   ```sh
+   printf '{"t":1,"seq":1,"v":0,"w":0,"ttl_ms":400,"scan":{"id":1,"action":"start","start_deg":-90,"end_deg":90,"step_deg":6,"rate_hz":20}}' | nc -u <rover-ip> 4210
+   ```
 
 2. **Decode the chunks.** Sniff UDP on the laptop. Every result datagram must start
    with `0x53`; `n_samples` must never exceed 64 (62 with the default optionals);
