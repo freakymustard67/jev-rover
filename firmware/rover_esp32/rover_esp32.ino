@@ -69,9 +69,11 @@
 #define RVR_SENSOR_VL53L0X 1
 #define RVR_SENSOR_HCSR04  2
 
-// EXAMPLE default: a VL53L0X time-of-flight sensor on I2C.
-// Switch to RVR_SENSOR_HCSR04 for the HC-SR04 (pulseIn) fallback.
-#define RVR_DISTANCE_SENSOR RVR_SENSOR_VL53L0X
+// This rover: HC-SR04 ultrasonic (front).
+// Caveat from the README: a DISCONNECTED HC-SR04 reads as "open space"
+// (timeout -> 4.0 m), so keep wheels off the ground until it is wired.
+// Use RVR_SENSOR_VL53L0X for a VL53L0X ToF on I2C instead.
+#define RVR_DISTANCE_SENSOR RVR_SENSOR_HCSR04
 
 // --- scan sensor (servo ToF sweep; HARDWARE-UNVERIFIED, see README) ---
 #define RVR_SCAN_SENSOR_VL53L1X 1   // ST ULD API shape; 4 m class; non-blocking ready poll
@@ -109,21 +111,26 @@
 // while driving. See "Wireless updates (OTA)" in firmware/README.md.
 #define RVR_OTA 1
 
+// Servo ToF sweep (sections 9, 10, 14). 0 = no scan sensor fitted: the
+// sensor/servo hardware layer is stubbed and any scan command completes with
+// timeouts only. Set to 1 when a VL53L1X (with its ST ULD headers) is fitted.
+#define RVR_ENABLE_SCAN 0
+
 #if RVR_ENABLE_REAR_SENSOR && (RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X)
 #error "RVR_ENABLE_REAR_SENSOR=1 needs the HC-SR04 driver: two VL53L0X sensors share I2C address 0x29 and re-addressing via XSHUT is not implemented. Set RVR_ENABLE_REAR_SENSOR to 0, or set RVR_DISTANCE_SENSOR to RVR_SENSOR_HCSR04."
 #endif
 
-#if (RVR_SCAN_SENSOR != RVR_SCAN_SENSOR_VL53L1X) && (RVR_SCAN_SENSOR != RVR_SCAN_SENSOR_VL53L0X)
+#if RVR_ENABLE_SCAN && (RVR_SCAN_SENSOR != RVR_SCAN_SENSOR_VL53L1X) && (RVR_SCAN_SENSOR != RVR_SCAN_SENSOR_VL53L0X)
 #error "RVR_SCAN_SENSOR must be RVR_SCAN_SENSOR_VL53L1X or RVR_SCAN_SENSOR_VL53L0X."
 #endif
 
 // The L0X scan fallback is just the Adafruit VL53L0X front driver, so it
 // can only be compiled when that driver is selected for the front sensor.
-#if (RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L0X) && (RVR_DISTANCE_SENSOR != RVR_SENSOR_VL53L0X)
+#if RVR_ENABLE_SCAN && (RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L0X) && (RVR_DISTANCE_SENSOR != RVR_SENSOR_VL53L0X)
 #error "RVR_SCAN_SENSOR_VL53L0X reuses the Adafruit VL53L0X front-sensor driver, which is only compiled in when RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X. Either set RVR_DISTANCE_SENSOR to RVR_SENSOR_VL53L0X, or use RVR_SCAN_SENSOR_VL53L1X for the sweep."
 #endif
 
-#if RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L0X
+#if RVR_ENABLE_SCAN && RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L0X
 #warning "Scan fallback: the Adafruit VL53L0X has no non-blocking readiness poll, so the scan interleave guarantees are weaker (bench use only; see README)."
 #endif
 
@@ -147,7 +154,7 @@
   #include <Adafruit_VL53L0X.h>
 #endif
 
-#if RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L1X
+#if RVR_ENABLE_SCAN && RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L1X
   // HARDWARE-UNVERIFIED: the ST ULD VL53L1X API. Ports differ in header
   // names and platform bring-up; section 9 uses the function names from
   // UM2356 and isolates every hardware call in three small functions.
@@ -285,7 +292,7 @@ constexpr float RVR_SLEW_UP_V_PER_TICK   = 0.02f;   // 0.6 m/s in ~600 ms
 constexpr float RVR_SLEW_DOWN_V_PER_TICK = 0.10f;   // 0.6 m/s -> 0 in ~120 ms
 
 // --- PWM ---
-constexpr uint32_t RVR_PWM_FREQ_HZ  = 20000;  // above audible range; L298N users: use ~5000
+constexpr uint32_t RVR_PWM_FREQ_HZ  = 5000;   // L298N (this rover); TB6612FNG can take 20000
 constexpr uint8_t  RVR_PWM_RES_BITS = 10;
 constexpr uint32_t RVR_PWM_MAX = (1u << RVR_PWM_RES_BITS) - 1u;
 constexpr float RVR_PWM_RAMP_STEP = 0.05f;   // max PWM change per tick (~1.0 -> 0 in 400 ms)
@@ -424,13 +431,12 @@ public:
     digitalWrite(_in1, LOW);
     digitalWrite(_in2, LOW);
 
-    // NOTE: Arduino-ESP32 core 3.x deprecates ledcSetup()/ledcAttachPin()
-    // in favour of ledcAttach(pin, freq, res). Both work on 3.x; on 3.x
-    // you may replace the two calls below with ledcAttach(_pwmPin,
-    // RVR_PWM_FREQ_HZ, RVR_PWM_RES_BITS).
-    ledcSetup(_ch, RVR_PWM_FREQ_HZ, RVR_PWM_RES_BITS);
-    ledcAttachPin(_pwmPin, _ch);
-    ledcWrite(_ch, 0);
+    // Arduino-ESP32 core 3.x LEDC API: ledcAttach(pin, freq, res) allocates
+    // a channel for the pin; ledcWrite() addresses the PIN. (The legacy
+    // ledcSetup()/ledcAttachPin()/channel-write API was removed in 3.3.x;
+    // _ch is retained for debug/telemetry compatibility only.)
+    ledcAttach(_pwmPin, RVR_PWM_FREQ_HZ, RVR_PWM_RES_BITS);
+    ledcWrite(_pwmPin, 0);
   }
 
   // norm in [-1, +1]. The output ramps toward it by at most
@@ -465,7 +471,7 @@ private:
       digitalWrite(_in1, LOW);
       digitalWrite(_in2, LOW);
     }
-    ledcWrite(_ch, duty);
+    ledcWrite(_pwmPin, duty);
   }
 
   uint8_t _pwmPin = 0;
@@ -612,6 +618,7 @@ private:
   uint8_t _echo = 0;
 };
 
+#if RVR_ENABLE_SCAN
 // =====================================================================
 //  9. SCAN SENSOR ABSTRACTION  (ToF for the servo sweep)
 // ---------------------------------------------------------------------
@@ -753,7 +760,7 @@ static void rvrServoWritePulseUs(uint32_t pulseUs) {
   if (pulseUs > RVR_SERVO_PERIOD_US) pulseUs = RVR_SERVO_PERIOD_US;  // defensive
   const uint32_t duty =
       (pulseUs * ((1u << RVR_SERVO_RES_BITS) - 1u)) / RVR_SERVO_PERIOD_US;
-  ledcWrite(RVR_SERVO_CH, duty);
+  ledcWrite(RVR_SERVO_PIN, duty);
 }
 
 // Pulse for an angle: start_deg -> RVR_SERVO_PULSE_MIN_US, end_deg ->
@@ -779,10 +786,17 @@ static void rvrServoWriteAngle(int16_t angleDd, int16_t startDd, int16_t endDd) 
 // Setup-time init; call once from setup(). Parks the servo mid-range until a
 // command asks for a sweep.
 static void rvrServoBegin() {
-  ledcSetup(RVR_SERVO_CH, RVR_SERVO_HZ, RVR_SERVO_RES_BITS);
-  ledcAttachPin(RVR_SERVO_PIN, RVR_SERVO_CH);
+  ledcAttach(RVR_SERVO_PIN, RVR_SERVO_HZ, RVR_SERVO_RES_BITS);
   rvrServoWritePulseUs(RVR_SERVO_PARK_US);
 }
+#else   // !RVR_ENABLE_SCAN -- stubs so setup() and the scan FSM still link
+static bool rvrScanSensorBegin() { return false; }
+static bool rvrScanSensorReady() { return false; }
+static bool rvrScanSensorFetch(uint16_t*, uint8_t*, uint16_t*, uint16_t*) { return false; }
+static void rvrServoBegin() {}
+static uint32_t rvrServoPulseUsFor(int16_t, int16_t, int16_t) { return RVR_SERVO_PARK_US; }
+static void rvrServoWriteAngle(int16_t, int16_t, int16_t) {}
+#endif  // RVR_ENABLE_SCAN
 
 // =====================================================================
 // 11. GLOBAL STATE
@@ -1180,7 +1194,7 @@ static void rvrScanRecordSample(uint32_t now, uint8_t status, uint16_t rangeMm,
   g_scan.idx++;
 
   if (advance && g_scan.idx < g_scan.n) {
-    g_scan.angleDd = (int16_t)(g_scan.angleDd + (int16_t)g_scan.stepDd);
+    g_scan.angleDd = (int16_t)(g_scan.angleDd + (int16_t)g_scan.act.stepDd);
     rvrServoWriteAngle(g_scan.angleDd, g_scan.act.startDd, g_scan.act.endDd);  // ONE write
     g_scan.tSlotMs = now;   // the next slot starts waiting now
   }
@@ -1713,7 +1727,7 @@ void setup() {
   // Distance sensors. The I2C bus is also needed when the scan sensor is
   // the VL53L1X, even if the front distance sensor is an HC-SR04.
 #if (RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X) || \
-    (RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L1X)
+    (RVR_ENABLE_SCAN && (RVR_SCAN_SENSOR == RVR_SCAN_SENSOR_VL53L1X))
   Wire.begin(RVR_I2C_SDA, RVR_I2C_SCL);
   Wire.setClock(400000);
 #endif
@@ -1731,6 +1745,7 @@ void setup() {
   // Scan sensor + servo (HARDWARE-UNVERIFIED; see README "Scan mode").
   // The sensor init runs here and only here: it may block internally, and
   // it is unreachable from the scan FSM (interleave rule 3).
+#if RVR_ENABLE_SCAN
   const bool scanOk = rvrScanSensorBegin();
   if (scanOk) {
     Serial.println("[scan] scan sensor ready");
@@ -1742,6 +1757,9 @@ void setup() {
                 (unsigned)RVR_SERVO_CH, (unsigned)RVR_SERVO_PIN,
                 (unsigned)RVR_SERVO_HZ, (unsigned)RVR_SCAN_GRID_MS,
                 (unsigned)RVR_SCAN_BUDGET_MS, (unsigned)RVR_SCAN_TIMEOUT_MS);
+#else
+  Serial.println("[scan] disabled (RVR_ENABLE_SCAN 0; no scan sensor fitted)");
+#endif
 
   rvrInitEncoderPins();
 
@@ -1759,9 +1777,9 @@ void setup() {
 #ifdef ROVER_STATIC_IP
   WiFi.config(IPAddress(ROVER_IP), IPAddress(ROVER_GATEWAY), IPAddress(ROVER_SUBNET));
 #endif
-  WiFi.begin(RVR_WIFI_SSID, RVR_WIFI_PASSWORD);
+  WiFi.begin(ROVER_WIFI_SSID, ROVER_WIFI_PASSWORD);
 
-  Serial.printf("[wifi] connecting to \"%s\"", RVR_WIFI_SSID);
+  Serial.printf("[wifi] connecting to \"%s\"", ROVER_WIFI_SSID);
   const uint32_t start = millis();
   while (WiFi.status() != WL_CONNECTED &&
          (uint32_t)(millis() - start) < RVR_WIFI_TIMEOUT_MS) {
