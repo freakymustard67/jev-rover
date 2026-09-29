@@ -68,6 +68,25 @@ def test_ids_stable_with_two_same_label_objects(tmp_path):
     assert xs[0] < 1.5 and xs[1] > 3.5, xs
 
 
+def test_label_matching_folds_case_and_plurals(tmp_path):
+    st = _store(tmp_path)
+    st.merge([_obj("Blue Mat", 3.0, 1.2)], 0, "fake", 0.0)
+    m = st.merge([_obj("blue mats", 3.02, 1.19)], 0, "fake", 1.0)
+    assert not m.diff.appeared and not m.diff.vanished, "one object, not two"
+    assert len(m.objects) == 1 and m.objects[0].label == "Blue Mat", \
+        "the display label keeps its original spelling"
+
+
+def test_contested_detection_goes_to_the_nearest_object(tmp_path):
+    """Distance-ordered assignment: insertion order must not decide a match."""
+    st = _store(tmp_path)
+    st.merge([_obj("mat", 1.0, 1.0), _obj("mat", 1.4, 1.0)], 0, "fake", 0.0)
+    m = st.merge([_obj("mat", 1.3, 1.0)], 0, "fake", 1.0)  # 0.30 m from obj 1, 0.10 m from obj 2
+    assert not m.diff.appeared
+    assert st.objs["obj_0001"].x == 1.0, "the far object must not steal the detection"
+    assert abs(st.objs["obj_0002"].x - (0.6 * 1.4 + 0.4 * 1.3)) < 1e-9
+
+
 def test_smoothing_converges(tmp_path):
     st = _store(tmp_path)
     st.merge([_obj("mat", 1.0, 1.0)], 0, "fake", 0.0)
@@ -84,12 +103,54 @@ def test_appeared_respects_min_confidence(tmp_path):
     assert m.diff.appeared == [], "...but they are not announced as appeared"
 
 
+def test_sub_threshold_hits_only_refresh_freshness(tmp_path):
+    """A low-score detection must not move the object or overwrite its flags."""
+    st = _store(tmp_path)
+    st.merge([_obj("mat", 3.0, 1.2, 0.9, hs=True)], 0, "fake", 0.0)
+    m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 1.0)
+    o = m.objects[0]
+    assert o.x == 3.0 and o.confidence == 0.9 and o.height_suspect is True
+    assert o.last_seen_s == 1.0, "sub-threshold hits still count as seen"
+    m = st.merge([_obj("mat", 3.4, 1.2, score=0.2)], 0, "fake", 2.0)
+    assert not m.diff.vanished, "freshness from low-confidence hits keeps it alive"
+    assert m.diff.moved == [], "no motion is reported from a rejected detection"
+
+
+def test_height_suspect_flips_only_on_two_of_three(tmp_path):
+    """Hysteresis: one noisy probe must not flap the flag either way."""
+    st = _store(tmp_path)
+    st.merge([_obj("box", 3.0, 1.0)], 0, "fake", 0.0)
+    m = st.merge([_obj("box", 3.0, 1.0, hs=True)], 0, "fake", 1.0)
+    assert m.objects[0].height_suspect is False, "1 of 1 is not a majority"
+    m = st.merge([_obj("box", 3.0, 1.0, hs=True)], 0, "fake", 2.0)
+    assert m.objects[0].height_suspect is True, "2 of 3 agree -> flip up"
+    m = st.merge([_obj("box", 3.0, 1.0, hs=False)], 0, "fake", 3.0)
+    assert m.objects[0].height_suspect is True, "one clean probe must not flip it back"
+    m = st.merge([_obj("box", 3.0, 1.0, hs=False)], 0, "fake", 4.0)
+    assert m.objects[0].height_suspect is False, "2 of 3 clear -> flip down"
+
+
 def test_height_suspect_and_rejected_propagate(tmp_path):
     st = _store(tmp_path)
     m = st.merge([_obj("box", 3.0, 1.0, hs=True)], rejected=2, model="fake", t_pass=0.0)
     assert m.objects[0].height_suspect is True
     assert st.rejected_total == 2
     assert m.age_s == 0.0
+
+
+def test_eviction_caps_resurrection_and_map_growth(tmp_path):
+    """After max_misses missed passes the object is gone; a return is a new id."""
+    st = _store(tmp_path, max_misses=3)
+    st.merge([_obj("mat", 3.0, 1.2)], 0, "fake", 0.0)
+    for i in (1.0, 2.0):
+        st.merge([], 0, "fake", i)
+    assert "obj_0001" in st.objs, "not evicted before the cap"
+    m = st.merge([], 0, "fake", 3.0)                       # third miss -> evict
+    assert "obj_0001" not in st.objs
+    assert m.diff.vanished == [], "the vanish event already fired at vanish_passes"
+    m = st.merge([_obj("mat", 3.0, 1.2)], 0, "fake", 4.0)
+    assert m.diff.appeared == ["obj_0002"], "a returning object is a new identity"
+    assert len(m.objects) == 1, "the map does not grow from churn"
 
 
 def test_persistence_round_trip(tmp_path):

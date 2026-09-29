@@ -19,6 +19,7 @@ import json
 import math
 import os
 import time
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -170,7 +171,8 @@ def parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--config", default="config/room.json")
     p.add_argument("--source", choices=["camera", "synthetic"], default="camera")
     p.add_argument("--camera", default=None, help="override camera.source")
-    p.add_argument("--mission", choices=["goto", "patrol", "track"], default="goto")
+    p.add_argument("--mission", choices=["none", "goto", "patrol", "track"], default=None,
+                   help="none idles; goto needs --waypoint; --find defaults to none")
     p.add_argument("--waypoint", default=None)
     p.add_argument("--route", default=None)
     p.add_argument("--instruction", default=None, help="natural-language mission text (logged)")
@@ -186,10 +188,11 @@ def parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--local-port", type=int, default=4211)
     p.add_argument("--perception-hz", type=float, default=15.0)
     p.add_argument("--control-hz", type=float, default=20.0)
-    p.add_argument("--semantics", choices=["off", "fake"], default="off",
-                   help="off follows config.semantics.enabled; fake forces the fixture adapter (M1)")
+    p.add_argument("--semantics", choices=["off", "fake"], default=None,
+                   help="unset follows config.semantics.enabled; off disables outright; "
+                        "fake forces the fixture adapter (M1)")
     p.add_argument("--semantics-once", action="store_true",
-                   help="single semantic pass at mission start, no further triggers (M1 default)")
+                   help="mission-start pass only; without it audits run every audit_period_s")
     p.add_argument("--find", default=None, metavar="LABEL",
                    help="resolve a natural-language destination from the semantic map and print it")
     p.add_argument("--video", default=None)
@@ -229,7 +232,23 @@ def main(argv=None) -> int:
 
     perception = Perception(cfg)
     executor = Executor(cfg, perception.grid, require_telemetry=isinstance(link, UDPLink))
-    goals = GoalManager(cfg, args.mission, args.waypoint, args.route, args.goal_tol,
+
+    # Tri-state semantics: unset follows config.semantics.enabled; 'off' disables
+    # outright (even over an enabled config); 'fake' forces the fixture adapter.
+    # --find needs the runner, so it enables it unless semantics were turned off.
+    if args.semantics == "off":
+        sem_on, find_label = False, None
+        if args.find:
+            print("[find] ignored: --semantics off disables the semantic layer")
+    else:
+        sem_on = cfg.semantics.enabled or args.semantics == "fake" or bool(args.find)
+        find_label = args.find
+
+    # --find only resolves and prints, so it gets an idle default mission
+    # instead of the legacy goto default demanding --waypoint.
+    mission = args.mission or ("goto" if args.waypoint or not find_label else "none")
+
+    goals = GoalManager(cfg, mission, args.waypoint, args.route, args.goal_tol,
                         args.instruction)
     tact = None
     if not args.no_jev:
@@ -239,13 +258,18 @@ def main(argv=None) -> int:
     metrics = Metrics()
 
     runner = None
-    if args.semantics == "fake" or args.find or cfg.semantics.enabled:
-        vision = build_vision(cfg.semantics, perception.homography)
+    if sem_on:
+        sem_cfg = cfg.semantics
+        if args.semantics == "fake" and sem_cfg.model.kind != "fake":
+            sem_cfg = replace(sem_cfg, model=replace(sem_cfg.model, kind="fake"))
+        vision = build_vision(sem_cfg, perception.homography)
         runner = SemanticsRunner(cfg, cfg.name, vision)
         n_fixtures = len(getattr(vision, "fixtures", []))
-        print(f"[semantics] enabled: model={vision.name} fixtures={n_fixtures} "
-              f"(M1: one pass at mission start, no triggers)")
+        cadence = ("one pass at mission start" if args.semantics_once
+                   else f"mission-start pass + audit every {cfg.semantics.audit_period_s:.0f}s")
+        print(f"[semantics] enabled: model={vision.name} fixtures={n_fixtures} ({cadence})")
     semantics_fired = False
+    next_audit_t = float("inf")
     find_done = False
     log_file = open(args.log, "a") if args.log else None
 
@@ -294,19 +318,27 @@ def main(argv=None) -> int:
                         if runner.maybe_pass(t, perception.semantic_context(t), frame,
                                              kind="full", force=True):
                             semantics_fired = True
+                            next_audit_t = t + cfg.semantics.audit_period_s
+                    elif (semantics_fired and not args.semantics_once
+                          and t >= next_audit_t):
+                        # Audit cadence (proposal §8); --semantics-once pins the
+                        # mission-start pass only. Budgets/interval still apply.
+                        runner.maybe_pass(t, perception.semantic_context(t), frame,
+                                          kind="audit")
+                        next_audit_t = t + cfg.semantics.audit_period_s
                     scene.semantics = runner.snapshot(t)
-                    if args.find and not find_done and scene.semantics is not None:
-                        dest = resolve_destination(args.find, scene.semantics, cfg=cfg.semantics)
+                    if find_label and not find_done and scene.semantics is not None:
+                        dest = resolve_destination(find_label, scene.semantics, cfg=cfg.semantics)
                         if dest is not None:
                             ax, ay = approach_point(dest, (scene.pose.x, scene.pose.y),
                                                     cfg.destination.standoff_m)
                             runner.set_destination(dest)
-                            print(f"[find] '{args.find}' -> {dest.label} at "
+                            print(f"[find] '{find_label}' -> {dest.label} at "
                                   f"({dest.x:.2f},{dest.y:.2f}) m conf={dest.confidence:.2f} "
                                   f"object={dest.object_id}; approach ({ax:.2f},{ay:.2f}) "
                                   f"standoff={cfg.destination.standoff_m} m")
                         else:
-                            print(f"[find] '{args.find}': no destination resolved "
+                            print(f"[find] '{find_label}': no destination resolved "
                                   f"(passes={scene.semantics.passes})")
                         find_done = True
                 judg = tact.read(t) if tact is not None else dict(DEFAULT, source="none")
@@ -336,7 +368,6 @@ def main(argv=None) -> int:
                               f"jev={judg.get('maneuver')}({judg.get('source')},"
                               f"{judg.get('age_s')}) risk={judg.get('risk')} "
                               f"cmd=({cmd.v_mps:+.2f},{cmd.w_deg_s:+.0f},{cmd.source})")
-                print(trace_line)
 
             if args.video or args.show:
                 canvas = renderer.draw(frame, scene, judg, cmd, executor.path)
@@ -368,7 +399,7 @@ def main(argv=None) -> int:
     summary = {
         "config": args.config,
         "source": args.source,
-        "mission": args.mission,
+        "mission": mission,
         "jevs": not args.no_jev,
         "link": type(link).__name__,
         "metrics": metrics.summary(t_total, goals.reached, goals.expected),

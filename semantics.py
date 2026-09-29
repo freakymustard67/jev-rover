@@ -31,6 +31,7 @@ import math
 import os
 import queue
 import re
+import sys
 import threading
 import time
 from dataclasses import asdict, dataclass, field, replace
@@ -47,6 +48,7 @@ from scene import Destination, SemanticDiff, SemanticMap, SemanticObject
 VISION_KINDS = ("fake", "local", "remote")
 ANCHOR_POINTS = ("bbox_bottom_center", "bbox_center", "centroid")
 MAX_DETECTIONS = 64
+PROBE_PATCH_PX = (7, 3)                # probe median patch (w, h) below the bbox base
 EVENT_LOG = "events.jsonl"
 
 
@@ -90,8 +92,8 @@ class FakeVision:
             raise ValueError("FakeVision expects a BGR frame")
         if not labels:
             return list(self.fixtures)
-        want = {lbl.strip().lower() for lbl in labels}
-        return [d for d in self.fixtures if d.label.strip().lower() in want]
+        want = {canonical_label(lbl) for lbl in labels}
+        return [d for d in self.fixtures if canonical_label(d.label) in want]
 
     @classmethod
     def from_world(cls, entries, homography: Homography,
@@ -117,8 +119,8 @@ def build_vision(cfg: SemanticsConfig, homography: Homography) -> VisionModel:
     if kind == "fake":
         entries = list(cfg.model.fixtures)
         if cfg.model.labels:
-            want = {lbl.strip().lower() for lbl in cfg.model.labels}
-            entries = [e for e in entries if e.label.strip().lower() in want]
+            want = {canonical_label(lbl) for lbl in cfg.model.labels}
+            entries = [e for e in entries if canonical_label(e.label) in want]
         return FakeVision.from_world(entries, homography)
     raise NotImplementedError(
         f"vision model kind {kind!r} is planned for M2; only 'fake' ships in M1")
@@ -152,15 +154,41 @@ def _iou(a: tuple[float, float, float, float], b: tuple[float, float, float, flo
     return inter / max(1e-9, area_a + area_b - inter)
 
 
-def dedupe_detections(dets: list[Detection], iou_thr: float) -> list[Detection]:
-    """Same-label overlapping detections collapse to the highest score."""
+def _centres_within_m(a: Detection, b: Detection, homography: Homography,
+                      thr_m: float) -> bool:
+    """World-space bbox-centre distance (the plan's 'centres < 0.15 m' clause)."""
+    if thr_m <= 0.0:
+        return False
+    ca = np.array([[(a.bbox_px[0] + a.bbox_px[2]) / 2.0, (a.bbox_px[1] + a.bbox_px[3]) / 2.0]])
+    cb = np.array([[(b.bbox_px[0] + b.bbox_px[2]) / 2.0, (b.bbox_px[1] + b.bbox_px[3]) / 2.0]])
+    wa = homography.img_to_world(ca)[0]
+    wb = homography.img_to_world(cb)[0]
+    return float(math.hypot(wa[0] - wb[0], wa[1] - wb[1])) <= thr_m
+
+
+def dedupe_detections(dets: list[Detection], iou_thr: float, *,
+                      homography: Homography | None = None,
+                      center_dist_m: float = 0.0) -> list[Detection]:
+    """Same-label duplicates collapse to the highest score.
+
+    Duplicates overlap (IoU > ``iou_thr``) or have projected centres within
+    ``center_dist_m`` metres (near-coincident detector boxes that do not
+    overlap); the world clause needs ``homography``.
+    """
     kept: list[Detection] = []
+    kept_canon: list[str] = []
     for d in sorted(dets, key=lambda d: -d.score):
         if d.bbox_px[2] <= d.bbox_px[0] or d.bbox_px[3] <= d.bbox_px[1]:
             continue
-        if any(k.label == d.label and _iou(k.bbox_px, d.bbox_px) > iou_thr for k in kept):
+        canon = canonical_label(d.label)
+        if any(canon == kc and (
+                   _iou(k.bbox_px, d.bbox_px) > iou_thr
+                   or (homography is not None
+                       and _centres_within_m(k, d, homography, center_dist_m)))
+               for kc, k in zip(kept_canon, kept)):
             continue
         kept.append(d)
+        kept_canon.append(canon)
     return kept[:MAX_DETECTIONS]
 
 
@@ -170,7 +198,13 @@ def _inside_polygon(polygon_px: np.ndarray, x: float, y: float) -> bool:
 
 
 def _lab_at(frame: np.ndarray, x: int, y: int) -> np.ndarray:
-    return cv2.cvtColor(frame[y, x].reshape(1, 1, 3), cv2.COLOR_BGR2LAB)[0, 0].astype(float)
+    """Median LAB over a small patch: one pixel sits in MJPG edge ringing."""
+    h, w = frame.shape[:2]
+    pw, ph = PROBE_PATCH_PX
+    x0, x1 = max(0, x - pw // 2), min(w, x + pw // 2 + 1)
+    y0, y1 = max(0, y - ph // 2), min(h, y + ph // 2 + 1)
+    patch = cv2.cvtColor(frame[y0:y1, x0:x1], cv2.COLOR_BGR2LAB).reshape(-1, 3)
+    return np.median(patch.astype(float), axis=0)
 
 
 def height_suspect(frame: np.ndarray, bbox: tuple[float, float, float, float],
@@ -209,7 +243,8 @@ def project_detections(dets: list[Detection], frame: np.ndarray, ctx: SemanticCo
     h, w = frame.shape[:2]
     objects: list[SemanticObject] = []
     rejected = 0
-    for d in dedupe_detections(dets, cfg.dedupe_iou):
+    for d in dedupe_detections(dets, cfg.dedupe_iou, homography=ctx.homography,
+                               center_dist_m=cfg.dedupe_center_m):
         x0 = max(0, min(w - 1, d.bbox_px[0]))
         y0 = max(0, min(h - 1, d.bbox_px[1]))
         x1 = max(0, min(w - 1, d.bbox_px[2]))
@@ -252,6 +287,7 @@ class SemanticStore:
         self.diff = SemanticDiff()
         self.destination: Destination | None = None
         self._misses: dict[str, int] = {}
+        self._hs_hist: dict[str, list[bool]] = {}
         self._labels: dict[str, str] = {}
         self.store_dir = Path(cfg.store_dir)
 
@@ -267,31 +303,57 @@ class SemanticStore:
         seen: set[str] = set()
         ema = self.cfg.ema_alpha
 
+        # Distance-ordered best-first assignment: collect every (object,
+        # detection) pair inside the match radius and consume the globally
+        # nearest pair first, so two same-label objects cannot swap identities
+        # because of dict insertion order.
+        pairs: list[tuple[float, str, int]] = []
+        det_labels = [canonical_label(d.label) for d in unmatched]
         for oid, prev in self.objs.items():
-            best_i, best_d = None, self.cfg.match_radius_m
+            prev_label = canonical_label(prev.label)
             for i, d in enumerate(unmatched):
-                if d.label != prev.label:
+                if det_labels[i] != prev_label:
                     continue
                 dd = math.hypot(d.x - prev.x, d.y - prev.y)
-                if dd <= best_d:
-                    best_i, best_d = i, dd
-            if best_i is None:
+                if dd <= self.cfg.match_radius_m:
+                    pairs.append((dd, oid, i))
+        pairs.sort(key=lambda p: p[0])
+
+        taken: set[int] = set()
+        for _, oid, i in pairs:
+            if oid in seen or i in taken:
                 continue
-            d = unmatched.pop(best_i)
+            d = unmatched[i]
+            taken.add(i)
+            prev = self.objs[oid]
+            prev.last_seen_s = round(t_pass, 2)
+            self._misses[oid] = 0
+            seen.add(oid)
+            if d.confidence < self.cfg.min_confidence:
+                # Freshness only: a sub-threshold hit keeps the object alive but
+                # must not move it or overwrite its flags.
+                continue
             prev_x, prev_y = prev.x, prev.y
             prev.x = (1.0 - ema) * prev.x + ema * d.x
             prev.y = (1.0 - ema) * prev.y + ema * d.y
             prev.confidence = d.confidence
-            prev.height_suspect = d.height_suspect
-            prev.last_seen_s = round(t_pass, 2)
-            self._misses[oid] = 0
+            # height_suspect needs a 2-of-3 majority (hysteresis): a single
+            # noisy probe must not flap the flag in either direction.
+            hist = self._hs_hist.setdefault(oid, [])
+            hist.append(bool(d.height_suspect))
+            del hist[:-3]
+            if sum(hist) >= 2:
+                prev.height_suspect = True
+            elif len(hist) - sum(hist) >= 2:
+                prev.height_suspect = False
             # RAW displacement this pass, before any smoothing: the EMA step is
             # only alpha * raw and hides moves just above the threshold.
             raw = math.hypot(d.x - prev_x, d.y - prev_y)
             prev.motion = "moved" if raw > self.cfg.move_threshold_m else "static"
             if prev.motion == "moved":
                 diff.moved.append(oid)
-            seen.add(oid)
+
+        unmatched = [d for i, d in enumerate(unmatched) if i not in taken]
 
         for d in unmatched:
             oid = f"obj_{self.next_id:04d}"
@@ -305,12 +367,22 @@ class SemanticStore:
                 diff.appeared.append(oid)
             seen.add(oid)
 
+        evicted: list[str] = []
         for oid in self.objs:
             if oid in seen:
                 continue
             self._misses[oid] = self._misses.get(oid, 0) + 1
             if self._misses[oid] == self.cfg.vanish_passes:
                 diff.vanished.append(oid)
+            if self._misses[oid] >= self.cfg.max_misses:
+                evicted.append(oid)
+        for oid in evicted:
+            # Cap resurrection: an object gone this long gets a new id if it
+            # comes back, and churn cannot grow the map without bound.
+            del self.objs[oid]
+            self._misses.pop(oid, None)
+            self._labels.pop(oid, None)
+            self._hs_hist.pop(oid, None)
 
         self.diff = diff
         if diff.appeared or diff.moved or diff.vanished:
@@ -493,8 +565,10 @@ class SemanticsRunner:
         self._offer_times: list[float] = []
         self.last_offer_t = float("-inf")
         self.fail_cooldown_until = float("-inf")
-        self.skipped = {"interval": 0, "budget": 0, "inflight": 0, "no_context": 0}
+        self.skipped = {"interval": 0, "budget": 0, "inflight": 0, "no_context": 0,
+                        "resolution": 0, "cooldown": 0}
         self.stale_dropped = 0
+        self._resolution_warned = False
 
     # -- passes -------------------------------------------------------------
     def maybe_pass(self, t: float, ctx: SemanticContext, frame: np.ndarray, *,
@@ -506,9 +580,21 @@ class SemanticsRunner:
         if ctx.floor_lab is None:
             self.skipped["no_context"] += 1
             return False
+        # The polygon, homography and probe are all in configured-camera pixels;
+        # a frame at another resolution would silently misplace them. Refuse and
+        # say so once instead of projecting wrong.
+        if ctx.camera_w and ctx.camera_h and frame.shape[:2] != (ctx.camera_h, ctx.camera_w):
+            if not self._resolution_warned:
+                print(f"[semantics] frame {frame.shape[1]}x{frame.shape[0]} does not match "
+                      f"the configured camera {ctx.camera_w}x{ctx.camera_h}; refusing semantic "
+                      f"passes (calibrate at the capture resolution)", file=sys.stderr)
+                self._resolution_warned = True
+            self.skipped["resolution"] += 1
+            return False
         # Cooldown and budget are hard limits: even an explicit trigger respects
         # them, so a bug cannot run up a bill or hammer a failing model.
         if t < self.fail_cooldown_until:
+            self.skipped["cooldown"] += 1
             return False
         if not force and t - self.last_offer_t < self.semantics_cfg.min_interval_s:
             self.skipped["interval"] += 1
@@ -582,10 +668,24 @@ _STOP_WORDS = {
 
 
 def _fold(word: str) -> str:
-    """Tiny plural fold; enough for 'mats' -> 'mat' without a stemmer."""
+    """Tiny plural fold; enough for 'mats'/'boxes'/'berries' without a stemmer."""
+    if len(word) > 4 and word.endswith("ies") and word[-4] not in "aeiou":
+        return word[:-3] + "y"                    # berries -> berry
+    if len(word) > 4 and word.endswith("es") and (
+            word[-3] in "sxz" or word.endswith(("ches", "shes"))):
+        return word[:-2]                          # boxes -> box, dishes -> dish
     if len(word) > 3 and word.endswith("s") and not word.endswith("ss"):
-        return word[:-1]
+        return word[:-1]                          # mats -> mat
     return word
+
+
+def canonical_label(label: str) -> str:
+    """Casefold + plural fold, used for label comparisons only.
+
+    'Blue Mats' -> 'blue mat'; the display label stored in the map keeps its
+    original spelling. A real stemmer is out of scope (M2 concern).
+    """
+    return " ".join(_fold(w) for w in re.findall(r"[a-z0-9]+", label.casefold()))
 
 
 def _tokens(text: str) -> set[str]:
@@ -677,7 +777,9 @@ def approach_point(dest: Destination, from_xy: tuple[float, float],
                    standoff_m: float) -> tuple[float, float]:
     dx, dy = dest.x - from_xy[0], dest.y - from_xy[1]
     length = math.hypot(dx, dy)
-    if length < 1e-9:
+    if length <= standoff_m:
+        # Already inside the standoff ring (or on the object): never step past
+        # the destination to its far side.
         return dest.x, dest.y
     return (dest.x - dx / length * standoff_m, dest.y - dy / length * standoff_m)
 

@@ -159,6 +159,8 @@ class SemanticContext:
     grid_t: float
     occupied_thr: float
     stale_s: float
+    camera_w: int = 0               # configured capture size; 0 = unknown, no check
+    camera_h: int = 0
 
     def occupied(self) -> np.ndarray:
         return self.grid_log_odds > self.occupied_thr
@@ -719,6 +721,8 @@ class Perception:
             grid_t=t,
             occupied_thr=self.grid.OCCUPIED_THR,
             stale_s=self.cfg.grid.stale_s,
+            camera_w=int(self.cfg.camera.width),
+            camera_h=int(self.cfg.camera.height),
         )
 
     # -- main ---------------------------------------------------------------

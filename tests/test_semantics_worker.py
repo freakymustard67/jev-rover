@@ -115,6 +115,7 @@ def test_failure_cooldown(tmp_path):
         assert _drain(runner, 0.05) is None
         assert runner.worker.errors == 1
         assert not runner.maybe_pass(1.0, _ctx(), FRAME, force=True), "cooldown must block"
+        assert runner.skipped["cooldown"] == 1, "cooldown refusals are counted"
         assert runner.maybe_pass(20.0, _ctx(), FRAME, force=True), "cooldown must expire"
     finally:
         runner.close()
@@ -129,11 +130,35 @@ def test_pass_refused_without_floor_sample(tmp_path):
         runner.close()
 
 
+def test_frame_resolution_mismatch_is_refused_once(tmp_path, capsys):
+    runner = _runner(FastVision(), tmp_path)
+    try:
+        ctx = replace(_ctx(), camera_w=100, camera_h=100)     # FRAME is 160x120
+        assert not runner.maybe_pass(1.0, ctx, FRAME, force=True)
+        assert not runner.maybe_pass(2.0, ctx, FRAME, force=True)
+        assert runner.skipped["resolution"] == 2
+        assert capsys.readouterr().err.count("does not match") == 1, "warn once, not per refusal"
+    finally:
+        runner.close()
+
+
+def test_frame_resolution_match_is_accepted(tmp_path):
+    runner = _runner(FastVision(), tmp_path)
+    try:
+        ctx = replace(_ctx(), camera_w=160, camera_h=120)
+        assert runner.maybe_pass(1.0, ctx, FRAME, force=True)
+        assert runner.skipped["resolution"] == 0
+    finally:
+        runner.close()
+
+
 def test_stats_shape(tmp_path):
     runner = _runner(FastVision(), tmp_path)
     try:
         stats = runner.stats()
         assert stats["enabled"] is True and stats["passes"] == 0
         assert "median_ms" in stats and "skipped" in stats
+        assert set(stats["skipped"]) == {"interval", "budget", "inflight", "no_context",
+                                         "resolution", "cooldown"}
     finally:
         runner.close()

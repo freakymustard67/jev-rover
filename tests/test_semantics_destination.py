@@ -78,3 +78,14 @@ def test_approach_point_standoff():
     assert ax < 3.0 and abs(ay - 1.0) < 1e-9
     # degenerate: standing on the object
     assert approach_point(dest, (3.0, 1.0), 0.35) == (3.0, 1.0)
+
+
+def test_approach_point_never_overshoots_the_destination():
+    from scene import Destination
+    dest = Destination(label="mat", x=3.0, y=1.0, confidence=0.9)
+    # standoff larger than the distance: the old formula flipped to the far side
+    assert approach_point(dest, (3.2, 1.0), 0.35) == (3.0, 1.0)
+    assert approach_point(dest, (2.9, 1.0), 0.35) == (3.0, 1.0)
+    # just outside the ring still lands on the ring
+    ax, ay = approach_point(dest, (2.0, 1.0), 0.35)
+    assert abs(ax - 2.65) < 1e-9 and ay == 1.0

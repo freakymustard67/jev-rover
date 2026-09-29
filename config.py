@@ -146,7 +146,9 @@ class SemanticsConfig:
     ema_alpha: float = 0.4
     move_threshold_m: float = 0.25
     vanish_passes: int = 2
+    max_misses: int = 10               # evict (cap resurrection) after this many missed passes
     dedupe_iou: float = 0.5
+    dedupe_center_m: float = 0.15      # ...or same-label bbox centres closer than this (metres)
     min_interval_s: float = 2.0
     failure_cooldown_s: float = 10.0
     min_label_score: float = 0.34
@@ -320,6 +322,7 @@ class RoomConfig:
                                     ("failure_cooldown_s", s.failure_cooldown_s, 0.0, None),
                                     ("ema_alpha", s.ema_alpha, 1e-9, 1.0),
                                     ("dedupe_iou", s.dedupe_iou, 0.0, 1.0),
+                                    ("dedupe_center_m", s.dedupe_center_m, 0.0, None),
                                     ("min_confidence", s.min_confidence, 0.0, 1.0),
                                     ("roi_min_confidence", s.roi_min_confidence, 0.0, 1.0),
                                     ("match_radius_m", s.match_radius_m, 1e-9, None),
@@ -332,6 +335,9 @@ class RoomConfig:
             raise ConfigError(f"{where}.semantics.max_passes_per_min must be >= 1")
         if s.vanish_passes < 1:
             raise ConfigError(f"{where}.semantics.vanish_passes must be >= 1")
+        if s.max_misses < s.vanish_passes:
+            raise ConfigError(f"{where}.semantics.max_misses must be >= vanish_passes "
+                              f"({s.max_misses} < {s.vanish_passes})")
         w = self.sweep
         _check_choice(w.sensor.kind, ("tof",), f"{where}.sweep.sensor.kind")
         if not (0.0 < w.sensor.min_range_m < w.sensor.max_range_m):
