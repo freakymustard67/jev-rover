@@ -64,6 +64,31 @@ def test_oversized_foreground_is_rejected():
     assert est.update(everything, 0.0) is None
 
 
+def test_arm_sized_blob_rejected_by_metric_cap():
+    """A hand/arm-sized foreground (~10x the rover) is filtered by area_m2."""
+    bg, _ = _scene(600, 400)
+    est = BlobPoseEstimator(_H(), background_bgr=bg)      # 200 px/m -> 1 px^2 = 2.5e-5 m^2
+    frame = bg.copy()
+    cv2.rectangle(frame, (500, 300), (620, 420), (25, 25, 25), -1)   # 120x120 px = 0.36 m^2
+    assert est.update(frame, 0.0) is None
+
+
+def test_nearest_blob_wins_over_larger_far_blob():
+    """Continuity beats size: a bigger foreground object must not steal the lock."""
+    bg, _ = _scene(600, 400)                              # establishes the prior at (600, 400)
+    est = BlobPoseEstimator(_H(), background_bgr=bg)
+    assert est.update(_scene(600, 400)[1], 0.0) is not None
+    frame = bg.copy()
+    cv2.rectangle(frame, (580, 370), (660, 400), (25, 25, 25), -1)   # small: the rover moved a little
+    cv2.rectangle(frame, (880, 480), (960, 560), (25, 25, 25), -1)   # bigger, elsewhere (0.16 m^2)
+    fix = est.update(frame, 0.1)
+    assert fix is not None
+    near = _H().img_to_world(np.array([[620.0, 400.0]]))[0]
+    far = _H().img_to_world(np.array([[920.0, 560.0]]))[0]
+    assert abs(fix.x - near[0]) < 0.3 and abs(fix.y - near[1]) < 0.3
+    assert abs(fix.x - far[0]) + abs(fix.y - far[1]) > 1.0
+
+
 def test_mog2_path_waits_for_warmup():
     _, frame = _scene(600, 400)
     est = BlobPoseEstimator(_H(), background_bgr=None, warmup_frames=5)
@@ -73,7 +98,10 @@ def test_mog2_path_waits_for_warmup():
 
 
 def test_perception_blob_mode_tracks_the_synthetic_rover(synth_cfg, tmp_path):
-    cfg = replace(synth_cfg, rover=replace(synth_cfg.rover, pose_source="blob"))
+    # the synthetic renderer draws the tag 2.5x life size, so the rover blob is
+    # far larger than a real one: raise the metric area cap for this fixture
+    cfg = replace(synth_cfg, rover=replace(synth_cfg.rover, pose_source="blob",
+                                            blob_max_area_m2=2.0))
     syn = SyntheticRoom(cfg, draw_rover=False)
     bg_path = tmp_path / "empty_room.png"
     assert cv2.imwrite(str(bg_path), syn.render())

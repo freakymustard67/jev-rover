@@ -28,7 +28,8 @@
         960
       ]
     ],
-    "lab_tolerance": 22.0
+    "lab_tolerance": 22.0,
+    "background": "calibration/empty_room.png"
   },
   "homography": {
     "image_points_px": [

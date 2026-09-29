@@ -680,10 +680,17 @@ class BlobPoseEstimator:
     motion over a ~0.6 s window; while the rover is nearly stationary the last
     heading is HELD and flagged ``heading_uncertain`` - Jev sees that flag and
     must not trust yaw-dependent decisions.
+
+    Selection: candidates are filtered by a METRIC area cap (``max_area_m2``:
+    a hand/arm is ~10x the rover, so size is a hard filter) and, when a previous
+    position exists, the candidate nearest to it wins - continuity beats size,
+    so a bigger foreground object cannot steal the lock. Largest wins only when
+    there is no prior.
     """
 
     def __init__(self, homography: Homography, *, background_bgr: np.ndarray | None = None,
                  diff_thr: int = 25, min_area_px: int = 120, max_area_frac: float = 0.35,
+                 max_area_m2: float = 0.25,
                  warmup_frames: int = 40, heading_window_s: float = 0.6,
                  move_thresh_mps: float = 0.04, alpha: float = 0.4,
                  open_px: int = 3, close_px: int = 7):
@@ -697,6 +704,7 @@ class BlobPoseEstimator:
         self.diff_thr = int(diff_thr)
         self.min_area_px = int(min_area_px)
         self.max_area_frac = float(max_area_frac)
+        self.max_area_m2 = float(max_area_m2)
         self.warmup_frames = int(warmup_frames)
         self.heading_window_s = float(heading_window_s)
         self.move_thresh_mps = float(move_thresh_mps)
@@ -733,17 +741,34 @@ class BlobPoseEstimator:
         contours, _ = cv2.findContours(fg, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours:
             return None
-        big = max(contours, key=cv2.contourArea)
-        area = float(cv2.contourArea(big))
         h, w = frame.shape[:2]
-        if area < self.min_area_px or area > self.max_area_frac * h * w:
+        max_px = self.max_area_frac * h * w
+        cands: list[tuple[float, float, float, float, float, float]] = []
+        for c in contours:
+            area = float(cv2.contourArea(c))
+            if area < self.min_area_px or area > max_px:
+                continue
+            x, y, bw, bh = cv2.boundingRect(c)
+            cx_px, cy_px = x + bw / 2.0, float(y + bh)      # contact point
+            world = self.H.img_to_world(np.array([[cx_px, cy_px]]))[0]
+            wx, wy = float(world[0]), float(world[1])
+            if not (math.isfinite(wx) and math.isfinite(wy)):
+                continue
+            # metric area via the homography's local scale: an arm is ~10x the
+            # rover, so size is a hard filter, not a tiebreak
+            sx = self.H.img_to_world(np.array([[cx_px + 1.0, cy_px]]))[0]
+            sy = self.H.img_to_world(np.array([[cx_px, cy_px + 1.0]]))[0]
+            mpp2 = math.hypot(sx[0] - wx, sx[1] - wy) * math.hypot(sy[0] - wx, sy[1] - wy)
+            if area * max(mpp2, 1e-12) > self.max_area_m2:
+                continue
+            # nearest-to-prior first: continuity beats size, so a bigger arm in
+            # frame cannot steal the lock; largest wins only with no prior
+            key = (-math.hypot(wx - self.pos[0], wy - self.pos[1])
+                   if self.pos is not None else area)
+            cands.append((key, area, wx, wy, cx_px, cy_px))
+        if not cands:
             return None
-        x, y, bw, bh = cv2.boundingRect(big)
-        cx_px, cy_px = x + bw / 2.0, float(y + bh)          # contact point
-        world = self.H.img_to_world(np.array([[cx_px, cy_px]]))[0]
-        wx, wy = float(world[0]), float(world[1])
-        if not (math.isfinite(wx) and math.isfinite(wy)):
-            return None
+        _, area, wx, wy, cx_px, cy_px = max(cands)
         self.pos = ((wx, wy) if self.pos is None else
                     (self.pos[0] + self.alpha * (wx - self.pos[0]),
                      self.pos[1] + self.alpha * (wy - self.pos[1])))
@@ -796,7 +821,8 @@ class Perception:
         blob_bg = None
         if self.pose_mode == "blob" and cfg.floor.background:
             blob_bg = cv2.imread(cfg.floor.background, cv2.IMREAD_COLOR)
-        self.blob = (BlobPoseEstimator(self.homography, background_bgr=blob_bg)
+        self.blob = (BlobPoseEstimator(self.homography, background_bgr=blob_bg,
+                                       max_area_m2=cfg.rover.blob_max_area_m2)
                      if self.pose_mode == "blob" else None)
         self.est = RoverEstimator(cfg.rover.footprint_radius_m,
                                   source_label=self.pose_mode,

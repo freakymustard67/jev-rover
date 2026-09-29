@@ -85,6 +85,10 @@ class RoverConfig:
     #: Where pose comes from: "tag" (AprilTag on the rover) or "blob"
     #: (camera-only: static-scene background subtraction -> rover blob).
     pose_source: str = "tag"
+    #: Blob pose: reject foreground blobs whose floor-projected area exceeds
+    #: this (an arm/torso is ~10x the rover; the rover's own silhouette is well
+    #: under). The frame-fraction cap remains as a hard backstop.
+    blob_max_area_m2: float = 0.25
     tag_id: int = 0
     tag_size_m: float = 0.10
     # Rotation between the tag's +y (printed "up") and the rover's forward axis.
@@ -133,6 +137,7 @@ class VisionModelConfig:
     # --- M2 real adapters (m2-design.md §2.6) ---
     model_id: str = ""                 # local: HF id; "" -> vision.DEFAULT_LOCAL_MODEL
     device: str = "auto"               # auto | cpu | cuda | cuda:N
+    threads: int = 2                   # torch CPU threads (leave cores for the 15 Hz loop)
     half: bool = False                 # fp16, cuda only
     image_shortest_edge: int = 800     # processor size (CPU profile: 400)
     image_longest_edge: int = 1333     # (CPU profile: 666)
@@ -336,6 +341,8 @@ class RoomConfig:
             raise ConfigError(f"{where}.rover.footprint_radius_m out of range: "
                               f"{r.footprint_radius_m}")
         _check_choice(r.pose_source, ("tag", "blob"), f"{where}.rover.pose_source")
+        if r.blob_max_area_m2 <= 0:
+            raise ConfigError(f"{where}.rover.blob_max_area_m2 must be > 0")
         if not 0.0 < self.camera.hfov_deg < 179.0:
             raise ConfigError(f"{where}.camera.hfov_deg must be in (0, 179)")
         if r.tof_stop_m >= r.tof_slow_m:
@@ -360,6 +367,8 @@ class RoomConfig:
         _check_choice(s.model.kind, ("fake", "local", "remote"), f"{where}.semantics.model.kind")
         if s.model.timeout_s <= 0:
             raise ConfigError(f"{where}.semantics.model.timeout_s must be > 0")
+        if s.model.threads < 1:
+            raise ConfigError(f"{where}.semantics.model.threads must be >= 1")
         m = s.model
         if m.kind in ("local", "remote") and not m.labels:
             raise ConfigError(f"{where}.semantics.model.labels must be non-empty "

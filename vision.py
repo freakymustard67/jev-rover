@@ -231,7 +231,7 @@ class LocalVision:
                 self._torch = torch
                 self._device = self._resolve_device(torch)
                 if self._device == "cpu":
-                    torch.set_num_threads(min(4, os.cpu_count() or 1))
+                    torch.set_num_threads(max(1, int(self.cfg.threads)))
                 self._processor = AutoProcessor.from_pretrained(self.model_id)
                 self._model = AutoModelForZeroShotObjectDetection.from_pretrained(
                     self.model_id).to(self._device).eval()
