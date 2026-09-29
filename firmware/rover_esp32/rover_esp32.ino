@@ -102,6 +102,13 @@
 // 0 is the honest default for a car without a divider.)
 #define RVR_ENABLE_BATTERY 0
 
+// Wireless firmware updates (ArduinoOTA). The FIRST flash must be over USB;
+// after that the rover accepts updates on the LAN (mDNS name ROVER_HOSTNAME,
+// default `jev-rover.local`, espota port 3232). The watchdog keeps the motors
+// cut during a flash unless valid commands keep arriving, so do not flash
+// while driving. See "Wireless updates (OTA)" in firmware/README.md.
+#define RVR_OTA 1
+
 #if RVR_ENABLE_REAR_SENSOR && (RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X)
 #error "RVR_ENABLE_REAR_SENSOR=1 needs the HC-SR04 driver: two VL53L0X sensors share I2C address 0x29 and re-addressing via XSHUT is not implemented. Set RVR_ENABLE_REAR_SENSOR to 0, or set RVR_DISTANCE_SENSOR to RVR_SENSOR_HCSR04."
 #endif
@@ -132,6 +139,10 @@
 #include <ArduinoJson.h>   // REQUIRES v7.x
 #include <Wire.h>
 
+#if RVR_OTA
+  #include <ArduinoOTA.h>
+#endif
+
 #if RVR_DISTANCE_SENSOR == RVR_SENSOR_VL53L0X
   #include <Adafruit_VL53L0X.h>
 #endif
@@ -154,6 +165,14 @@
   #endif
 #else
   #include "secrets.h"
+#endif
+
+// OTA defaults for secrets.h files written before the OTA fields existed.
+#ifndef ROVER_OTA_PASSWORD
+  #define ROVER_OTA_PASSWORD ""
+#endif
+#ifndef ROVER_HOSTNAME
+  #define ROVER_HOSTNAME "jev-rover"
 #endif
 
 // =====================================================================
@@ -1760,6 +1779,23 @@ void setup() {
 
   g_udp.begin(RVR_UDP_PORT);
   Serial.printf("[udp] listening on port %u\n", (unsigned)RVR_UDP_PORT);
+
+#if RVR_OTA
+  // Wireless updates. begin() starts the mDNS responder and the espota UDP
+  // listener; handle() is serviced from loop(). Neither touches g_cmd, so
+  // the watchdog and the reflex behave exactly as before during a flash.
+  ArduinoOTA.setHostname(ROVER_HOSTNAME);
+  if (strlen(ROVER_OTA_PASSWORD) > 0) {
+    ArduinoOTA.setPassword(ROVER_OTA_PASSWORD);
+  }
+  ArduinoOTA.onStart([]() { Serial.println("[ota] update starting"); });
+  ArduinoOTA.onEnd([]() { Serial.println("\n[ota] done; rebooting"); });
+  ArduinoOTA.onError([](ota_error_t e) {
+    Serial.printf("[ota] error %u\n", (unsigned)e);
+  });
+  ArduinoOTA.begin();
+  Serial.printf("[ota] ready as %s.local (espota UDP 3232)\n", ROVER_HOSTNAME);
+#endif
   Serial.printf("[proto] v <= %.2f m/s, w <= %.2f rad/s, watchdog %u ms\n",
                 RVR_MAX_V, RVR_MAX_W, (unsigned)RVR_WATCHDOG_MS);
   Serial.println("[safety] watchdog armed, reflex armed. Wheels off the ground for first tests.");
@@ -1771,6 +1807,13 @@ void loop() {
   // Incoming commands first: they are the only input the control loop needs.
   // (Interleave rule 1: this stays the first statement of every pass.)
   rvrPollUdp(now);
+
+#if RVR_OTA
+  // Non-blocking OTA service. Like rvrPollUdp it never blocks the loop and
+  // never touches the watchdog: a flash without commands means stopped
+  // motors (which is what we want while reflashing).
+  ArduinoOTA.handle();
+#endif
 
   // Servo ToF sweep: one bounded step per pass, never the whole sweep.
   rvrScanStep(now);

@@ -537,6 +537,30 @@ gets, put it in the laptop's config.
 > **L298N note:** lower `RVR_PWM_FREQ_HZ` to ~5000. The 20 kHz default is for the
 > TB6612FNG, which switches fast enough to keep it inaudible.
 
+### Wireless updates (OTA)
+
+The firmware ships with ArduinoOTA enabled (`RVR_OTA 1`). **The first flash of a new
+rover must be over USB**; after that it can be reflashed over WiFi:
+
+- The rover is reachable at its mDNS name (`ROVER_HOSTNAME` in `secrets.h`, default
+  `jev-rover` → `jev-rover.local`), espota UDP port 3232.
+- With `arduino-cli`:
+  ```sh
+  arduino-cli compile --fqbn esp32:esp32:esp32 firmware/rover_esp32
+  arduino-cli upload -p jev-rover.local --fqbn esp32:esp32:esp32 --protocol network firmware/rover_esp32
+  ```
+  If the core's network uploader is unavailable, use the `espota.py` that ships with
+  the esp32 core:
+  ```sh
+  python3 ~/.arduino15/packages/esp32/hardware/esp32/*/tools/espota.py -i jev-rover.local -f <build>.bin
+  ```
+- Set `ROVER_OTA_PASSWORD` (non-empty) to require a password when flashing.
+- **Safety:** the 400 ms watchdog keeps the motors cut during a flash unless valid
+  commands keep arriving — do not flash while driving. `handle()` is non-blocking and
+  never touches the watchdog or the reflex.
+- **Recovery:** if WiFi credentials change or mDNS breaks, a USB flash always works.
+  Keep the cable reachable.
+
 ### First test, wheels off the ground
 
 - Power up with **no** laptop connected. The motors must be dead and telemetry idle
